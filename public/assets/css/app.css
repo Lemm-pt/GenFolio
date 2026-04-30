@@ -1,0 +1,23 @@
+body { font-family: 'Inter', sans-serif; background: #0f0f1a; color: #eee; }
+.hero { height: 70vh; display: flex; align-items: center; justify-content: center; text-align: center; }
+.btn-gold { background: #C6A43F; color: #0a0a1a; padding: 12px 30px; border-radius: 50px; text-decoration: none; display: inline-block; transition: 0.3s; }
+.btn-gold:hover { background: #d4b96a; transform: translateY(-3px); }
+.btn-outline-gold { border: 1px solid #C6A43F; color: #C6A43F; background: transparent; }
+.btn-outline-gold:hover { background: #C6A43F; color: #0a0a1a; }
+.servico-card, .imovel-card, .blog-card { background: #1e1e2a; padding: 20px; border-radius: 15px; margin-bottom: 20px; transition: 0.3s; }
+.servico-card:hover, .imovel-card:hover { transform: translateY(-5px); }
+.text-gold { color: #C6A43F; }
+.rodape { background: #0a0a1a; border-top: 1px solid #C6A43F33; }
+.form-control { background: #2a2a35; border: none; color: white; }
+
+/* Prevenir scroll horizontal em todo o admin */
+body, .container, .row, .col-md-10 {
+    overflow-x: hidden;
+}
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
+.table {
+    min-width: 500px; /* apenas para telemóveis, sem quebrar layout */
+}

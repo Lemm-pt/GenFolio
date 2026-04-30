@@ -1,0 +1,45 @@
+Ver de eexiste autenticação de 2 fatores na "gerir conta google"
+
+Você já está no lugar certo 👍 — e como a verificação em duas etapas está ativada, a opção de senha de app deve estar disponível.
+
+🔍 Onde encontrar a senha de app
+
+No painel da sua conta do Google:
+
+Vá em Segurança e login (onde você já está)
+Role a página um pouco mais para baixo
+Procure por “Senhas de app”
+
+👉 Link direto (mais rápido):
+https://myaccount.google.com/apppasswords
+
+🧭 Se não aparecer a opção
+
+Pode ser por alguns motivos:
+
+Conta corporativa (Google Workspace) → o admin pode ter bloqueado
+Você não confirmou totalmente o 2FA
+Conta muito recente ou com restrições de segurança
+🛠️ Como gerar a senha
+
+Quando entrar em “Senhas de app”:
+
+Escolha App: Mail
+Escolha Dispositivo: Outro (ex: "PHPMailer")
+Clique em Gerar
+
+Vai aparecer uma senha tipo:
+
+abcd efgh ijkl mnop
+
+⚠️ Use essa senha no PHPMailer no lugar da sua senha normal (sem espaços).
+
+💡 Dica importante
+Essa senha aparece uma única vez
+Se perder, tem que gerar outra
+Não use sua senha real do Gmail no código
+
+
+base
+lemm.pt@gmail.com
+uzya hlsc mliz tvbq --> uzyahlscmliztvbq

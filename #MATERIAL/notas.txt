@@ -1,0 +1,31 @@
+
+
+
+
+CLIENTES:
+---------
+id_cliente
+email
+senha
+nome_completo
+morada
+cidade
+telefone
+purl
+activo
+created_at
+updated_at
+deleted_at
+
+
+
+
+// status
+/* 
+    PENDENTE - encomenda acabada de registar
+    PAGO - encomenda que foi paga
+    EM TRATAMENTO - está a ser processada pela loja
+    ENVIADA - foi enviada por correio
+    CANCELADA
+    ENTREGUE - completamente finalizada
+*/
