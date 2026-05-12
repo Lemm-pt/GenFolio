@@ -11,34 +11,57 @@
     <div class="container">
         <h2 class="text-center mb-5">Serviços</h2>
         <div class="row">
-            <div class="col-md-4"><div class="servico-card"><i class="fas fa-building fa-3x"></i><h4>Mediação Imobiliária</h4><p>Curadoria de imóveis de prestígio.</p></div></div>
-            <div class="col-md-4"><div class="servico-card"><i class="fas fa-chart-line fa-3x"></i><h4>Intermediação de Crédito</h4><p>Melhores soluções bancárias.</p></div></div>
-            <div class="col-md-4"><div class="servico-card"><i class="fas fa-hard-hat fa-3x"></i><h4>Construção</h4><p>Projeto chave-na-mão.</p></div></div>
+            <?php if(!empty($servicos)): ?>
+                <?php foreach($servicos as $servico): ?>
+                <div class="col-md-4">
+                    <div class="servico-card text-center">
+                        <i class="fas <?= $servico->icone ?> fa-3x mb-3" style="color: #C6A43F;"></i>
+                        <h4><?= htmlspecialchars($servico->titulo) ?></h4>
+                        <p><?= htmlspecialchars($servico->descricao) ?></p>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center">
+                    <p>Adicione serviços no backoffice.</p>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </section>
 
-<!-- Imóveis em destaque -->
-<section id="imoveis" class="py-5 bg-light">
+<!-- PRODUTOS EM DESTAQUE -->
+<section id="produtos" class="py-5 bg-light">
     <div class="container">
-       <h2 class="text-center mb-5"><?= $config->get('tipo_servico') == 'imobiliario' ? 'Imóveis em Destaque' : 'Destaques' ?></h2>
+        <h2 class="text-center mb-5"><?= $config->get('tipo_servico', 'imobiliario') == 'imobiliario' ? 'Produtos em Destaque' : 'Destaques' ?></h2>
         <div class="row">
-            <?php foreach($imoveis as $imovel): ?>
-            <div class="col-md-4 mb-4">
-                <div class="card imovel-card">
-                    <?php if($imovel->imagem): ?>
-                        <img src="assets/images/<?= $imovel->imagem ?>" class="card-img-top" alt="">
-                    <?php else: ?>
-                        <div class="bg-secondary text-white text-center p-5">Sem imagem</div>
-                    <?php endif; ?>
-                    <div class="card-body">
-                        <h5><?= htmlspecialchars($imovel->titulo) ?></h5>
-                        <p class="text-gold">€ <?= number_format($imovel->preco, 0, ',', '.') ?></p>
-                        <a href="?a=imovel&slug=<?= $imovel->slug ?>" class="btn btn-sm btn-outline-gold">Ver detalhes</a>
-                    </div>
+            <?php if(!empty($produtos)): ?>
+                <?php foreach($produtos as $produto): ?>
+                <div class="col-md-4 mb-4">
+                  <div class="card produto-card h-100">
+                      <?php if($produto->imagem): ?>
+                          <img src="<?= BASE_URL ?>assets/images/produtos/<?= $produto->imagem ?>" class="card-img-top" style="height: 100%; width: 100%; object-fit: cover;" alt="<?= htmlspecialchars($produto->nome) ?>">
+                      <?php else: ?>
+                          <div class="bg-secondary text-white text-center d-flex align-items-center justify-content-center" style="height: 220px;">
+                              <i class="fas fa-image fa-3x"></i>
+                              <span class="ms-2">Sem imagem</span>
+                          </div>
+                      <?php endif; ?>
+                      <div class="card-body">
+                          <h5><?= htmlspecialchars($produto->nome) ?></h5>
+                          <p><?= htmlspecialchars(substr($produto->descricao ?? '', 0, 100)) ?>...</p>
+                          <?php if($produto->preco): ?>
+                              <p class="text-gold fw-bold">€ <?= number_format($produto->preco, 2, ',', '.') ?></p>
+                          <?php endif; ?>
+                      </div>
+                  </div>
+              </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center">
+                    <p class="text-muted">Sem produtos em destaque no momento.</p>
                 </div>
-            </div>
-            <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 </section>
@@ -48,17 +71,26 @@
     <div class="container">
         <h2 class="text-center mb-5">Blog</h2>
         <div class="row">
-            <?php foreach($publicacoes as $pub): ?>
-            <div class="col-md-4">
-                <div class="card blog-card">
-                    <div class="card-body">
-                        <h5><?= htmlspecialchars($pub->titulo) ?></h5>
-                        <p><?= substr(strip_tags($pub->conteudo), 0, 100) ?>...</p>
-                        <a href="?a=artigo&slug=<?= $pub->slug ?>" class="text-gold">Ler mais →</a>
+            <?php if(!empty($publicacoes)): ?>
+                <?php foreach($publicacoes as $pub): ?>
+                <div class="col-md-4 mb-4">
+                    <div class="card blog-card h-100">
+                        <?php if($pub->imagem): ?>
+                            <img src="<?= BASE_URL ?>assets/images/blog/<?= $pub->imagem ?>" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        <?php endif; ?>
+                        <div class="card-body">
+                            <h5><?= htmlspecialchars($pub->titulo) ?></h5>
+                            <p><?= htmlspecialchars(substr(strip_tags($pub->conteudo), 0, 100)) ?>...</p>
+                            <a href="?a=artigo&slug=<?= $pub->slug ?>" class="text-gold">Ler mais →</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center">
+                    <p>Nenhuma publicação ainda.</p>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </section>

@@ -21,3 +21,126 @@ body, .container, .row, .col-md-10 {
 .table {
     min-width: 500px; /* apenas para telemóveis, sem quebrar layout */
 }
+
+/* Admin - Melhor visibilidade */
+.card { background: #1e1e2e; border: none; border-radius: 12px; }
+.card-header { background: #2a2a3a; color: #C6A43F; font-weight: 600; border-bottom: none; }
+.card-body { background: #1e1e2e; color: #e0e0e0; }
+.form-control { background: #2a2a3a; border: 1px solid #3a3a4a; color: white; }
+.form-control:focus { background: #2a2a3a; color: white; border-color: #C6A43F; }
+.btn-gold { background: #C6A43F; color: #1e1e2e; border: none; }
+.btn-gold:hover { background: #d4b96a; color: #0a0a1a; }
+.text-muted { color: #aaa !important; }
+.logo-part1 { color: white; }
+.logo-part2 { color: #C6A43F; }
+label { font-weight: 500; margin-bottom: 0.3rem; display: block; }
+
+
+/* ============================================
+   ADMIN CSS - Melhorar visibilidade
+   ============================================ */
+.admin-container, 
+.admin-container .card,
+.admin-container .card-body,
+.admin-container .card-header {
+    color: #333 !important;
+}
+
+.admin-container .bg-gold {
+    background: #C6A43F !important;
+    color: #1a1a2e !important;
+}
+
+.admin-container .card {
+    background: white !important;
+    border: 1px solid #ddd !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+.admin-container .card-header {
+    background: #f8f9fa !important;
+    border-bottom: 1px solid #ddd !important;
+    color: #333 !important;
+    font-weight: 600 !important;
+}
+
+.admin-container .form-control {
+    background: white !important;
+    border: 1px solid #ced4da !important;
+    color: #333 !important;
+}
+
+.admin-container .form-control:focus {
+    border-color: #C6A43F !important;
+    box-shadow: 0 0 0 0.2rem rgba(198, 164, 63, 0.25) !important;
+}
+
+.admin-container label {
+    color: #333 !important;
+    font-weight: 500 !important;
+}
+
+.admin-container .text-muted {
+    color: #6c757d !important;
+}
+
+.admin-container h1,
+.admin-container h2,
+.admin-container h3,
+.admin-container h4 {
+    color: #333 !important;
+}
+
+/* Dashboard cards */
+.admin-container .dashboard-card {
+    background: white !important;
+    border-radius: 10px !important;
+    padding: 20px !important;
+    text-align: center !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+    transition: transform 0.2s !important;
+}
+
+.admin-container .dashboard-card:hover {
+    transform: translateY(-5px) !important;
+}
+
+.admin-container .dashboard-card h3 {
+    font-size: 2rem !important;
+    margin: 0 !important;
+    color: #C6A43F !important;
+}
+
+.admin-container .dashboard-card p {
+    margin: 0 !important;
+    color: #666 !important;
+}
+
+/* Tabelas do admin */
+.admin-container .table {
+    background: white !important;
+    color: #333 !important;
+}
+
+.admin-container .table th {
+    background: #f8f9fa !important;
+    color: #333 !important;
+    border-bottom: 2px solid #dee2e6 !important;
+}
+
+.admin-container .table td {
+    color: #333 !important;
+    vertical-align: middle !important;
+}
+
+/* Botões */
+.admin-container .btn-gold {
+    background: #C6A43F !important;
+    border: none !important;
+    color: #1a1a2e !important;
+}
+
+.admin-container .btn-gold:hover {
+    background: #b8922e !important;
+    color: #0a0a1a !important;
+}

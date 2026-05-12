@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/app.css">
-    <style>
+    <!-- <style>
         /* CSS adicional para melhorar o admin */
         body { background: #f4f6f9; font-family: 'Inter', sans-serif; }
         .navbar-dark.bg-dark { background-color: #1a1a2e !important; }
@@ -16,6 +16,6 @@
         .btn-primary { background-color: #C6A43F; border-color: #C6A43F; }
         .btn-primary:hover { background-color: #a8872e; border-color: #a8872e; }
         .table th { background-color: #e9ecef; }
-    </style>
+    </style> -->
 </head>
-<body>
+<body class="admin-container">

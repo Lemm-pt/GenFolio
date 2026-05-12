@@ -1,17 +1,31 @@
-<?php $imovel = $imovel ?? null; ?>
-<h2><?= $imovel ? 'Editar Imóvel' : 'Novo Imóvel' ?></h2>
-<form action="" method="POST">
-    <input type="text" name="titulo" class="form-control mb-2" placeholder="Título" value="<?= $imovel->titulo ?? '' ?>" required>
-    <textarea name="descricao" class="form-control mb-2" placeholder="Descrição" rows="5"><?= $imovel->descricao ?? '' ?></textarea>
-    <input type="number" name="preco" class="form-control mb-2" placeholder="Preço" value="<?= $imovel->preco ?? '' ?>" step="0.01">
-    <input type="text" name="localizacao" class="form-control mb-2" placeholder="Localização" value="<?= $imovel->localizacao ?? '' ?>">
-    <input type="text" name="tipo" class="form-control mb-2" placeholder="Tipo (ex: Moradia T5)" value="<?= $imovel->tipo ?? '' ?>">
-    <select name="status" class="form-control mb-2">
-        <option value="disponivel" <?= isset($imovel) && $imovel->status=='disponivel' ? 'selected' : '' ?>>Disponível</option>
-        <option value="reservado" <?= isset($imovel) && $imovel->status=='reservado' ? 'selected' : '' ?>>Reservado</option>
-        <option value="vendido" <?= isset($imovel) && $imovel->status=='vendido' ? 'selected' : '' ?>>Vendido</option>
-    </select>
-    <div class="mb-2"><input type="checkbox" name="destaque" <?= isset($imovel) && $imovel->destaque ? 'checked' : '' ?>> Destaque na Home</div>
-    <button type="submit" class="btn btn-primary">Salvar</button>
-    <a href="?a=admin" class="btn btn-secondary">Cancelar</a>
-</form>
+<div class="container mt-4">
+    <h2><?= isset($publicacao) ? 'Editar Publicação' : 'Nova Publicação' ?></h2>
+    
+    <form action="" method="POST" enctype="multipart/form-data" class="mt-4">
+        <div class="mb-3">
+            <label class="form-label">Título *</label>
+            <input type="text" name="titulo" class="form-control" value="<?= $publicacao->titulo ?? '' ?>" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Conteúdo *</label>
+            <textarea name="conteudo" class="form-control" rows="10" required><?= $publicacao->conteudo ?? '' ?></textarea>
+            <small>Suporta HTML: use &lt;strong&gt; para negrito, &lt;br&gt; para quebra de linha</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Imagem de destaque</label>
+            <?php if(isset($publicacao) && $publicacao->imagem): ?>
+                <div class="mb-2">
+                    <img src="<?= BASE_URL ?>assets/images/blog/<?= $publicacao->imagem ?>" style="height: 100px;">
+                    <p class="small text-muted">Imagem atual</p>
+                </div>
+            <?php endif; ?>
+            <input type="file" name="imagem" class="form-control" accept="image/*">
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="publicado" class="form-check-input" id="publicado" <?= (isset($publicacao) && $publicacao->publicado) ? 'checked' : 'checked' ?>>
+            <label class="form-check-label" for="publicado">Publicar imediatamente</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="?a=admin_publicacoes" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

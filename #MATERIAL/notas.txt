@@ -1,4 +1,16 @@
 
+backoffice
+admin
+admin123
+
+
+
+// Base de Dados
+define('MYSQL_SERVER',      'lhcp3350.webapps.net');
+define('MYSQL_DATABASE',    'vl2tjdok_spacet');
+define('MYSQL_USER',        'vl2tjdok_lemm');
+define('MYSQL_PASS',        'Mackyver');
+define('MYSQL_CHARSET',     'utf8');´
 
 
 

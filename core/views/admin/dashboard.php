@@ -1,7 +1,71 @@
-<h2>Dashboard</h2>
-<div class="row mb-4"><div class="col-md-6"><div class="card text-white bg-primary"><div class="card-body"><h3><?=count($imoveis)?></h3><p>Imóveis</p><a href="?a=admin_imovel_criar" class="btn btn-light">+ Novo</a></div></div></div><div class="col-md-6"><div class="card text-white bg-success"><div class="card-body"><h3><?=count($publicacoes)?></h3><p>Publicações</p><a href="?a=admin_publicacao_criar" class="btn btn-light">+ Nova</a></div></div></div></div>
-<h3>Imóveis</h3><table class="table-responsive"><thead><tr><th>ID</th><th>Título</th><th>Preço</th><th>Ações</th></tr></thead><tbody><?php foreach($imoveis as $i):?><tr><td><?=$i->id?></td><td><?=htmlspecialchars($i->titulo)?></td><td>€<?=$i->preco?></td><td><a href="?a=admin_imovel_editar&id=<?=$i->id?>" class="btn btn-sm btn-warning">Editar</a> <button class="btn btn-sm btn-danger delete-item" data-id="<?=$i->id?>" data-tipo="imovel">Excluir</button></td></tr><?php endforeach;?></tbody></table>
-<h3>Publicações</h3><table class="table-responsive"><thead><tr><th>ID</th><th>Título</th><th>Ações</th></tr></thead><tbody><?php foreach($publicacoes as $p):?><tr><td><?=$p->id?></td><td><?=htmlspecialchars($p->titulo)?></td><td><a href="?a=admin_publicacao_editar&id=<?=$p->id?>" class="btn btn-sm btn-warning">Editar</a> <button class="btn btn-sm btn-danger delete-item" data-id="<?=$p->id?>" data-tipo="publicacao">Excluir</button></td></tr><?php endforeach;?></tbody></table>
-<script>
-document.querySelectorAll('.delete-item').forEach(btn=>btn.addEventListener('click',async function(){if(!confirm('Eliminar?')) return;const tipo=this.dataset.tipo,id=this.dataset.id;const res=await fetch(`?a=admin_${tipo}_deletar`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`id=${id}`});const data=await res.json();if(data.success)location.reload();else alert('Erro');}));
-</script>
+<div class="container mt-4">
+    <h2>Painel de Controlo</h2>
+    <p class="text-muted">Bem-vindo, <?= $_SESSION['admin_user'] ?? 'Admin' ?>! Configure o seu site abaixo.</p>
+    
+    <div class="row mt-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3><?= count($servicos) ?></h3>
+                    <p>Serviços</p>
+                    <a href="?a=admin_servicos" class="btn btn-sm btn-gold">Gerir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3><?= count($galeria) ?></h3>
+                    <p>Galeria (max 7)</p>
+                    <a href="?a=admin_galeria" class="btn btn-sm btn-gold">Gerir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3><?= count($produtos) ?></h3>
+                    <p>Produtos (max 6)</p>
+                    <a href="?a=admin_produtos" class="btn btn-sm btn-gold">Gerir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3><?= count($publicacoes) ?></h3>
+                    <p>Publicações (max 7)</p>
+                    <a href="?a=admin_publicacoes" class="btn btn-sm btn-gold">Gerir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header bg-gold text-dark">Configurações Rápidas</div>
+                <div class="card-body">
+                    <p><strong>Logotipo:</strong> <?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></p>
+                    <p><strong>Slogan:</strong> <?= htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) ?></p>
+                    <p><strong>Email:</strong> <?= htmlspecialchars($config->get('email_contacto', 'Não definido')) ?></p>
+                    <p><strong>Telefone:</strong> <?= htmlspecialchars($config->get('telefone', 'Não definido')) ?></p>
+                    <a href="?a=admin_configuracoes" class="btn btn-sm btn-primary">Configurações Completas</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header bg-gold text-dark">Pré-visualização</div>
+                <div class="card-body text-center">
+                    <h2>
+                        <span style="color: white;"><?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?></span>
+                        <span style="color: #C6A43F;"><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></span>
+                    </h2>
+                    <p class="text-muted"><?= htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) ?></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

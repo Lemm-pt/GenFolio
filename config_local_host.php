@@ -2,18 +2,11 @@
 
 define('APP_NAME',          'JoFolio');
 define('APP_VERSION',       '1.0');
-define('BASE_URL',          'http://localhost/vitrina/public/');
-
-// // Base de Dados
-// define('MYSQL_SERVER',      'lhcp3350.webapps.net');
-// define('MYSQL_DATABASE',    'vl2tjdok_spacet');
-// define('MYSQL_USER',        'vl2tjdok_lemm');
-// define('MYSQL_PASS',        'Mackyver');
-// define('MYSQL_CHARSET',     'utf8');
+define('BASE_URL',          'http://localhost/JOfolio/public/');
 
 // Base de Dados
 define('MYSQL_SERVER',      'localhost');
-define('MYSQL_DATABASE',    'vitrina');
+define('MYSQL_DATABASE',    'jofolio');
 define('MYSQL_USER',        'root');
 define('MYSQL_PASS',        '');
 define('MYSQL_CHARSET',     'utf8');

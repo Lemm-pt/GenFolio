@@ -1,5 +1,9 @@
 <footer class="rodape text-center py-3">
-    <small><?= $config->get('nome_site', APP_NAME) ?> &copy; <?= date('Y') ?> | 
-    <?= $config->get('email_contacto', DS_EMAIL) ?> | 
-    <?= $config->get('telefone_contacto', DS_PHONE) ?></small>
+    <div class="container">
+        <small>
+            <?= $config->get('logo_parte1', 'Vitrine') ?><?= $config->get('logo_parte2', '.lemm') ?> &copy; <?= date('Y') ?> | 
+            <a href="mailto:<?= $config->get('email_contacto', '') ?>" class="text-gold"><?= $config->get('email_contacto', '') ?></a> | 
+            <?= $config->get('telefone', '') ?>
+        </small>
+    </div>
 </footer>

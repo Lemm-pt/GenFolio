@@ -1,58 +1,259 @@
 <?php use core\classes\Store; ?>
 <?php 
-// Carregar configurações para o menu
 if(!isset($config)) {
     $config = new \core\models\Configuracao();
 }
 ?>
 <canvas id="particlesCanvas"></canvas>
 
-<nav class="navegacao">
-    <div class="container">
-        <div class="row align-items-center g-0">
-            <div class="col-6 col-md-3">
-                <a href="?a=inicio" class="logo">
-                    <h3><span class="logo-parte1"><?= htmlspecialchars($config->get('logo_parte1', 'Jo')) ?></span><span class="logo-parte2"><?= htmlspecialchars($config->get('logo_parte2', 'Folio')) ?></span></h3>
-                </a>
-            </div>
-            <div class="col-6 col-md-9 text-end">
-                <button class="menu-hamburger d-md-none" id="menuHamburger">
-                    <i class="fas fa-bars fa-2x"></i>
-                </button>
-                <div class="menu-links d-none d-md-inline" id="menuLinks">
-                    <a href="?a=inicio">Início</a>
-                    <a href="#servicos">Serviços</a>
-                    <a href="#itens">Itens</a>
-                    <a href="?a=blog">Blog</a>
-                    <a href="?a=contacto">Contacto</a>
-                    <?php if(Store::adminLogado()): ?>
-                        <a href="?a=admin">Admin</a>
-                        <a href="?a=admin_logout">Sair</a>
-                    <?php else: ?>
-                        <a href="?a=admin_login">Área Restrita</a>
-                    <?php endif; ?>
-                </div>
-            </div>
+<nav class="navbar-modern">
+    <div class="nav-container">
+        <a href="?a=inicio" class="logo">
+            <span class="logo-part1"><?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?></span><span class="logo-part2"><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></span>
+        </a>
+        
+        <button class="nav-toggle" id="navToggle">
+            <span></span><span></span><span></span>
+        </button>
+        
+        <div class="nav-menu" id="navMenu">
+            <a href="?a=inicio" class="nav-link">Início</a>
+            <a href="#servicos" class="nav-link">Serviços</a>
+            <a href="#itens" class="nav-link">Destaques</a>
+            <a href="?a=blog" class="nav-link">Blog</a>
+            <a href="?a=contacto" class="nav-link">Contacto</a>
+            <?php if(Store::adminLogado()): ?>
+                <a href="?a=admin" class="nav-link admin-link"><i class="fas fa-crown"></i> Admin</a>
+                <a href="?a=admin_logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
+            <?php else: ?>
+                <a href="?a=admin_login" class="nav-link login-link"><i class="fas fa-lock"></i> Entrar</a>
+            <?php endif; ?>
         </div>
     </div>
 </nav>
 
-<div id="mobileMenuPanel" class="mobile-menu-panel d-md-none">
-    <a href="?a=inicio">Início</a>
-    <a href="#servicos">Serviços</a>
-    <a href="#itens">Itens</a>
-    <a href="?a=blog">Blog</a>
-    <a href="?a=contacto">Contacto</a>
-    <?php if(Store::adminLogado()): ?>
-        <a href="?a=admin">Admin</a>
-        <a href="?a=admin_logout">Sair</a>
-    <?php else: ?>
-        <a href="?a=admin_login">Área Restrita</a>
-    <?php endif; ?>
-</div>
+<style>
+/* Reset e fonts */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-<!-- SCRIPT DAS PARTÍCULAS / BOLHAS -->
+/* Canvas partículas */
+#particlesCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Navbar moderna */
+.navbar-modern {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 0.75rem 0;
+    background: rgba(10, 10, 26, 0.75);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(198, 164, 63, 0.15);
+    transition: all 0.3s ease;
+}
+
+.navbar-modern.scrolled {
+    padding: 0.4rem 0;
+    background: rgba(10, 10, 26, 0.95);
+    backdrop-filter: blur(25px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Logo */
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+}
+
+.logo-part1 {
+    color: #ffffff;
+}
+
+.logo-part2 {
+    color: #C6A43F;
+}
+
+/* Menu desktop */
+.nav-menu {
+    display: flex;
+    gap: 0.2rem;
+    align-items: center;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 40px;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.nav-link:hover {
+    color: #C6A43F;
+    background: rgba(198, 164, 63, 0.1);
+}
+
+.admin-link {
+    background: rgba(198, 164, 63, 0.15);
+    color: #C6A43F;
+}
+
+.admin-link:hover {
+    background: #C6A43F;
+    color: #0a0a1a;
+}
+
+.login-link {
+    border: 1px solid rgba(198, 164, 63, 0.3);
+}
+
+.login-link:hover {
+    background: rgba(198, 164, 63, 0.15);
+    border-color: #C6A43F;
+}
+
+/* Botão hambúrguer (mobile) */
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.3rem;
+}
+
+.nav-toggle span {
+    width: 24px;
+    height: 2px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.nav-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.nav-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Mobile responsivo */
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 1.2rem;
+    }
+    
+    .nav-toggle {
+        display: flex;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        top: 60px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 60px);
+        background: rgba(10, 10, 26, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 0.5rem;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+    
+    .nav-menu.active {
+        left: 0;
+    }
+    
+    .nav-link {
+        width: 100%;
+        text-align: center;
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+    
+    .logo {
+        font-size: 1.3rem;
+    }
+}
+
+/* Ajuste do container principal para compensar o navbar */
+body {
+    padding-top: 0;
+}
+
+.container-margin {
+    margin-top: 75px;
+}
+
+@media (max-width: 768px) {
+    .container-margin {
+        margin-top: 65px;
+    }
+}
+</style>
+
+<!-- Script do menu mobile e scroll -->
 <script>
+// Menu hambúrguer
+const navToggle = document.getElementById('navToggle');
+const navMenu = document.getElementById('navMenu');
+
+if (navToggle) {
+    navToggle.addEventListener('click', () => {
+        navToggle.classList.toggle('active');
+        navMenu.classList.toggle('active');
+    });
+}
+
+// Fechar menu ao clicar num link
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        navToggle?.classList.remove('active');
+        navMenu?.classList.remove('active');
+    });
+});
+
+// Scroll effect - navbar fica menor ao descer
+window.addEventListener('scroll', () => {
+    const navbar = document.querySelector('.navbar-modern');
+    if (window.scrollY > 20) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+});
+
+// Partículas
 document.addEventListener('DOMContentLoaded', function() {
     const canvas = document.getElementById('particlesCanvas');
     if (!canvas) return;
@@ -69,10 +270,10 @@ document.addEventListener('DOMContentLoaded', function() {
         constructor() {
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 4 + 1;
-            this.speedX = (Math.random() - 0.5) * 0.5;
-            this.speedY = (Math.random() - 0.5) * 0.5;
-            this.color = `rgba(198, 164, 63, ${Math.random() * 0.3 + 0.1})`;
+            this.size = Math.random() * 3 + 1;
+            this.speedX = (Math.random() - 0.5) * 0.3;
+            this.speedY = (Math.random() - 0.5) * 0.3;
+            this.color = `rgba(198, 164, 63, ${Math.random() * 0.25 + 0.05})`;
             this.originalX = this.x;
             this.originalY = this.y;
         }
@@ -80,65 +281,55 @@ document.addEventListener('DOMContentLoaded', function() {
             this.x += this.speedX;
             this.y += this.speedY;
             if (mouseX === null) {
-                this.x += (this.originalX - this.x) * 0.02;
-                this.y += (this.originalY - this.y) * 0.02;
+                this.x += (this.originalX - this.x) * 0.01;
+                this.y += (this.originalY - this.y) * 0.01;
             } else {
                 const dx = this.x - mouseX;
                 const dy = this.y - mouseY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 150) {
+                if (dist < 120) {
                     const angle = Math.atan2(dy, dx);
-                    const force = (150 - dist) / 150;
-                    this.x += Math.cos(angle) * force * 2;
-                    this.y += Math.sin(angle) * force * 2;
-                } else {
-                    this.x += (this.originalX - this.x) * 0.02;
-                    this.y += (this.originalY - this.y) * 0.02;
+                    const force = (120 - dist) / 120;
+                    this.x += Math.cos(angle) * force * 1.5;
+                    this.y += Math.sin(angle) * force * 1.5;
                 }
             }
-            if (this.x < 0) this.x = canvas.width;
-            if (this.x > canvas.width) this.x = 0;
-            if (this.y < 0) this.y = canvas.height;
-            if (this.y > canvas.height) this.y = 0;
+            if (this.x < -50) this.x = canvas.width + 50;
+            if (this.x > canvas.width + 50) this.x = -50;
+            if (this.y < -50) this.y = canvas.height + 50;
+            if (this.y > canvas.height + 50) this.y = -50;
         }
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
             ctx.fillStyle = this.color;
             ctx.fill();
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = 'rgba(198, 164, 63, 0.5)';
-            ctx.fill();
-            ctx.shadowBlur = 0;
         }
     }
 
     function init() {
         resizeCanvas();
         particles = [];
-        const particleCount = Math.min(100, Math.floor(window.innerWidth * 0.1));
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
+        const count = Math.min(80, Math.floor(window.innerWidth / 15));
+        for (let i = 0; i < count; i++) particles.push(new Particle());
     }
 
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, '#0a0a1a');
-        gradient.addColorStop(1, '#1a1a2e');
-        ctx.fillStyle = gradient;
+        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        grad.addColorStop(0, '#0a0a1a');
+        grad.addColorStop(1, '#16162a');
+        ctx.fillStyle = grad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Conexões
+        
         for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
                 const dx = particles[i].x - particles[j].x;
                 const dy = particles[i].y - particles[j].y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 120) {
+                if (dist < 100) {
                     ctx.beginPath();
-                    ctx.strokeStyle = `rgba(198, 164, 63, ${0.1 * (1 - dist / 120)})`;
+                    ctx.strokeStyle = `rgba(198, 164, 63, ${0.08 * (1 - dist / 100)})`;
                     ctx.lineWidth = 0.5;
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
@@ -146,99 +337,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
-
+        
+        particles.forEach(p => { p.update(); p.draw(); });
         requestAnimationFrame(animate);
     }
 
-    window.addEventListener('resize', () => {
-        resizeCanvas();
-        init();
-    });
-    window.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    });
-    window.addEventListener('mouseleave', () => {
-        mouseX = mouseY = null;
-    });
+    window.addEventListener('resize', () => { resizeCanvas(); init(); });
+    window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+    window.addEventListener('mouseleave', () => { mouseX = mouseY = null; });
     init();
     animate();
 });
-
-// Menu hambúrguer (já existia, mantém)
-document.getElementById('menuHamburger')?.addEventListener('click', function() {
-    document.getElementById('mobileMenuPanel').classList.toggle('show');
-});
 </script>
 
-<style>
-#particlesCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    pointer-events: none;
-}
-.navegacao {
-    background: rgba(10,10,26,0.85);
-    backdrop-filter: blur(12px);
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(198,164,63,0.2);
-}
-.navegacao .logo h3 {
-    font-size: 1.5rem;
-    margin: 0;
-    color: white;
-}
-.logo-parte2 { color: #C6A43F; }
-.navegacao a {
-    color: white;
-    text-decoration: none;
-    margin: 0 0.8rem;
-    transition: color 0.2s;
-}
-.navegacao a:hover { color: #C6A43F; }
-.menu-hamburger {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-}
-.mobile-menu-panel {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    background: rgba(10,10,26,0.98);
-    backdrop-filter: blur(10px);
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    transform: translateY(-120%);
-    transition: transform 0.3s ease;
-    z-index: 999;
-}
-.mobile-menu-panel.show { transform: translateY(0); }
-.mobile-menu-panel a {
-    color: white;
-    text-decoration: none;
-    padding: 0.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.container { margin-top: 70px; }
-@media (max-width: 768px) {
-    .container { margin-top: 60px; }
-}
-</style>
+<!-- Espaçador para compensar o navbar fixo -->
+<div style="height: 70px;"></div>

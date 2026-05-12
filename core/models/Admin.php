@@ -4,6 +4,8 @@ namespace core\models;
 use core\classes\Database;
 
 class Admin {
+
+
     public function validar($username, $password) {
         $bd = new Database();
         $res = $bd->select("SELECT * FROM admin WHERE username = :username", [':username' => $username]);
@@ -12,4 +14,6 @@ class Admin {
         }
         return false;
     }
+
+    
 }

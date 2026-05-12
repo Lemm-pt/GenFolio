@@ -3,50 +3,64 @@ namespace core\controllers;
 
 use core\classes\Store;
 use core\classes\EnviarEmail;
-use core\models\Imovel;
-use core\models\Publicacao;
+
 
 class Main {
-  public function index() {
-    $config = new \core\models\Configuracao();
-    $imovelModel = new Imovel();
-    $pubModel = new Publicacao();
-    $imoveis = $imovelModel->listar(true, 3);
-    $publicacoes = $pubModel->listar(3);
+
+
+ public function index() {
+    $cliente_id = $_SESSION['cliente'] ?? 1;
+    $config = new \core\models\Configuracao($cliente_id);
+    $servicos = (new \core\models\Servicos())->listar();
+    $galeria = (new \core\models\Galeria())->listar();
+    $produtos = (new \core\models\Produtos())->listar();
+    $publicacoes = (new \core\models\Publicacoes())->listar(3); // <-- VERIFICAR ISTO
     
-    Store::Layout(['layouts/html_header', 'layouts/header', 'home', 'layouts/footer', 'layouts/html_footer'], [
-        'imoveis' => $imoveis,
-        'publicacoes' => $publicacoes,
-        'config' => $config  // passar objeto de configuração
+    // DEBUG: Verificar se publicacoes está vindo
+    if(empty($publicacoes)) {
+        error_log("Publicacoes está vazio!");
+    }
+    
+    Store::Layout([
+        'layouts/html_header',
+        'layouts/header',
+        'home',
+        'layouts/footer',
+        'layouts/html_footer'
+    ], [
+        'config' => $config,
+        'servicos' => $servicos,
+        'galeria' => $galeria,
+        'produtos' => $produtos,
+        'publicacoes' => $publicacoes  // <-- DEVE ESTAR AQUI
     ]);
 }
-    public function imovel() {
-        $slug = $_GET['slug'] ?? '';
-        $imovelModel = new Imovel();
-        $imovel = $imovelModel->buscarPorSlug($slug);
-        if(!$imovel) Store::redirect();
-        Store::Layout(['layouts/html_header', 'layouts/header', 'imovel', 'layouts/footer', 'layouts/html_footer'], [
-            'imovel' => $imovel
-        ]);
-    }
 
-    public function blog() {
-        $pubModel = new Publicacao();
-        $publicacoes = $pubModel->listar();
-        Store::Layout(['layouts/html_header', 'layouts/header', 'blog', 'layouts/footer', 'layouts/html_footer'], [
-            'publicacoes' => $publicacoes
-        ]);
-    }
 
     public function artigo() {
-        $slug = $_GET['slug'] ?? '';
-        $pubModel = new Publicacao();
-        $artigo = $pubModel->buscarPorSlug($slug);
-        if(!$artigo) Store::redirect('blog');
-        Store::Layout(['layouts/html_header', 'layouts/header', 'artigo', 'layouts/footer', 'layouts/html_footer'], [
-            'artigo' => $artigo
-        ]);
+    $slug = $_GET['slug'] ?? '';
+    
+    if(empty($slug)) {
+        Store::redirect('blog');
+        return;
     }
+    
+    $pubModel = new \core\models\Publicacoes();
+    $artigo = $pubModel->buscarPorSlug($slug);
+    
+    if(!$artigo) {
+        // Redirecionar para o blog se não encontrar
+        Store::redirect('blog');
+        return;
+    }
+    
+    $config = new \core\models\Configuracao();
+    
+    Store::Layout(['layouts/html_header', 'layouts/header', 'artigo', 'layouts/footer', 'layouts/html_footer'], [
+        'artigo' => $artigo,
+        'config' => $config
+    ]);
+}
 
  public function contacto() {
     $config = new \core\models\Configuracao();
