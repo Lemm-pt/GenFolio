@@ -1,69 +1,73 @@
 <div class="container mt-4">
-    <h2>Painel de Controlo</h2>
-    <p class="text-muted">Bem-vindo, <?= $_SESSION['admin_user'] ?? 'Admin' ?>! Configure o seu site abaixo.</p>
+    <h2 class="mb-4">Painel de Controlo</h2>
+    <p class="text-muted mb-4">Bem-vindo, <strong><?= $_SESSION['admin_user'] ?? 'Admin' ?></strong>! Configure o seu site abaixo.</p>
     
     <div class="row mt-4">
         <div class="col-md-3 mb-3">
-            <div class="card text-center">
+            <div class="card text-center dashboard-card">
                 <div class="card-body">
-                    <h3><?= count($servicos) ?></h3>
-                    <p>Serviços</p>
+                    <h3 class="text-gold"><?= isset($servicos) ? count($servicos) : 0 ?></h3>
+                    <p class="text-dark">Serviços</p>
                     <a href="?a=admin_servicos" class="btn btn-sm btn-gold">Gerir</a>
                 </div>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card text-center">
+            <div class="card text-center dashboard-card">
                 <div class="card-body">
-                    <h3><?= count($galeria) ?></h3>
-                    <p>Galeria (max 7)</p>
+                    <h3 class="text-gold"><?= isset($galeria) ? count($galeria) : 0 ?></h3>
+                    <p class="text-dark">Galeria (max 7)</p>
                     <a href="?a=admin_galeria" class="btn btn-sm btn-gold">Gerir</a>
                 </div>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card text-center">
+            <div class="card text-center dashboard-card">
                 <div class="card-body">
-                    <h3><?= count($produtos) ?></h3>
-                    <p>Produtos (max 6)</p>
+                    <h3 class="text-gold"><?= isset($produtos) ? count($produtos) : 0 ?></h3>
+                    <p class="text-dark">Produtos (max 6)</p>
                     <a href="?a=admin_produtos" class="btn btn-sm btn-gold">Gerir</a>
                 </div>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card text-center">
+            <div class="card text-center dashboard-card">
                 <div class="card-body">
-                    <h3><?= count($publicacoes) ?></h3>
-                    <p>Publicações (max 7)</p>
+                    <h3 class="text-gold"><?= isset($publicacoes) ? count($publicacoes) : 0 ?></h3>
+                    <p class="text-dark">Publicações (max 7)</p>
                     <a href="?a=admin_publicacoes" class="btn btn-sm btn-gold">Gerir</a>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-md-6 mb-3">
             <div class="card">
-                <div class="card-header bg-gold text-dark">Configurações Rápidas</div>
+                <div class="card-header">
+                    <i class="fas fa-cog"></i> Configurações Rápidas
+                </div>
                 <div class="card-body">
-                    <p><strong>Logotipo:</strong> <?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></p>
-                    <p><strong>Slogan:</strong> <?= htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) ?></p>
-                    <p><strong>Email:</strong> <?= htmlspecialchars($config->get('email_contacto', 'Não definido')) ?></p>
-                    <p><strong>Telefone:</strong> <?= htmlspecialchars($config->get('telefone', 'Não definido')) ?></p>
-                    <a href="?a=admin_configuracoes" class="btn btn-sm btn-primary">Configurações Completas</a>
+                    <p><strong>Logotipo:</strong> <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('logo_parte1', 'Vitrine')) : 'Vitrine' ?><?= isset($config) ? htmlspecialchars($config->get('logo_parte2', '.lemm')) : '.lemm' ?></span></p>
+                    <p><strong>Slogan:</strong> <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) : 'Soluções Personalizadas' ?></span></p>
+                    <p><strong>Email:</strong> <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('email_contacto', 'Não definido')) : 'Não definido' ?></span></p>
+                    <p><strong>Telefone:</strong> <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('telefone', 'Não definido')) : 'Não definido' ?></span></p>
+                    <a href="?a=admin_configuracoes" class="btn btn-sm btn-gold mt-2">Configurações Completas</a>
                 </div>
             </div>
         </div>
         
         <div class="col-md-6 mb-3">
             <div class="card">
-                <div class="card-header bg-gold text-dark">Pré-visualização</div>
+                <div class="card-header">
+                    <i class="fas fa-eye"></i> Pré-visualização
+                </div>
                 <div class="card-body text-center">
-                    <h2>
-                        <span style="color: white;"><?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?></span>
-                        <span style="color: #C6A43F;"><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></span>
-                    </h2>
-                    <p class="text-muted"><?= htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) ?></p>
+                    <h3 class="mb-0">
+                        <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('logo_parte1', 'Vitrine')) : 'Vitrine' ?></span>
+                        <span class="text-gold"><?= isset($config) ? htmlspecialchars($config->get('logo_parte2', '.lemm')) : '.lemm' ?></span>
+                    </h3>
+                    <p class="text-muted mt-2"><?= isset($config) ? htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) : 'Soluções Personalizadas' ?></p>
                 </div>
             </div>
         </div>

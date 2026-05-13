@@ -76,7 +76,7 @@
                 <div class="col-md-4 mb-4">
                     <div class="card blog-card h-100">
                         <?php if($pub->imagem): ?>
-                            <img src="<?= BASE_URL ?>assets/images/blog/<?= $pub->imagem ?>" class="card-img-top" style="height: 200px; object-fit: cover;">
+                            <img src="<?= BASE_URL ?>assets/images/blog/<?= $pub->imagem ?>" class="card-img-top" style="height: 100%; object-fit: cover;">
                         <?php endif; ?>
                         <div class="card-body">
                             <h5><?= htmlspecialchars($pub->titulo) ?></h5>
