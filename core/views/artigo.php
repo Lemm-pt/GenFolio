@@ -8,7 +8,7 @@
                 </div>
                 
                 <?php if($artigo->imagem): ?>
-                    <img src="<?= BASE_URL ?>assets/images/blog/<?= $artigo->imagem ?>" class="img-fluid rounded mb-4" alt="<?= htmlspecialchars($artigo->titulo) ?>" style="width: 100%; max-height: 400px; object-fit: cover;">
+                    <img src="<?= BASE_URL ?>assets/images/blog/<?= $artigo->imagem ?>" class="img-fluid rounded mb-4" alt="<?= htmlspecialchars($artigo->titulo) ?>" style="width: 100%; max-height: 100%; object-fit: cover;">
                 <?php endif; ?>
                 
                 <div class="article-content">

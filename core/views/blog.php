@@ -10,7 +10,7 @@
             <div class="col-md-4 mb-4">
                 <div class="card blog-card h-100">
                     <?php if($pub->imagem): ?>
-                        <img src="<?= BASE_URL ?>assets/images/blog/<?= $pub->imagem ?>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="<?= htmlspecialchars($pub->titulo) ?>">
+                        <img src="<?= BASE_URL ?>assets/images/blog/<?= $pub->imagem ?>" class="card-img-top" style="height: 100%; object-fit: cover;" alt="<?= htmlspecialchars($pub->titulo) ?>">
                     <?php else: ?>
                         <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
                             <i class="fas fa-newspaper fa-3x text-white"></i>

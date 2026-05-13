@@ -17,20 +17,35 @@ if(!isset($config)) {
         </button>
         
         <div class="nav-menu" id="navMenu">
-            <a href="?a=inicio" class="nav-link">Início</a>
-            <a href="#servicos" class="nav-link">Serviços</a>
-            <a href="#itens" class="nav-link">Destaques</a>
-            <a href="?a=blog" class="nav-link">Blog</a>
-            <a href="?a=contacto" class="nav-link">Contacto</a>
-            <?php if(Store::adminLogado()): ?>
-                <a href="?a=admin" class="nav-link admin-link"><i class="fas fa-crown"></i> Admin</a>
-                <a href="?a=admin_logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
-            <?php else: ?>
-                <a href="?a=admin_login" class="nav-link login-link"><i class="fas fa-lock"></i> Entrar</a>
-            <?php endif; ?>
-        </div>
+    <a href="?a=inicio" class="nav-link">Início</a>
+    
+    <!-- Links âncora só funcionam na home, senão vão para home + âncora -->
+    <?php if(basename($_SERVER['REQUEST_URI']) === 'index.php' && (!isset($_GET['a']) || $_GET['a'] === 'inicio' || $_GET['a'] === '')): ?>
+        <a href="#servicos" class="nav-link">Serviços</a>
+        <a href="#produtos" class="nav-link">Produtos</a>
+        <a href="#mapa" class="nav-link">Onde Estamos</a>
+        <a href="#contacto" class="nav-link">Contacto</a>
+    <?php else: ?>
+        <a href="?a=inicio#servicos" class="nav-link">Serviços</a>
+        <a href="?a=inicio#produtos" class="nav-link">Produtos</a>
+        <a href="?a=inicio#mapa" class="nav-link">Onde Estamos</a>
+        <a href="?a=inicio#contacto" class="nav-link">Contacto</a>
+    <?php endif; ?>
+    
+    <a href="?a=blog" class="nav-link">Blog</a>
+    
+    <?php if(Store::adminLogado()): ?>
+        <a href="?a=admin" class="nav-link admin-link"><i class="fas fa-crown"></i> Admin</a>
+        <a href="?a=admin_logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
+    <?php else: ?>
+        <a href="?a=admin_login" class="nav-link login-link"><i class="fas fa-lock"></i> Entrar</a>
+    <?php endif; ?>
+</div>
     </div>
 </nav>
+
+<!-- Espaçador -->
+<div style="height: 80px;"></div>
 
 <style>
 /* Reset e fonts */
@@ -85,13 +100,8 @@ if(!isset($config)) {
     letter-spacing: -0.5px;
 }
 
-.logo-part1 {
-    color: #ffffff;
-}
-
-.logo-part2 {
-    color: #C6A43F;
-}
+.logo-part1 { color: #ffffff; }
+.logo-part2 { color: #C6A43F; }
 
 /* Menu desktop */
 .nav-menu {
@@ -108,7 +118,6 @@ if(!isset($config)) {
     padding: 0.5rem 1rem;
     border-radius: 40px;
     transition: all 0.2s ease;
-    letter-spacing: 0.3px;
 }
 
 .nav-link:hover {
@@ -130,12 +139,7 @@ if(!isset($config)) {
     border: 1px solid rgba(198, 164, 63, 0.3);
 }
 
-.login-link:hover {
-    background: rgba(198, 164, 63, 0.15);
-    border-color: #C6A43F;
-}
-
-/* Botão hambúrguer (mobile) */
+/* Botão hambúrguer */
 .nav-toggle {
     display: none;
     flex-direction: column;
@@ -143,7 +147,6 @@ if(!isset($config)) {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.3rem;
 }
 
 .nav-toggle span {
@@ -156,78 +159,37 @@ if(!isset($config)) {
 .nav-toggle.active span:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
 }
-
-.nav-toggle.active span:nth-child(2) {
-    opacity: 0;
-}
-
+.nav-toggle.active span:nth-child(2) { opacity: 0; }
 .nav-toggle.active span:nth-child(3) {
     transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* Mobile responsivo */
+/* Mobile */
 @media (max-width: 768px) {
-    .nav-container {
-        padding: 0 1.2rem;
-    }
-    
-    .nav-toggle {
-        display: flex;
-    }
-    
+    .nav-container { padding: 0 1.2rem; }
+    .nav-toggle { display: flex; }
     .nav-menu {
         position: fixed;
-        top: 60px;
+        top: 65px;
         left: -100%;
         width: 100%;
-        height: calc(100vh - 60px);
         background: rgba(10, 10, 26, 0.98);
         backdrop-filter: blur(20px);
         flex-direction: column;
         padding: 1.5rem;
         gap: 0.5rem;
         transition: left 0.3s ease;
-        overflow-y: auto;
     }
-    
-    .nav-menu.active {
-        left: 0;
-    }
-    
-    .nav-link {
-        width: 100%;
-        text-align: center;
-        padding: 0.8rem;
-        font-size: 1rem;
-    }
-    
-    .logo {
-        font-size: 1.3rem;
-    }
-}
-
-/* Ajuste do container principal para compensar o navbar */
-body {
-    padding-top: 0;
-}
-
-.container-margin {
-    margin-top: 75px;
-}
-
-@media (max-width: 768px) {
-    .container-margin {
-        margin-top: 65px;
-    }
+    .nav-menu.active { left: 0; }
+    .nav-link { width: 100%; text-align: center; padding: 0.8rem; }
+    .logo { font-size: 1.3rem; }
 }
 </style>
 
-<!-- Script do menu mobile e scroll -->
 <script>
-// Menu hambúrguer
+// Menu mobile
 const navToggle = document.getElementById('navToggle');
 const navMenu = document.getElementById('navMenu');
-
 if (navToggle) {
     navToggle.addEventListener('click', () => {
         navToggle.classList.toggle('active');
@@ -235,7 +197,7 @@ if (navToggle) {
     });
 }
 
-// Fechar menu ao clicar num link
+// Fechar menu ao clicar
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
         navToggle?.classList.remove('active');
@@ -243,14 +205,26 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
 });
 
-// Scroll effect - navbar fica menor ao descer
+// Scroll effect
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar-modern');
-    if (window.scrollY > 20) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
+    if (window.scrollY > 20) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+});
+
+// Scroll suave para âncoras
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        const targetId = this.getAttribute('href');
+        if(targetId === '#' || targetId === '') return;
+        const target = document.querySelector(targetId);
+        if(target) {
+            e.preventDefault();
+            const navbarHeight = document.querySelector('.navbar-modern')?.offsetHeight || 80;
+            const targetPos = target.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+            window.scrollTo({ top: targetPos, behavior: 'smooth' });
+        }
+    });
 });
 
 // Partículas
@@ -258,8 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const canvas = document.getElementById('particlesCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let particles = [];
-    let mouseX = null, mouseY = null;
+    let particles = [], mouseX = null, mouseY = null;
 
     function resizeCanvas() {
         canvas.width = window.innerWidth;
@@ -284,9 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.x += (this.originalX - this.x) * 0.01;
                 this.y += (this.originalY - this.y) * 0.01;
             } else {
-                const dx = this.x - mouseX;
-                const dy = this.y - mouseY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                const dx = this.x - mouseX, dy = this.y - mouseY, dist = Math.sqrt(dx*dx + dy*dy);
                 if (dist < 120) {
                     const angle = Math.atan2(dy, dx);
                     const force = (120 - dist) / 120;
@@ -324,9 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, dist = Math.sqrt(dx*dx + dy*dy);
                 if (dist < 100) {
                     ctx.beginPath();
                     ctx.strokeStyle = `rgba(198, 164, 63, ${0.08 * (1 - dist / 100)})`;
@@ -337,7 +306,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-        
         particles.forEach(p => { p.update(); p.draw(); });
         requestAnimationFrame(animate);
     }
@@ -349,6 +317,3 @@ document.addEventListener('DOMContentLoaded', function() {
     animate();
 });
 </script>
-
-<!-- Espaçador para compensar o navbar fixo -->
-<div style="height: 70px;"></div>

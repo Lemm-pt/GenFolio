@@ -62,25 +62,53 @@ class Main {
     ]);
 }
 
- public function contacto() {
+public function contacto() {
     $config = new \core\models\Configuracao();
+    
     if($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nome = $_POST['nome'] ?? '';
         $email = $_POST['email'] ?? '';
         $telefone = $_POST['telefone'] ?? '';
         $mensagem = $_POST['mensagem'] ?? '';
-        $mailer = new EnviarEmail();
-        // Usar email vindo da BD
+        
+        $mailer = new \core\classes\EnviarEmail();
         $para = $config->get('email_contacto', DS_EMAIL);
+        
         if($mailer->enviar_contacto($nome, $email, $telefone, $mensagem, $para)) {
             $_SESSION['msg_sucesso'] = "Mensagem enviada com sucesso!";
         } else {
             $_SESSION['msg_erro'] = "Erro ao enviar. Tente mais tarde.";
         }
         Store::redirect('contacto');
+        return;
     }
-    Store::Layout(['layouts/html_header', 'layouts/header', 'contacto', 'layouts/footer', 'layouts/html_footer'], ['config' => $config]);
+    
+    Store::Layout([
+        'layouts/html_header',
+        'layouts/header',
+        'contacto',
+        'layouts/footer',
+        'layouts/html_footer'
+    ], ['config' => $config]);
 }
+
+
+public function blog() {
+    $publicacoes = (new \core\models\Publicacoes())->listar();
+    $config = new \core\models\Configuracao();
+    
+    Store::Layout([
+        'layouts/html_header',
+        'layouts/header',
+        'blog',
+        'layouts/footer',
+        'layouts/html_footer'
+    ], [
+        'publicacoes' => $publicacoes,
+        'config' => $config
+    ]);
+}
+
 
 
 
