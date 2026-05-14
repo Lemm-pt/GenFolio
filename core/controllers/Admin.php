@@ -81,21 +81,21 @@ class Admin {
         ]);
     }
     
-    public function admin_salvar_config() {
-        $this->verificarLogin();
-        $config = new Configuracao();
-        
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $campos = ['logo_parte1', 'logo_parte2', 'slogan', 'meta_description', 'meta_keywords', 'email_contacto', 'telefone', 'endereco'];
-            foreach($campos as $campo) {
-                if(isset($_POST[$campo])) {
-                    $config->set($campo, trim($_POST[$campo]));
-                }
+   public function admin_salvar_config() {
+    $this->verificarLogin();
+    $config = new Configuracao();
+    
+    if($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $campos = ['logo_parte1', 'logo_parte2', 'slogan', 'texto_descritivo', 'meta_description', 'meta_keywords', 'email_contacto', 'telefone', 'endereco'];
+        foreach($campos as $campo) {
+            if(isset($_POST[$campo])) {
+                $config->set($campo, trim($_POST[$campo]));
             }
-            $_SESSION['sucesso'] = "Configurações atualizadas!";
         }
-        Store::redirect('admin_configuracoes');
+        $_SESSION['sucesso'] = "Configurações atualizadas!";
     }
+    Store::redirect('admin_configuracoes');
+  }
     
     // ============================================================
     // SERVIÇOS (CRUD)

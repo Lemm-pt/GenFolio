@@ -49,4 +49,6 @@ class Configuracao {
     public function getAll() {
         return $this->cache;
     }
+
+    
 }

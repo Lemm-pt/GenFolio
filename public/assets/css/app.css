@@ -453,3 +453,34 @@ body.admin-container {
 .admin-container .text-gold {
     color: #C6A43F !important;
 }
+
+/* Espaço extra no hero */
+.hero {
+    padding-top: 40px;
+    min-height: 65vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.hero .lead {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        min-height: 50vh;
+        padding-top: 30px;
+    }
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    .hero .lead {
+        font-size: 1rem;
+    }
+}

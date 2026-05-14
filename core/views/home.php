@@ -1,104 +1,100 @@
-<section class="hero">
+<!-- Hero Section -->
+<section class="hero" style="padding-top: 40px; min-height: 60vh; display: flex; align-items: center;">
     <div class="container text-center text-white">
-        <h1><span class="logo-parte1"><?= $config->get('logo_parte1', 'Jo') ?></span><span style="color:#C6A43F"><?= $config->get('logo_parte2', 'Folio') ?></span></h1>
-        <p class="lead"><?= $config->get('nome_site', 'JoFolio') ?> – <?= ucfirst($config->get('tipo_servico', 'imobiliario')) === 'imobiliario' ? 'Consultoria Imobiliária & Financeira' : 'Soluções Personalizadas' ?></p>
-        <a href="#servicos" class="btn-gold">Conheça os Serviços</a>
+        <h1><span class="logo-part1"><?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?></span><span style="color:#C6A43F"><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></span></h1>
+        <p class="lead"><?= htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) ?></p>
+        
+        <!-- TEXTO DESCRITIVO DINÂMICO -->
+        <?php if($config->get('texto_descritivo')): ?>
+            <p class="mt-3 text-white-50" style="max-width: 700px; margin-left: auto; margin-right: auto; font-size: 1.1rem;">
+                <?= nl2br(htmlspecialchars($config->get('texto_descritivo'))) ?>
+            </p>
+        <?php endif; ?>
+        
+        <a href="#servicos" class="btn-gold mt-4 d-inline-block">Conheça os Serviços</a>
     </div>
 </section>
 
-<!-- Serviços -->
+<!-- SERVIÇOS (só aparece se houver) -->
+<?php if(!empty($servicos)): ?>
 <section id="servicos" class="py-5">
     <div class="container">
         <h2 class="text-center mb-5">Serviços</h2>
         <div class="row">
-            <?php if(!empty($servicos)): ?>
-                <?php foreach($servicos as $servico): ?>
-                <div class="col-md-4">
-                    <div class="servico-card text-center">
-                        <i class="fas <?= $servico->icone ?> fa-3x mb-3" style="color: #C6A43F;"></i>
-                        <h4><?= htmlspecialchars($servico->titulo) ?></h4>
-                        <p><?= htmlspecialchars($servico->descricao) ?></p>
-                    </div>
+            <?php foreach($servicos as $servico): ?>
+            <div class="col-md-4 mb-4">
+                <div class="servico-card text-center h-100">
+                    <i class="fas <?= $servico->icone ?> fa-3x mb-3" style="color: #C6A43F;"></i>
+                    <h4><?= htmlspecialchars($servico->titulo) ?></h4>
+                    <p><?= htmlspecialchars($servico->descricao) ?></p>
                 </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div class="col-12 text-center">
-                    <p>Adicione serviços no backoffice.</p>
-                </div>
-            <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
+<?php endif; ?>
 
-<!-- PRODUTOS EM DESTAQUE -->
+<!-- PRODUTOS (só aparece se houver) -->
+<?php if(!empty($produtos)): ?>
 <section id="produtos" class="py-5 bg-light">
     <div class="container">
-        <h2 class="text-center mb-5"><?= $config->get('tipo_servico', 'imobiliario') == 'imobiliario' ? 'Produtos em Destaque' : 'Destaques' ?></h2>
+        <h2 class="text-center text-dark mb-5">Produtos</h2>
         <div class="row">
-            <?php if(!empty($produtos)): ?>
-                <?php foreach($produtos as $produto): ?>
-                <div class="col-md-4 mb-4">
-                  <div class="card produto-card h-100">
-                      <?php if($produto->imagem): ?>
-                          <img src="<?= BASE_URL ?>assets/images/produtos/<?= $produto->imagem ?>" class="card-img-top" style="height: 100%; width: 100%; object-fit: cover;" alt="<?= htmlspecialchars($produto->nome) ?>">
-                      <?php else: ?>
-                          <div class="bg-secondary text-white text-center d-flex align-items-center justify-content-center" style="height: 220px;">
-                              <i class="fas fa-image fa-3x"></i>
-                              <span class="ms-2">Sem imagem</span>
-                          </div>
-                      <?php endif; ?>
-                      <div class="card-body">
-                          <h5><?= htmlspecialchars($produto->nome) ?></h5>
-                          <p><?= htmlspecialchars(substr($produto->descricao ?? '', 0, 100)) ?>...</p>
-                          <?php if($produto->preco): ?>
-                              <p class="text-gold fw-bold">€ <?= number_format($produto->preco, 2, ',', '.') ?></p>
-                          <?php endif; ?>
-                      </div>
-                  </div>
-              </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div class="col-12 text-center">
-                    <p class="text-muted">Sem produtos em destaque no momento.</p>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
-</section>
-
-<!-- Últimas publicações -->
-<section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-5">Blog</h2>
-        <div class="row">
-            <?php if(!empty($publicacoes)): ?>
-                <?php foreach($publicacoes as $pub): ?>
-                <div class="col-md-4 mb-4">
-                    <div class="card blog-card h-100">
-                        <?php if($pub->imagem): ?>
-                            <img src="<?= BASE_URL ?>assets/images/blog/<?= $pub->imagem ?>" class="card-img-top" style="height: 100%; object-fit: cover;">
-                        <?php endif; ?>
-                        <div class="card-body">
-                            <h5><?= htmlspecialchars($pub->titulo) ?></h5>
-                            <p><?= htmlspecialchars(substr(strip_tags($pub->conteudo), 0, 100)) ?>...</p>
-                            <a href="?a=artigo&slug=<?= $pub->slug ?>" class="text-gold">Ler mais →</a>
+            <?php foreach($produtos as $produto): ?>
+            <div class="col-md-4 mb-4">
+                <div class="card produto-card h-100">
+                    <?php if($produto->imagem): ?>
+                        <img src="<?= BASE_URL ?>assets/images/produtos/<?= $produto->imagem ?>" class="card-img-top" style="height: 100%; object-fit: cover;">
+                    <?php else: ?>
+                        <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 220px;">
+                            <i class="fas fa-image fa-3x text-white"></i>
                         </div>
+                    <?php endif; ?>
+                    <div class="card-body">
+                        <h5><?= htmlspecialchars($produto->nome) ?></h5>
+                        <p><?= htmlspecialchars(substr($produto->descricao ?? '', 0, 100)) ?>...</p>
+                        <?php if($produto->preco): ?>
+                            <p class="text-gold fw-bold">€ <?= number_format($produto->preco, 2, ',', '.') ?></p>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div class="col-12 text-center">
-                    <p>Nenhuma publicação ainda.</p>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- MAPA - ONDE ESTAMOS -->
+<section id="mapa" class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Onde Estamos</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="map-container">
+                    <iframe 
+                        src="https://maps.google.com/maps?q=<?= urlencode($config->get('endereco', 'Esposende, Portugal')) ?>&output=embed"
+                        width="100%" 
+                        height="400" 
+                        style="border:0; border-radius: 15px;" 
+                        allowfullscreen="" 
+                        loading="lazy">
+                    </iframe>
                 </div>
-            <?php endif; ?>
+                <p class="text-center mt-3">
+                    <i class="fas fa-map-marker-alt text-gold"></i> 
+                    <?= htmlspecialchars($config->get('endereco', 'Esposende, Portugal')) ?>
+                </p>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Formulário de contacto -->
-<section class="py-5 bg-dark text-white">
+<!-- CONTACTO -->
+<section id="contacto" class="py-5 bg-dark text-white">
     <div class="container">
-        <h2 class="text-center mb-4">Fale Connosco</h2>
+        <h2 class="text-center mb-4">Contacto</h2>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <?php if(isset($_SESSION['msg_sucesso'])): ?>

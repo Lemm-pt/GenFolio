@@ -33,6 +33,12 @@
             <label class="form-label fw-bold">Slogan</label>
             <input type="text" name="slogan" class="form-control" value="<?= htmlspecialchars($config->get('slogan', 'Soluções Personalizadas para web vitrine')) ?>">
         </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Texto Descritivo (opcional)</label>
+            <textarea name="texto_descritivo" class="form-control" rows="3" placeholder="Um texto descritivo que aparece por baixo do slogan..."><?= htmlspecialchars($config->get('texto_descritivo', '')) ?></textarea>
+            <small class="text-muted">Este texto aparece na página inicial, logo abaixo do slogan.</small>
+       </div>
         
         <div class="mb-3">
             <label class="form-label fw-bold">Meta Description</label>
