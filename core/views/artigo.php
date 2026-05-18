@@ -1,3 +1,16 @@
+<?php if (empty($artigo) || !is_object($artigo)): ?>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="alert alert-warning">
+                Artigo não encontrado.
+            </div>
+        </div>
+    </div>
+</div>
+<?php return; ?>
+<?php endif; ?>
+
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">

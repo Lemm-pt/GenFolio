@@ -1,260 +1,156 @@
 <?php
-
 namespace core\models;
 
 use core\classes\Database;
 use core\classes\Store;
 
-class Clientes
-{
-
-    // ===========================================================
-    public function verificar_email_existe($email)
-    {
-
-        // verifica se já existe outra conta com o mesmo email
-        $bd = new Database();
-        $parametros = [
-            ':e' => strtolower(trim($email))
-        ];
-        $resultados = $bd->select("
-            SELECT email FROM clientes WHERE email = :e
-        ", $parametros);
-
-        // se o cliente já existe...
-        if (count($resultados) != 0) {
-            return true;
-        } else {
-            return false;
-        }
+class Clientes {
+    private $bd;
+    
+    public function __construct() {
+        $this->bd = new Database();
     }
-
-    // ===========================================================
-    public function registar_cliente()
-    {
-
-        // regista o novo cliente na base de dados
-        $bd = new Database();
-
-        // cria uma hash para o registo do cliente
+    
+    // ============================================================
+    // VERIFICAR SE EMAIL JÁ EXISTE
+    // ============================================================
+    public function verificar_email_existe($email) {
+        $resultados = $this->bd->select("SELECT id_cliente FROM clientes WHERE email = :email", [':email' => $email]);
+        return count($resultados) != 0;
+    }
+    
+    // ============================================================
+    // VERIFICAR SE SLUG JÁ EXISTE
+    // ============================================================
+    public function verificar_slug_existe($slug) {
+        $resultados = $this->bd->select("SELECT id_cliente FROM clientes WHERE slug = :slug", [':slug' => $slug]);
+        return count($resultados) != 0;
+    }
+    
+    // ============================================================
+    // REGISTAR NOVO CLIENTE (email, slug, senha)
+    // ============================================================
+    public function registar_cliente($email, $slug, $senha) {
         $purl = Store::criarHash();
-
-        // parametros
         $parametros = [
-            ':email' => strtolower(trim($_POST['text_email'])),
-            ':senha' => password_hash(trim($_POST['text_senha_1']), PASSWORD_DEFAULT),
-            ':nome_completo' => trim($_POST['text_nome_completo']),
-            ':morada' => trim($_POST['text_morada']),
-            ':cidade' => trim($_POST['text_cidade']),
-            ':telefone' => trim($_POST['text_telefone']),
+            ':email' => strtolower(trim($email)),
+            ':slug' => $slug,
+            ':senha' => password_hash($senha, PASSWORD_DEFAULT),
             ':purl' => $purl,
-            ':ativo' => 0
+            ':activo' => 0
         ];
-        $bd->insert("
-            INSERT INTO clientes VALUES(
-                0,
-                :email,
-                :senha,
-                :nome_completo,
-                :morada,
-                :cidade,
-                :telefone,
-                :purl,
-                :ativo,
-                NOW(),
-                NOW(),
-                NULL
-            )
+        
+        $this->bd->insert("
+            INSERT INTO clientes (email, slug, senha, purl, activo, created_at, updated_at) 
+            VALUES (:email, :slug, :senha, :purl, :activo, NOW(), NOW())
         ", $parametros);
-
-        // retorna o purl criado
+        
         return $purl;
     }
-
-    // ===========================================================
-    public function validar_email($purl)
-    {
-
-        // validar o email do novo cliente
-        $bd = new Database();
-        $parametros = [
-            ':purl' => $purl
-        ];
-        $resultados = $bd->select("
-            SELECT * FROM clientes 
-            WHERE purl = :purl
-        ", $parametros);
-
-        // verifica se foi encontrado o cliente
-        if (count($resultados) != 1) {
-            return false;
-        }
-
-        // foi encontrado este cliente com o purl indicado
+    
+    // ============================================================
+    // CONFIRMAR EMAIL (ativar conta)
+    // ============================================================
+    public function confirmar_email($purl) {
+        $resultados = $this->bd->select("SELECT id_cliente FROM clientes WHERE purl = :purl", [':purl' => $purl]);
+        if(count($resultados) != 1) return false;
+        
         $id_cliente = $resultados[0]->id_cliente;
-
-        // atualizar os dados do cliente
-        $parametros = [
-            ':id_cliente' => $id_cliente
-        ];
-        $bd->update("
-            UPDATE clientes SET
-            purl = NULL,
-            activo = 1,
-            updated_at = NOW()
+        $this->bd->update("
+            UPDATE clientes SET purl = NULL, activo = 1, updated_at = NOW()
             WHERE id_cliente = :id_cliente
-        ", $parametros);
-
+        ", [':id_cliente' => $id_cliente]);
+        
+        // Criar configurações padrão para o novo cliente
+        $this->criarConfiguracoesPadrao($id_cliente);
+        
         return true;
     }
-
-    // ===========================================================
-    public function validar_login($usuario, $senha)
-    {
-
-        // verificar se o login é válido
-        $parametros = [
-            ':usuario' => $usuario
-        ];
-
-        $bd = new Database();
-        $resultados = $bd->select("
-            SELECT * FROM clientes 
-            WHERE email = :usuario 
-            AND activo = 1 
-            AND deleted_at IS NULL
-        ", $parametros);
-
-        if (count($resultados) != 1) {
-
-            // não existe usuário
-            return false;
-        } else {
-
-            // temos usuário. Vamos ver a sua password
-            $usuario = $resultados[0];
-
-            // verificar a password
-            if (!password_verify($senha, $usuario->senha)) {
-
-                // password inválida
-                return false;
-            } else {
-
-                // login válido
-                return $usuario;
-            }
-        }
+    
+    // ============================================================
+    // VALIDAR LOGIN (por slug ou email)
+    // ============================================================
+public function validar_login($email, $senha) {
+    $resultados = $this->bd->select("
+        SELECT * FROM clientes 
+        WHERE email = :email AND activo = 1 AND deleted_at IS NULL
+    ", [':email' => $email]);
+    
+    if(count($resultados) != 1) return false;
+    
+    $cliente = $resultados[0];
+    if(password_verify($senha, $cliente->senha)) {
+        return $cliente;
     }
-
-    // ===========================================================
-    public function buscar_dados_cliente($id_cliente){
-
-        $parametros = [
-            'id_cliente' => $id_cliente
-        ];
-
-        $bd = new Database();
-        $resultados = $bd->select("
-            SELECT 
-                email,
-                nome_completo,
-                morada,
-                cidade,
-                telefone
-            FROM clientes 
-            WHERE id_cliente = :id_cliente
-        ", $parametros);
-        return $resultados[0];
-    }
-
-    // ===========================================================
-    public function verificar_se_email_existe_noutra_conta($id_cliente, $email){
-
-        // verificar se existe a conta de email noutra conta de cliente
-        $parametros = [
-            ':email' => $email,
-            ':id_cliente' => $id_cliente
-        ];
-        $bd = new Database();
-        $resultados = $bd->select("
-            SELECT id_cliente
-            FROM clientes
-            WHERE id_cliente <> :id_cliente
-            AND email = :email
-        ",$parametros);
-
-        if(count($resultados) != 0){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // ===========================================================
-    public function atualizar_dados_cliente($email, $nome_completo, $morada, $cidade, $telefone){
-
-        // atualiza os dados do cliente na base de dados
-        $parametros = [
-            ':id_cliente' => $_SESSION['cliente'],
-            ':email' => $email,
-            ':nome_completo' => $nome_completo,
-            ':morada' => $morada,
-            ':cidade' => $cidade,
-            ':telefone' => $telefone
-        ];
-
-        $bd = new Database();
-
-        $bd->update("
-            UPDATE clientes
-            SET
-                email = :email,
-                nome_completo = :nome_completo,
-                morada = :morada,
-                cidade = :cidade,
-                telefone = :telefone,
-                updated_at = NOW()
-            WHERE id_cliente = :id_cliente
-        ", $parametros);
-    }
-
-    // ===========================================================
-    public function ver_se_senha_esta_correta($id_cliente, $senha_atual){
-
-        // verifica se a senha atual está correta (de acordo com o que está na base de dados)
-        $parametros = [
-            ':id_cliente' => $id_cliente            
-        ];
-
-        $bd = new Database();
-
-        $senha_na_bd = $bd->select("
-            SELECT senha 
-            FROM clientes 
-            WHERE id_cliente = :id_cliente
-        ", $parametros)[0]->senha;
-
-        // verificar se a senha corresponde à senha atualmente na bd
-        return password_verify($senha_atual, $senha_na_bd);
-    }
-
-    // ===========================================================
-    public function atualizar_a_nova_senha($id_cliente, $nova_senha){
-
-        // atualização da senha do cliente
-        $parametros = [
-            ':id_cliente' => $id_cliente,
-            ':nova_senha' => password_hash($nova_senha, PASSWORD_DEFAULT)
-        ];
-
-        $bd = new Database();
-        $bd->update("
-            UPDATE clientes
-            SET
-                senha = :nova_senha,
-                updated_at = NOW()
-            WHERE id_cliente = :id_cliente
-        ", $parametros);
-    }
+    return false;
 }
+    
+    // ============================================================
+    // BUSCAR POR SLUG (para frontend)
+    // ============================================================
+    public function buscarPorSlug($slug) {
+        $resultados = $this->bd->select("SELECT id_cliente, email, slug FROM clientes WHERE slug = :slug AND activo = 1", [':slug' => $slug]);
+        return count($resultados) > 0 ? $resultados[0] : null;
+    }
+    
+    // ============================================================
+    // RECUPERAÇÃO DE PASSWORD (gera token no campo purl)
+    // ============================================================
+    public function gerarTokenRecuperacao($email) {
+        $token = Store::criarHash(32);
+        $this->bd->update("UPDATE clientes SET purl = :token WHERE email = :email", [':token' => $token, ':email' => $email]);
+        return $token;
+    }
+    
+    public function validarTokenRecuperacao($token) {
+        $resultados = $this->bd->select("SELECT id_cliente, email FROM clientes WHERE purl = :token AND activo = 1", [':token' => $token]);
+        return count($resultados) == 1 ? $resultados[0] : false;
+    }
+    
+    public function atualizarPassword($id_cliente, $nova_senha) {
+        $this->bd->update("
+            UPDATE clientes SET senha = :senha, purl = NULL, updated_at = NOW()
+            WHERE id_cliente = :id_cliente
+        ", [
+            ':senha' => password_hash($nova_senha, PASSWORD_DEFAULT),
+            ':id_cliente' => $id_cliente
+        ]);
+    }
+    
+    // ============================================================
+    // CONFIGURAÇÕES PADRÃO
+    // ============================================================
+    private function criarConfiguracoesPadrao($cliente_id) {
+        $existe = $this->bd->select("SELECT id FROM configuracoes_site WHERE cliente_id = :cliente_id LIMIT 1", [':cliente_id' => $cliente_id]);
+        if($existe) return;
+        
+        $configs = [
+            ['cliente_id' => $cliente_id, 'chave' => 'logo_parte1', 'valor' => 'Meu'],
+            ['cliente_id' => $cliente_id, 'chave' => 'logo_parte2', 'valor' => 'Negócio'],
+            ['cliente_id' => $cliente_id, 'chave' => 'logo_imagem', 'valor' => ''],
+            ['cliente_id' => $cliente_id, 'chave' => 'slogan', 'valor' => 'Soluções Personalizadas'],
+            ['cliente_id' => $cliente_id, 'chave' => 'texto_descritivo', 'valor' => 'Bem-vindo ao seu novo site!'],
+            ['cliente_id' => $cliente_id, 'chave' => 'email_contacto', 'valor' => ''],
+            ['cliente_id' => $cliente_id, 'chave' => 'telefone', 'valor' => ''],
+            ['cliente_id' => $cliente_id, 'chave' => 'endereco', 'valor' => ''],
+            ['cliente_id' => $cliente_id, 'chave' => 'meta_description', 'valor' => ''],
+            ['cliente_id' => $cliente_id, 'chave' => 'meta_keywords', 'valor' => '']
+        ];
+        foreach($configs as $config) {
+            $this->bd->insert("INSERT INTO configuracoes_site (cliente_id, chave, valor) VALUES (:cliente_id, :chave, :valor)", $config);
+        }
+    }
+
+
+
+
+public function buscarPorPurl($purl) {
+    $res = $this->bd->select("SELECT id_cliente, slug FROM clientes WHERE purl = :purl", [':purl' => $purl]);
+    return $res ? $res[0] : null;
+}
+
+
+
+
+
+    }

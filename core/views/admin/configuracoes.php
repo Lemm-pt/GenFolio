@@ -15,7 +15,7 @@
         </div>
     <?php endif; ?>
     
-    <form method="POST" action="?a=admin_salvar_config">
+    <form method="POST" action="?a=admin_salvar_config" enctype="multipart/form-data">
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Logotipo - Parte 1 (cor normal)</label>
@@ -28,6 +28,18 @@
                 <small class="text-muted">Ex: ".lemm" – aparecerá dourado</small>
             </div>
         </div>
+
+        <div class="mb-3">
+              <label class="form-label fw-bold">Logotipo - Imagem (opcional)</label>
+              <input type="file" name="logo_imagem" class="form-control" accept="image/*">
+              <?php if($config->get('logo_imagem')): ?>
+                  <div class="mt-2">
+                      <img src="<?= BASE_URL ?>assets/images/logos/<?= $config->get('logo_imagem') ?>" style="height: 60px;">
+                      <small class="text-muted">Imagem atual. Envie uma nova para substituir.</small>
+                  </div>
+              <?php endif; ?>
+              <small class="text-muted">Se enviar uma imagem, substitui o logotipo textual.</small>
+          </div>
         
         <div class="mb-3">
             <label class="form-label fw-bold">Slogan</label>

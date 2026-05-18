@@ -1,1 +1,20 @@
 colocar em espanhol frances e ingles automático
+
+adicionar pagamento para:
+agenda
+mais produtos
+mais publicacoes
+mais galeria
+para a loja
+
+
+
+O que precisamos corrigir/implementar amanhã:
+Tarefa	Prioridade
+URL amigável (ex: /vitrine/meu-negocio/)	Alta
+Ver Site redirecionar para URL com slug	Alta
+Frontend mostrar dados do cliente correto	Alta
+Registo de novos clientes com email de confirmação	Média
+Esqueceu-se da palavra-passe	Média
+Página "Onde Estamos" com mapa dinâmico	Baixa
+Corrigir textos pouco visíveis no admin	Já resolvido

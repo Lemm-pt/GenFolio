@@ -1,3 +1,8 @@
+
+<?php use core\classes\Store; ?>
+
+
+
 <div class="admin-sidebar">
     <div class="sidebar-header">
         <h4><i class="fas fa-crown"></i> Vitrine<span class="text-gold">.lemm</span></h4>
@@ -28,12 +33,9 @@
     </nav>
     
     <div class="sidebar-footer">
-        <a href="?a=inicio" target="_blank" class="btn btn-outline-light w-100">
-            <i class="fas fa-external-link-alt"></i> Ver Site
-        </a>
-        <a href="?a=admin_logout" class="btn btn-danger w-100 mt-2">
-            <i class="fas fa-sign-out-alt"></i> Sair
-        </a>
+     <a href="<?= BASE_URL . ($_SESSION['cliente_slug'] ?? 'vitrine-demo') ?>/" target="_blank" class="btn btn-outline-light w-100">
+    <i class="fas fa-external-link-alt"></i> Ver Site
+</a>
     </div>
 </div>
 

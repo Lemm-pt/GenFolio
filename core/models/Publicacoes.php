@@ -9,7 +9,7 @@ class Publicacoes {
     
     public function __construct() {
         $this->bd = new Database();
-        $this->cliente_id = $_SESSION['cliente'] ?? 1; // Padrão = 1
+        $this->cliente_id = $_SESSION['cliente_id'] ?? 1; // Padrão = 1
     }
     
   public function listar($limite = null) {
@@ -96,7 +96,7 @@ class Publicacoes {
     public function deletar($id) {
         $item = $this->buscar($id);
         if($item && $item->imagem) {
-            $caminho = __DIR__ . '/../../public/assets/images/blog/' . $item->imagem;
+            $caminho = __DIR__ . '/../../public/blog/' . $item->imagem;
             if(file_exists($caminho)) unlink($caminho);
         }
         $this->bd->delete("DELETE FROM publicacoes WHERE id=:id AND cliente_id=:cliente_id", [':id' => $id, ':cliente_id' => $this->cliente_id]);

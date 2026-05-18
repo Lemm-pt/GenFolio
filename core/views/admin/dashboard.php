@@ -1,6 +1,6 @@
 <div class="container mt-4">
     <h2 class="mb-4">Painel de Controlo</h2>
-    <p class="text-muted mb-4">Bem-vindo, <strong><?= $_SESSION['admin_user'] ?? 'Admin' ?></strong>! Configure o seu site abaixo.</p>
+    <p class="text-muted mb-4">Bem-vindo administrador da <strong><?= $_SESSION['cliente_slug'] ?? 'Admin' ?></strong>! Configure o seu site abaixo.</p>
     
     <div class="row mt-4">
         <div class="col-md-3 mb-3">

@@ -1,0 +1,58 @@
+vitrina/
+├── config.php
+├── core/
+│   ├── classes/
+│   │   ├── Database.php
+│   │   ├── EnviarEmail.php
+│   │   └── Store.php
+│   ├── controllers/
+│   │   ├── Admin.php
+│   │   └── Main.php
+│   ├── models/
+│   │   ├── Cliente.php (clientes)
+│   │   ├── Configuracao.php
+│   │   ├── Servicos.php
+│   │   ├── Produtos.php
+│   │   ├── Galeria.php
+│   │   └── Publicacoes.php
+│   ├── views/
+│   │   ├── layouts/
+│   │   │   ├── html_header.php
+│   │   │   ├── header.php
+│   │   │   ├── footer.php
+│   │   │   └── html_footer.php
+│   │   ├── home.php
+│   │   ├── blog.php
+│   │   ├── artigo.php
+│   │   ├── contacto.php
+│   │   ├── criar_cliente.php
+│   │   ├── criar_cliente_sucesso.php
+│   │   ├── conta_confirmada_sucesso.php
+│   │   ├── recuperar_password.php
+│   │   ├── recuperar_password_email.php
+│   │   ├── nova_password.php
+│   │   └── admin/
+│   │       ├── layouts/
+│   │       │   ├── html_header.php
+│   │       │   ├── header.php
+│   │       │   ├── footer.php
+│   │       │   └── html_footer.php
+│   │       ├── dashboard.php
+│   │       ├── configuracoes.php
+│   │       ├── servicos.php
+│   │       ├── servico_form.php
+│   │       ├── produtos.php
+│   │       ├── produto_form.php
+│   │       ├── galeria.php
+│   │       ├── publicacoes.php
+│   │       ├── publicacao_form.php
+│   │       └── login_frm.php
+│   └── rotas.php
+├── public/
+│   ├── .htaccess
+│   ├── index.php
+│   └── assets/
+│       ├── css/
+│       ├── js/
+│       └── images/
+└── vendor/

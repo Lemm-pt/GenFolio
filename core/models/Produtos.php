@@ -9,7 +9,7 @@ class Produtos {
     
     public function __construct() {
         $this->bd = new Database();
-        $this->cliente_id = $_SESSION['cliente'] ?? 1;
+        $this->cliente_id = $_SESSION['cliente_id'] ?? 1;
     }
     
     public function listar($limite = null) {

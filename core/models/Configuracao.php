@@ -10,7 +10,7 @@ class Configuracao {
     
     public function __construct($cliente_id = null) {
         $this->bd = new Database();
-        $this->cliente_id = $cliente_id ?? ($_SESSION['cliente'] ?? 1);
+        $this->cliente_id = $cliente_id ?? ($_SESSION['cliente_id'] ?? 1);
         $this->carregarTodas();
     }
     

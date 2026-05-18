@@ -1,0 +1,10 @@
+RewriteEngine On
+RewriteBase /vitrina/public/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ index.php?slug=$1 [QSA,L]
+
+RewriteRule ^([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$ index.php?slug=$1&a=$2 [QSA,L]
+
+RewriteRule ^([a-zA-Z0-9_-]+)/artigo/([a-zA-Z0-9_-]+)/?$ index.php?slug=$1&a=artigo&slug_artigo=$2 [QSA,L]

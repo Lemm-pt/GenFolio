@@ -66,6 +66,47 @@
 </section>
 <?php endif; ?>
 
+<!-- GALERIA (só aparece se houver fotos) -->
+<?php if(!empty($galeria)): ?>
+<section id="galeria" class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Galeria</h2>
+        <div class="row">
+            <?php foreach($galeria as $foto): ?>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="galeria-card">
+                    <img src="<?= BASE_URL ?>assets/images/galeria/<?= $foto->imagem ?>" class="img-fluid rounded" style="height: 200px; width: 100%; object-fit: cover; cursor: pointer;" onclick="abrirModalImagem('<?= BASE_URL ?>assets/images/galeria/<?= $foto->imagem ?>', '<?= htmlspecialchars($foto->legenda ?? '') ?>')">
+                    <?php if($foto->legenda): ?>
+                        <p class="text-center mt-2 small"><?= htmlspecialchars($foto->legenda) ?></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<!-- Modal para ver imagem em tamanho grande -->
+<div id="modalImagem" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; cursor: pointer;" onclick="fecharModalImagem()">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 90%; max-height: 90%;">
+        <img id="modalImagemSrc" src="" style="max-width: 100%; max-height: 90vh; border-radius: 10px;">
+        <p id="modalImagemLegenda" style="color: white; text-align: center; margin-top: 10px;"></p>
+    </div>
+    <button style="position: absolute; top: 20px; right: 30px; background: none; border: none; color: white; font-size: 40px; cursor: pointer;">&times;</button>
+</div>
+
+<script>
+function abrirModalImagem(src, legenda) {
+    document.getElementById('modalImagemSrc').src = src;
+    document.getElementById('modalImagemLegenda').innerHTML = legenda;
+    document.getElementById('modalImagem').style.display = 'block';
+}
+function fecharModalImagem() {
+    document.getElementById('modalImagem').style.display = 'none';
+}
+</script>
+<?php endif; ?>
+
 <!-- MAPA - ONDE ESTAMOS -->
 <section id="mapa" class="py-5">
     <div class="container">

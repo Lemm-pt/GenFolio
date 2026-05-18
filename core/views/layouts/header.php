@@ -1,50 +1,56 @@
 <?php use core\classes\Store; ?>
+
+
 <?php 
 if(!isset($config)) {
     $config = new \core\models\Configuracao();
 }
+$base_url = Store::getBaseUrl();
 ?>
 <canvas id="particlesCanvas"></canvas>
 
 <nav class="navbar-modern">
     <div class="nav-container">
-        <a href="?a=inicio" class="logo">
-            <span class="logo-part1"><?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?></span><span class="logo-part2"><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></span>
-        </a>
+
+    <?php 
+$base_url = BASE_URL . CLIENTE_SLUG . '/';
+?>
+       <a href="<?= $base_url ?>" class="logo">
+           <?php if($config->get('logo_imagem')): ?>
+               <img src="<?= BASE_URL ?>assets/images/<?= $config->get('logo_imagem') ?>" alt="Logotipo" style="height: 40px; width: auto; margin-right: 8px;">
+           <?php endif; ?>
+           <span class="logo-part1"><?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?></span><span class="logo-part2"><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></span>
+       </a>
         
         <button class="nav-toggle" id="navToggle">
             <span></span><span></span><span></span>
         </button>
         
         <div class="nav-menu" id="navMenu">
-    <a href="?a=inicio" class="nav-link">Início</a>
-    
-    <!-- Links âncora só funcionam na home, senão vão para home + âncora -->
-    <?php if(basename($_SERVER['REQUEST_URI']) === 'index.php' && (!isset($_GET['a']) || $_GET['a'] === 'inicio' || $_GET['a'] === '')): ?>
-        <a href="#servicos" class="nav-link">Serviços</a>
-        <a href="#produtos" class="nav-link">Produtos</a>
-        <a href="#mapa" class="nav-link">Onde Estamos</a>
-        <a href="#contacto" class="nav-link">Contacto</a>
-    <?php else: ?>
-        <a href="?a=inicio#servicos" class="nav-link">Serviços</a>
-        <a href="?a=inicio#produtos" class="nav-link">Produtos</a>
-        <a href="?a=inicio#mapa" class="nav-link">Onde Estamos</a>
-        <a href="?a=inicio#contacto" class="nav-link">Contacto</a>
-    <?php endif; ?>
-    
-    <a href="?a=blog" class="nav-link">Blog</a>
-    
-    <?php if(Store::adminLogado()): ?>
-        <a href="?a=admin" class="nav-link admin-link"><i class="fas fa-crown"></i> Admin</a>
-        <a href="?a=admin_logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
-    <?php else: ?>
-        <a href="?a=admin_login" class="nav-link login-link"><i class="fas fa-lock"></i> Entrar</a>
-    <?php endif; ?>
-</div>
+            <a href="<?= $base_url ?>" class="nav-link">Início</a>
+            <a href="<?= $base_url ?>#servicos" class="nav-link">Serviços</a>
+            <a href="<?= $base_url ?>#produtos" class="nav-link">Produtos</a>
+            <a href="<?= $base_url ?>#galeria" class="nav-link">Galeria</a>
+            <a href="<?= $base_url ?>blog" class="nav-link">Blog</a>
+            <a href="<?= $base_url ?>#mapa" class="nav-link">Onde Estamos</a>
+            <a href="<?= $base_url ?>#contacto" class="nav-link">Contacto</a>
+            
+            <?php if(Store::adminLogado()): ?>
+                <a href="<?= $base_url ?>admin" class="nav-link admin-link"><i class="fas fa-crown"></i> Admin</a>
+                <a href="<?= $base_url ?>logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            <?php else: ?>
+                <a href="<?= $base_url ?>admin_login" class="nav-link login-link"><i class="fas fa-lock"></i> Entrar</a>
+                <?php 
+                // Mostrar "Criar Conta" apenas para o cliente demo (vitrine-demo)
+                $cliente_slug_atual = Store::getClienteSlug();
+                if($cliente_slug_atual === 'vitrine-demo'): ?>
+                    <a href="<?= Store::getUrl('novo_cliente') ?>" class="nav-link">Criar Conta</a>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
     </div>
 </nav>
 
-<!-- Espaçador -->
 <div style="height: 80px;"></div>
 
 <style>
@@ -98,16 +104,26 @@ if(!isset($config)) {
     font-weight: 700;
     text-decoration: none;
     letter-spacing: -0.5px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.logo img {
+    max-height: 40px;
+    width: auto;
 }
 
 .logo-part1 { color: #ffffff; }
 .logo-part2 { color: #C6A43F; }
 
-/* Menu desktop */
+/* Menu desktop - ALINHADO À DIREITA */
 .nav-menu {
     display: flex;
     gap: 0.2rem;
     align-items: center;
+    margin-left: auto;
 }
 
 .nav-link {
@@ -118,6 +134,7 @@ if(!isset($config)) {
     padding: 0.5rem 1rem;
     border-radius: 40px;
     transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -147,6 +164,7 @@ if(!isset($config)) {
     background: none;
     border: none;
     cursor: pointer;
+    padding: 0.3rem;
 }
 
 .nav-toggle span {
@@ -179,10 +197,23 @@ if(!isset($config)) {
         padding: 1.5rem;
         gap: 0.5rem;
         transition: left 0.3s ease;
+        margin-left: 0;
     }
     .nav-menu.active { left: 0; }
-    .nav-link { width: 100%; text-align: center; padding: 0.8rem; }
+    .nav-link { width: 100%; text-align: center; padding: 0.8rem; white-space: normal; }
     .logo { font-size: 1.3rem; }
+}
+
+
+#particlesCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    filter: drop-shadow(0 0 2px rgba(198,164,63,0.2));
 }
 </style>
 
@@ -213,13 +244,22 @@ window.addEventListener('scroll', () => {
 });
 
 // Scroll suave para âncoras
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+document.querySelectorAll('a[href*="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
-        const targetId = this.getAttribute('href');
-        if(targetId === '#' || targetId === '') return;
-        const target = document.querySelector(targetId);
+        const href = this.getAttribute('href');
+        const hashIndex = href.indexOf('#');
+        if(hashIndex === -1) return;
+        
+        const hash = href.substring(hashIndex);
+        const target = document.querySelector(hash);
+        
         if(target) {
             e.preventDefault();
+            // Se não estiver na home, redireciona
+            if(!window.location.href.includes('?a=inicio') && window.location.pathname !== '/vitrina/public/' && window.location.pathname !== '/vitrina/public/index.php') {
+                window.location.href = href;
+                return;
+            }
             const navbarHeight = document.querySelector('.navbar-modern')?.offsetHeight || 80;
             const targetPos = target.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
             window.scrollTo({ top: targetPos, behavior: 'smooth' });
@@ -227,12 +267,16 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Partículas
+// Partículas (mantenha o código existente)
+// Partículas melhoradas - mais suaves, com gradiente e efeito de brilho
 document.addEventListener('DOMContentLoaded', function() {
     const canvas = document.getElementById('particlesCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let particles = [], mouseX = null, mouseY = null;
+    let particles = [];
+    let mouseX = null, mouseY = null;
+    let animationId = null;
+    let hue = 0;
 
     function resizeCanvas() {
         canvas.width = window.innerWidth;
@@ -241,14 +285,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     class Particle {
         constructor() {
+            this.reset();
+        }
+        reset() {
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 3 + 1;
-            this.speedX = (Math.random() - 0.5) * 0.3;
-            this.speedY = (Math.random() - 0.5) * 0.3;
-            this.color = `rgba(198, 164, 63, ${Math.random() * 0.25 + 0.05})`;
+            this.size = Math.random() * 3 + 1.5;
+            this.speedX = (Math.random() - 0.5) * 0.35;
+            this.speedY = (Math.random() - 0.5) * 0.35;
+            // Cores douradas com variação
+            const goldHue = 45 + (Math.random() * 10 - 5); // 40-50
+            this.color = `hsla(${goldHue}, 80%, 55%, ${Math.random() * 0.3 + 0.15})`;
             this.originalX = this.x;
             this.originalY = this.y;
+            this.glow = Math.random() > 0.7;
         }
         update() {
             this.x += this.speedX;
@@ -257,14 +307,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.x += (this.originalX - this.x) * 0.01;
                 this.y += (this.originalY - this.y) * 0.01;
             } else {
-                const dx = this.x - mouseX, dy = this.y - mouseY, dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist < 120) {
+                const dx = this.x - mouseX;
+                const dy = this.y - mouseY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 130) {
                     const angle = Math.atan2(dy, dx);
-                    const force = (120 - dist) / 120;
-                    this.x += Math.cos(angle) * force * 1.5;
-                    this.y += Math.sin(angle) * force * 1.5;
+                    const force = (130 - dist) / 130;
+                    this.x += Math.cos(angle) * force * 2.2;
+                    this.y += Math.sin(angle) * force * 2.2;
+                } else {
+                    this.x += (this.originalX - this.x) * 0.015;
+                    this.y += (this.originalY - this.y) * 0.015;
                 }
             }
+            // Limites com wrap-around suave
             if (this.x < -50) this.x = canvas.width + 50;
             if (this.x > canvas.width + 50) this.x = -50;
             if (this.y < -50) this.y = canvas.height + 50;
@@ -275,45 +331,79 @@ document.addEventListener('DOMContentLoaded', function() {
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
             ctx.fillStyle = this.color;
             ctx.fill();
+            if (this.glow) {
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = 'rgba(198, 164, 63, 0.8)';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
         }
     }
 
     function init() {
         resizeCanvas();
         particles = [];
-        const count = Math.min(80, Math.floor(window.innerWidth / 15));
-        for (let i = 0; i < count; i++) particles.push(new Particle());
+        const particleCount = Math.min(120, Math.floor(window.innerWidth / 12));
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
     }
 
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        grad.addColorStop(0, '#0a0a1a');
-        grad.addColorStop(1, '#16162a');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
+    function drawConnections() {
         for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist < 100) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 110) {
                     ctx.beginPath();
-                    ctx.strokeStyle = `rgba(198, 164, 63, ${0.08 * (1 - dist / 100)})`;
-                    ctx.lineWidth = 0.5;
+                    const opacity = 0.12 * (1 - dist / 110);
+                    ctx.strokeStyle = `rgba(198, 164, 63, ${opacity})`;
+                    ctx.lineWidth = 0.6;
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
                     ctx.stroke();
                 }
             }
         }
-        particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(animate);
     }
 
-    window.addEventListener('resize', () => { resizeCanvas(); init(); });
-    window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
-    window.addEventListener('mouseleave', () => { mouseX = mouseY = null; });
+    function animateBackground() {
+        // Gradiente animado suave
+        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        grad.addColorStop(0, '#0a0a1a');
+        grad.addColorStop(0.5, '#12122a');
+        grad.addColorStop(1, '#1a1a2e');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function animate() {
+        animateBackground();
+        drawConnections();
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        // Pequeno efeito de "respiração" da cor ambiente (opcional)
+        hue = (hue + 0.2) % 360;
+        animationId = requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        init();
+    });
+    window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+    window.addEventListener('mouseleave', () => {
+        mouseX = mouseY = null;
+    });
     init();
     animate();
 });
+
+
 </script>

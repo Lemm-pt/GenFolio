@@ -1,6 +1,6 @@
 <?php
 
-define('APP_NAME',          'JoFolio');
+define('APP_NAME',          'Vitrine');
 define('APP_VERSION',       '1.0');
 define('BASE_URL',          'http://localhost/vitrina/public/');
 
@@ -18,13 +18,16 @@ define('MYSQL_USER',        'root');
 define('MYSQL_PASS',        '');
 define('MYSQL_CHARSET',     'utf8');
 
-// Email (para formulário de contacto)
-define('EMAIL_HOST',        'smtp.gmail.com');
-define('EMAIL_FROM',        'joaquina@dsprivate.com');
-define('EMAIL_PASS',        '');
-define('EMAIL_PORT',        587);
 
-// Contactos (exibidos no site)
-define('DS_EMAIL',          'esposende@dsprivate.com');
-define('DS_PHONE',          '+351 938630655');
-define('DS_ADDRESS',        'Esposende, Portugal');
+// mail para para envio validação e Email (para formulário de contacto)
+define('EMAIL_HOST',        'smtp-pt.securemail.pro');
+define('EMAIL_FROM',        'luciano@lemm.pt');
+define('EMAIL_PASS',        'S&mStr&ss');
+define('EMAIL_PORT',        465);
+define('ESTADO',            ['PENDENTE','EM PROCESSAMENTO','ENVIADA','CANCELADA','CONCLUIDA']);
+
+
+// AES encriptação
+define('AES_KEY',           'qs8BzdLD8N7qJgqJ3qmGsuh8HMhCWqG4');
+define('AES_IV',            'WSzH6HcdZAYdQ9be');
+
