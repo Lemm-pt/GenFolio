@@ -31,7 +31,9 @@
                 <hr class="my-5">
                 
                 <div class="text-center">
-                    <a href="?a=blog" class="btn-gold">← Voltar ao Blog</a>
+                    <div class="text-center">
+                       <a href="<?= BASE_URL . CLIENTE_SLUG ?>/blog" class="btn-gold">← Voltar ao Blog</a>
+                   </div>
                 </div>
             </article>
         </div>

@@ -64,8 +64,9 @@ $base_url = BASE_URL . CLIENTE_SLUG . '/';
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
+    z-index: 0;  /* Garantir que fica atrás do conteúdo */
     pointer-events: none;
+    display: block;
 }
 
 /* Navbar moderna */
@@ -267,8 +268,8 @@ document.querySelectorAll('a[href*="#"]').forEach(anchor => {
     });
 });
 
-// Partículas (mantenha o código existente)
-// Partículas melhoradas - mais suaves, com gradiente e efeito de brilho
+// Partículas suaves com conexões visíveis (estilo original)
+// Partículas com conexões ligeiramente mais destacadas
 document.addEventListener('DOMContentLoaded', function() {
     const canvas = document.getElementById('particlesCanvas');
     if (!canvas) return;
@@ -276,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let particles = [];
     let mouseX = null, mouseY = null;
     let animationId = null;
-    let hue = 0;
+    let time = 0;
 
     function resizeCanvas() {
         canvas.width = window.innerWidth;
@@ -286,64 +287,61 @@ document.addEventListener('DOMContentLoaded', function() {
     class Particle {
         constructor() {
             this.reset();
+            this.pulseSpeed = 0.01 + Math.random() * 0.02;
+            this.pulsePhase = Math.random() * Math.PI * 2;
         }
         reset() {
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 3 + 1.5;
-            this.speedX = (Math.random() - 0.5) * 0.35;
-            this.speedY = (Math.random() - 0.5) * 0.35;
-            // Cores douradas com variação
-            const goldHue = 45 + (Math.random() * 10 - 5); // 40-50
-            this.color = `hsla(${goldHue}, 80%, 55%, ${Math.random() * 0.3 + 0.15})`;
+            this.baseSize = Math.random() * 2.8 + 1.2; // ligeiramente maior (max 4.0)
+            this.size = this.baseSize;
+            this.speedX = (Math.random() - 0.5) * 0.2;
+            this.speedY = (Math.random() - 0.5) * 0.2;
+            const goldHue = 45 + (Math.random() * 10 - 5);
+            this.color = `hsla(${goldHue}, 70%, 55%, ${Math.random() * 0.25 + 0.1})`;
             this.originalX = this.x;
             this.originalY = this.y;
-            this.glow = Math.random() > 0.7;
         }
-        update() {
+        update(mouseX, mouseY) {
+            this.size = this.baseSize + Math.sin(time * this.pulseSpeed + this.pulsePhase) * 0.3;
             this.x += this.speedX;
             this.y += this.speedY;
+            
             if (mouseX === null) {
-                this.x += (this.originalX - this.x) * 0.01;
-                this.y += (this.originalY - this.y) * 0.01;
+                this.x += (this.originalX - this.x) * 0.005;
+                this.y += (this.originalY - this.y) * 0.005;
             } else {
                 const dx = this.x - mouseX;
                 const dy = this.y - mouseY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 130) {
+                if (dist < 100) {
                     const angle = Math.atan2(dy, dx);
-                    const force = (130 - dist) / 130;
-                    this.x += Math.cos(angle) * force * 2.2;
-                    this.y += Math.sin(angle) * force * 2.2;
+                    const force = (100 - dist) / 100;
+                    this.x += Math.cos(angle) * force * 1.2;
+                    this.y += Math.sin(angle) * force * 1.2;
                 } else {
-                    this.x += (this.originalX - this.x) * 0.015;
-                    this.y += (this.originalY - this.y) * 0.015;
+                    this.x += (this.originalX - this.x) * 0.008;
+                    this.y += (this.originalY - this.y) * 0.008;
                 }
             }
-            // Limites com wrap-around suave
-            if (this.x < -50) this.x = canvas.width + 50;
-            if (this.x > canvas.width + 50) this.x = -50;
-            if (this.y < -50) this.y = canvas.height + 50;
-            if (this.y > canvas.height + 50) this.y = -50;
+            
+            if (this.x < -40) this.x = canvas.width + 40;
+            if (this.x > canvas.width + 40) this.x = -40;
+            if (this.y < -40) this.y = canvas.height + 40;
+            if (this.y > canvas.height + 40) this.y = -40;
         }
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
             ctx.fillStyle = this.color;
             ctx.fill();
-            if (this.glow) {
-                ctx.shadowBlur = 12;
-                ctx.shadowColor = 'rgba(198, 164, 63, 0.8)';
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
         }
     }
 
     function init() {
         resizeCanvas();
         particles = [];
-        const particleCount = Math.min(120, Math.floor(window.innerWidth / 12));
+        const particleCount = Math.min(100, Math.floor(window.innerWidth / 12));
         for (let i = 0; i < particleCount; i++) {
             particles.push(new Particle());
         }
@@ -357,9 +355,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < 110) {
                     ctx.beginPath();
-                    const opacity = 0.12 * (1 - dist / 110);
+                    // Opacidade mais destacada: 0.35 (antes 0.25)
+                    const opacity = 0.35 * (1 - dist / 110);
                     ctx.strokeStyle = `rgba(198, 164, 63, ${opacity})`;
-                    ctx.lineWidth = 0.6;
+                    ctx.lineWidth = 1.1; // ligeiramente mais grossa
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
                     ctx.stroke();
@@ -369,24 +368,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function animateBackground() {
-        // Gradiente animado suave
         const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
         grad.addColorStop(0, '#0a0a1a');
-        grad.addColorStop(0.5, '#12122a');
-        grad.addColorStop(1, '#1a1a2e');
+        grad.addColorStop(1, '#12122a');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
     function animate() {
+        time += 0.03;
         animateBackground();
         drawConnections();
         particles.forEach(p => {
-            p.update();
+            p.update(mouseX, mouseY);
             p.draw();
         });
-        // Pequeno efeito de "respiração" da cor ambiente (opcional)
-        hue = (hue + 0.2) % 360;
         animationId = requestAnimationFrame(animate);
     }
 
@@ -404,6 +400,5 @@ document.addEventListener('DOMContentLoaded', function() {
     init();
     animate();
 });
-
 
 </script>

@@ -57,25 +57,24 @@ class Main {
 
 
 public function artigo() {
-    $slug = $_GET['slug'] ?? '';
+    // O slug do artigo vem de $_GET['slug_artigo'] (definido pelo .htaccess)
+    $slug_artigo = $_GET['slug_artigo'] ?? '';
     
-    if(empty($slug)) {
+    if (empty($slug_artigo)) {
         Store::redirect('blog');
         return;
     }
     
-    $publicacoesModel = new \core\models\Publicacoes();
-    $artigo = $publicacoesModel->buscarPorSlug($slug);
+    // Usar a constante CLIENTE_ID (já definida no index.php)
+    $publicacoesModel = new \core\models\Publicacoes(CLIENTE_ID);
+    $artigo = $publicacoesModel->buscarPorSlug($slug_artigo);
     
-    if(!$artigo) {
+    if (!$artigo) {
         Store::redirect('blog');
         return;
     }
     
-    // DEBUG - verificar se o artigo foi encontrado
-    error_log("Artigo encontrado: " . $artigo->titulo);
-    
-    $config = new \core\models\Configuracao();
+    $config = new \core\models\Configuracao(CLIENTE_ID);
     
     Store::Layout([
         'layouts/html_header',
@@ -84,7 +83,7 @@ public function artigo() {
         'layouts/footer',
         'layouts/html_footer'
     ], [
-        'artigo' => $artigo,   // <-- NOME DA VARIÁVEL NA VIEW
+        'artigo' => $artigo,
         'config' => $config
     ]);
 }
@@ -99,7 +98,7 @@ public function artigo() {
             $telefone = $_POST['telefone'] ?? '';
             $mensagem = $_POST['mensagem'] ?? '';
             $mailer = new EnviarEmail();
-            $para = $config->get('email_contacto', DS_EMAIL);
+            $para = $config->get('email_contacto', EMAIL_FROM);
             
             if($mailer->enviar_contacto($nome, $email, $telefone, $mensagem, $para)) {
                 $_SESSION['msg_sucesso'] = "Mensagem enviada com sucesso!";

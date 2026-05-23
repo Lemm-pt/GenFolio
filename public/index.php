@@ -2,52 +2,75 @@
 session_start();
 
 require_once('../vendor/autoload.php');
-require_once('../config.php');
+
 
 $acao = $_GET['a'] ?? 'inicio';
 $slug = $_GET['slug'] ?? $_GET['c'] ?? null;
 
-// Rotas que NÃO precisam de slug (podem ser acedidas diretamente)
-$rotas_sem_slug = ['admin_login', 'admin_login_submit', 'admin_logout', 
-                   'criar_cliente', 'novo_cliente', 'confirmar_email',
-                   'recuperar_password', 'recuperar_password_submit', 
-                   'recuperar_password_confirmar', 'nova_password_submit', 'artigo'];
+// ============================================================
+// ROTAS QUE NÃO PRECISAM DE SLUG (páginas de autenticação, registo, etc.)
+// ============================================================
+$rotas_sem_slug = [
+    'admin_login', 'admin_login_submit', 'admin_logout',
+    'criar_cliente', 'novo_cliente', 'confirmar_email',
+    'recuperar_password', 'recuperar_password_submit',
+    'recuperar_password_confirmar', 'nova_password_submit'
+    // 'artigo' REMOVIDO – agora precisa de slug do cliente
+];
 
-// Rotas de admin que exigem login
-$rotas_admin = ['admin', 'admin_configuracoes', 'admin_servicos', 
-                'admin_galeria', 'admin_produtos', 'admin_publicacoes'];
+// ============================================================
+// ROTAS DE ADMIN QUE EXIGEM LOGIN
+// ============================================================
+$rotas_admin = [
+    'admin', 'admin_configuracoes', 'admin_servicos',
+    'admin_galeria', 'admin_produtos', 'admin_publicacoes'
+];
 
-// Verificar se é uma rota de admin que precisa de login
-if(in_array($acao, $rotas_admin) && !isset($_SESSION['cliente_id'])) {
+// ============================================================
+// VERIFICAR LOGIN ADMIN
+// ============================================================
+if (in_array($acao, $rotas_admin) && !isset($_SESSION['cliente_id'])) {
     header("Location: " . BASE_URL . "index.php?a=admin_login");
     exit;
 }
 
-// Para rotas sem slug (como criar_cliente), não redirecionar
-if(!$slug && !in_array($acao, $rotas_sem_slug)) {
-    // Redirecionar para o demo
-    header("Location: " . BASE_URL . "vitrine-demo/");
-    exit;
-}
-
-// Buscar cliente na BD (se houver slug)
-$cliente_atual = null;
-if($slug) {
+// ============================================================
+// DEFINIR CONSTANTES CLIENTE_SLUG E CLIENTE_ID
+// ============================================================
+if (in_array($acao, $rotas_sem_slug)) {
+    // Rotas sem slug: usar sessão se disponível, senão demo
+    if (isset($_SESSION['cliente_id'], $_SESSION['cliente_slug'])) {
+        define('CLIENTE_SLUG', $_SESSION['cliente_slug']);
+        define('CLIENTE_ID', (int)$_SESSION['cliente_id']);
+    } else {
+        define('CLIENTE_SLUG', 'vitrine-demo');
+        define('CLIENTE_ID', 1);
+    }
+} else {
+    // Rotas que precisam de slug (incluindo 'artigo')
+    if (empty($slug)) {
+        // Se não tem slug na URL, redireciona para o demo
+        header("Location: " . BASE_URL . "vitrine-demo/");
+        exit;
+    }
+    
     $bd = new \core\classes\Database();
-    $cliente = $bd->select("SELECT id_cliente, slug, activo FROM clientes WHERE slug = :slug", [':slug' => $slug]);
-    if($cliente && $cliente[0]->activo == 1) {
-        $cliente_atual = $cliente[0];
+    $cliente = $bd->select(
+        "SELECT id_cliente, slug FROM clientes WHERE slug = :slug AND activo = 1",
+        [':slug' => $slug]
+    );
+    
+    if ($cliente && !empty($cliente)) {
+        define('CLIENTE_SLUG', $cliente[0]->slug);
+        define('CLIENTE_ID', (int)$cliente[0]->id_cliente);
+    } else {
+        // Slug inválido – redireciona para demo
+        header("Location: " . BASE_URL . "vitrine-demo/");
+        exit;
     }
 }
 
-// Se não encontrou cliente e não é rota sem slug, redireciona para demo
-if(!$cliente_atual && !in_array($acao, $rotas_sem_slug) && $acao !== 'admin_login') {
-    header("Location: " . BASE_URL . "vitrine-demo/");
-    exit;
-}
-
-// Constantes para o frontend
-define('CLIENTE_SLUG', $cliente_atual ? $cliente_atual->slug : 'vitrine-demo');
-define('CLIENTE_ID', $cliente_atual ? $cliente_atual->id_cliente : 1);
-
+// ============================================================
+// CARREGAR ROTAS
+// ============================================================
 require_once('../core/rotas.php');

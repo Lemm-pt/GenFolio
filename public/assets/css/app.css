@@ -508,3 +508,33 @@ body.admin-container {
         font-size: 1rem;
     }
 }
+
+
+/* ============================================
+   FIXAR RODAPÉ NO FUNDO (Frontend)
+   ============================================ */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Wrapper principal que envolve todo o conteúdo entre o header e o footer */
+/* Como não tens uma div específica, vamos aplicar ao elemento que contém o conteúdo principal */
+/* Normalmente as views estão dentro de <div class="container"> ou similar */
+.container,
+.container-fluid,
+.py-5.container:first-of-type {
+    flex: 1 0 auto;
+}
+
+.rodape {
+    flex-shrink: 0;
+    margin-top: 0; /* Remove o margin-top existente para não criar espaços desnecessários */
+}

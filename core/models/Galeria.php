@@ -7,11 +7,11 @@ class Galeria {
     private $bd;
     private $cliente_id;
     
-    public function __construct() {
+   // Recebe cliente_id como parâmetro, padrão = 1 (apenas fallback)
+    public function __construct($cliente_id = null) {
         $this->bd = new Database();
-        $this->cliente_id = $_SESSION['cliente_id'] ?? 1;
+        $this->cliente_id = $cliente_id ?? (defined('CLIENTE_ID') ? CLIENTE_ID : 1);
     }
-    
     public function listar() {
         $result = $this->bd->select("SELECT * FROM galeria WHERE cliente_id = :cliente_id ORDER BY ordem", [':cliente_id' => $this->cliente_id]);
         return $result ? $result : [];

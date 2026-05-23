@@ -20,7 +20,7 @@
                         <small class="text-gold"><?= date('d/m/Y', strtotime($pub->created_at)) ?></small>
                         <h4 class="mt-2"><?= htmlspecialchars($pub->titulo) ?></h4>
                         <p><?= htmlspecialchars(substr(strip_tags($pub->conteudo), 0, 120)) ?>...</p>
-                     <a href="?a=artigo&slug=<?= $pub->slug ?>" class="text-gold">Ler mais →</a>
+                    <a href="<?= BASE_URL . CLIENTE_SLUG ?>/artigo/<?= $pub->slug ?>" class="text-gold">Ler mais →</a>
                     </div>
                 </div>
             </div>

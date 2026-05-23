@@ -1,4 +1,9 @@
+
+
+
 colocar em espanhol frances e ingles automático
+
+acertar contact form
 
 adicionar pagamento para:
 agenda

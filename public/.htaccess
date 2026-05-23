@@ -3,8 +3,19 @@ RewriteBase /vitrina/public/
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([a-zA-Z0-9_-]+)/?$ index.php?slug=$1 [QSA,L]
 
+# Artigo: /{slug}/artigo/{slug_artigo}
+RewriteRule ^([a-zA-Z0-9_-]+)/artigo/([a-zA-Z0-9_-]+)/?$ index.php?slug=$1&a=artigo&slug_artigo=$2 [QSA,L]
+
+# Blog: /{slug}/blog
+RewriteRule ^([a-zA-Z0-9_-]+)/blog/?$ index.php?slug=$1&a=blog [QSA,L]
+
+# Admin: /{slug}/admin ou /{slug}/admin/{rota}
+RewriteRule ^([a-zA-Z0-9_-]+)/admin/?$ index.php?slug=$1&a=admin [QSA,L]
+RewriteRule ^([a-zA-Z0-9_-]+)/admin/([a-zA-Z0-9_]+)/?$ index.php?slug=$1&a=$2 [QSA,L]
+
+# Outras rotas: /{slug}/{rota}
 RewriteRule ^([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$ index.php?slug=$1&a=$2 [QSA,L]
 
-RewriteRule ^([a-zA-Z0-9_-]+)/artigo/([a-zA-Z0-9_-]+)/?$ index.php?slug=$1&a=artigo&slug_artigo=$2 [QSA,L]
+# Página inicial do cliente: /{slug}/
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ index.php?slug=$1&a=inicio [QSA,L]
