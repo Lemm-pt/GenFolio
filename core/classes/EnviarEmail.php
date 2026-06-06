@@ -87,7 +87,7 @@ class EnviarEmail {
     // ENVIAR CONTACTO
     // ============================================================
     public function enviar_contacto($nome, $email, $telefone, $mensagem, $destinatario = null) {
-        $destinatario = $destinatario ?? DS_EMAIL;
+        $destinatario = $destinatario ?? EMAIL_FROM;
         
         $mail = new PHPMailer(true);
         try {

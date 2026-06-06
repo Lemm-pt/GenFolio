@@ -257,7 +257,7 @@ document.querySelectorAll('a[href*="#"]').forEach(anchor => {
         if(target) {
             e.preventDefault();
             // Se não estiver na home, redireciona
-            if(!window.location.href.includes('?a=inicio') && window.location.pathname !== '/vitrina/public/' && window.location.pathname !== '/vitrina/public/index.php') {
+            if(!window.location.href.includes('?a=inicio') && window.location.pathname !== '/sevenlux/public/' && window.location.pathname !== '/sevenlux/public/index.php') {
                 window.location.href = href;
                 return;
             }

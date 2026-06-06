@@ -1,76 +1,110 @@
 <?php
+/**
+ * Front Controller
+ * 
+ * Handles routing, slug detection, and session management for the multi-tenant system.
+ * Each client has a unique slug (e.g., /my-business/) which determines which site is loaded.
+ * 
+ * @package SevenLux
+ */
+
 session_start();
 
 require_once('../vendor/autoload.php');
 
-
-$acao = $_GET['a'] ?? 'inicio';
-$slug = $_GET['slug'] ?? $_GET['c'] ?? null;
+// ============================================================
+// Global action and slug detection
+// ============================================================
+$action = $_GET['a'] ?? 'inicio';
+$slug   = $_GET['slug'] ?? $_GET['c'] ?? null;
 
 // ============================================================
-// ROTAS QUE NÃO PRECISAM DE SLUG (páginas de autenticação, registo, etc.)
+// Routes that do NOT require a client slug in the URL
+// (authentication, registration, password recovery, etc.)
 // ============================================================
-$rotas_sem_slug = [
-    'admin_login', 'admin_login_submit', 'admin_logout',
-    'criar_cliente', 'novo_cliente', 'confirmar_email',
-    'recuperar_password', 'recuperar_password_submit',
-    'recuperar_password_confirmar', 'nova_password_submit'
-    // 'artigo' REMOVIDO – agora precisa de slug do cliente
+$routes_without_slug = [
+    'admin_login_submit',
+    'admin_logout',
+    'criar_cliente',
+    'novo_cliente',
+    'confirmar_email',
+    'recuperar_password',
+    'recuperar_password_submit',
+    'recuperar_password_confirmar',
+    'nova_password_submit',
 ];
 
 // ============================================================
-// ROTAS DE ADMIN QUE EXIGEM LOGIN
+// Admin routes that require the user to be logged in
 // ============================================================
-$rotas_admin = [
-    'admin', 'admin_configuracoes', 'admin_servicos',
-    'admin_galeria', 'admin_produtos', 'admin_publicacoes'
+$admin_routes = [
+    'admin',
+    'admin_configuracoes',
+    'admin_servicos',
+    'admin_galeria',
+    'admin_produtos',
+    'admin_publicacoes',
 ];
 
 // ============================================================
-// VERIFICAR LOGIN ADMIN
+// Check admin login for protected routes
 // ============================================================
-if (in_array($acao, $rotas_admin) && !isset($_SESSION['cliente_id'])) {
+if (in_array($action, $admin_routes) && !isset($_SESSION['cliente_id'])) {
     header("Location: " . BASE_URL . "index.php?a=admin_login");
     exit;
 }
 
 // ============================================================
-// DEFINIR CONSTANTES CLIENTE_SLUG E CLIENTE_ID
+// Define constants CLIENTE_SLUG and CLIENTE_ID
 // ============================================================
-if (in_array($acao, $rotas_sem_slug)) {
-    // Rotas sem slug: usar sessão se disponível, senão demo
+if (in_array($action, $routes_without_slug)) {
+    // Routes without slug: use session if available, otherwise fallback to demo client
     if (isset($_SESSION['cliente_id'], $_SESSION['cliente_slug'])) {
         define('CLIENTE_SLUG', $_SESSION['cliente_slug']);
-        define('CLIENTE_ID', (int)$_SESSION['cliente_id']);
+        define('CLIENTE_ID', (int) $_SESSION['cliente_id']);
     } else {
         define('CLIENTE_SLUG', 'vitrine-demo');
         define('CLIENTE_ID', 1);
     }
 } else {
-    // Rotas que precisam de slug (incluindo 'artigo')
+    // Routes that require a valid client slug from the URL
     if (empty($slug)) {
-        // Se não tem slug na URL, redireciona para o demo
+        // No slug provided – redirect to the demo client
         header("Location: " . BASE_URL . "vitrine-demo/");
         exit;
     }
-    
-    $bd = new \core\classes\Database();
-    $cliente = $bd->select(
-        "SELECT id_cliente, slug FROM clientes WHERE slug = :slug AND activo = 1",
-        [':slug' => $slug]
-    );
-    
-    if ($cliente && !empty($cliente)) {
-        define('CLIENTE_SLUG', $cliente[0]->slug);
-        define('CLIENTE_ID', (int)$cliente[0]->id_cliente);
+
+    // 🔐 SECURITY: If user is already logged in, they can only access their own slug
+    if (isset($_SESSION['cliente_id'], $_SESSION['cliente_slug'])) {
+        if ($slug !== $_SESSION['cliente_slug']) {
+            // Attempt to access another client's admin – log out and force login
+            session_destroy();
+            header("Location: " . BASE_URL . $slug . "/admin_login?erro=acesso_negado");
+            exit;
+        }
+        // Use session data directly (fast, no DB query)
+        define('CLIENTE_SLUG', $_SESSION['cliente_slug']);
+        define('CLIENTE_ID', (int) $_SESSION['cliente_id']);
     } else {
-        // Slug inválido – redireciona para demo
-        header("Location: " . BASE_URL . "vitrine-demo/");
-        exit;
+        // Not logged in – verify the slug from database (public access)
+        $db = new \core\classes\Database();
+        $client = $db->select(
+            "SELECT id_cliente, slug FROM clientes WHERE slug = :slug AND activo = 1",
+            [':slug' => $slug]
+        );
+
+        if ($client && !empty($client)) {
+            define('CLIENTE_SLUG', $client[0]->slug);
+            define('CLIENTE_ID', (int) $client[0]->id_cliente);
+        } else {
+            // Invalid slug – redirect to demo client
+            header("Location: " . BASE_URL . "vitrine-demo/");
+            exit;
+        }
     }
 }
 
 // ============================================================
-// CARREGAR ROTAS
+// Load route definitions (maps actions to controllers)
 // ============================================================
 require_once('../core/rotas.php');

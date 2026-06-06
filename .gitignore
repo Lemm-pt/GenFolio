@@ -1,0 +1,22 @@
+# Pastas de materiais, recursos locais e ficheiros pesados
+#MATERIAL/
+
+# Dependências do PHP (Composer)
+vendor/
+
+
+
+# Logs do sistema e lixo local
+logs/
+*.log
+C📂xampphtdocsutrinalogs/
+
+# Configurações do VS Code / IDEs
+.vscode/
+*.code-workspace
+sevenlux.code-workspace
+sevenlux.code-workspaces
+
+# Ficheiros do sistema operativo
+.DS_Store
+Thumbs.db

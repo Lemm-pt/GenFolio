@@ -1,4 +1,13 @@
 <?php
+/**
+ * Main Controller
+ * 
+ * Handles public pages: home, blog, contact, registration, login (client area),
+ * password recovery, and code recovery for admin access.
+ * 
+ * @package SevenLux
+ */
+
 namespace core\controllers;
 
 use core\classes\Store;
@@ -10,103 +19,126 @@ use core\models\Galeria;
 use core\models\Produtos;
 use core\models\Publicacoes;
 
-class Main {
-    
+class Main
+{
     // ============================================================
-    // PÁGINA INICIAL
+    // HOME PAGE
     // ============================================================
- public function index() {
-    $cliente_id = CLIENTE_ID; // constante definida no index.php
-    $config = new Configuracao($cliente_id);
-    $servicos = (new Servicos())->listar();
-    $galeria = (new Galeria())->listar();
-    $produtos = (new Produtos())->listar(6);
-    $publicacoes = (new Publicacoes())->listar(3);
     
-    Store::Layout([
-        'layouts/html_header',
-        'layouts/header',
-        'home',
-        'layouts/footer',
-        'layouts/html_footer'
-    ], [
-        'config' => $config,
-        'servicos' => $servicos,
-        'galeria' => $galeria,
-        'produtos' => $produtos,
-        'publicacoes' => $publicacoes,
-        'slug_atual' => CLIENTE_SLUG
-    ]);
-}
+    /**
+     * Displays the home page with services, products, gallery, and recent blog posts.
+     */
+    public function index()
+    {
+        $clientId = CLIENTE_ID; // defined in index.php
+        $config = new Configuracao($clientId);
+        $services = (new Servicos())->listar();
+        $gallery = (new Galeria())->listar();
+        $products = (new Produtos())->listar(6);
+        $posts = (new Publicacoes())->listar(3);
+        
+        Store::Layout([
+            'layouts/html_header',
+            'layouts/header',
+            'home',
+            'layouts/footer',
+            'layouts/html_footer'
+        ], [
+            'config'      => $config,
+            'servicos'    => $services,
+            'galeria'     => $gallery,
+            'produtos'    => $products,
+            'publicacoes' => $posts,
+            'slug_atual'  => CLIENTE_SLUG
+        ]);
+    }
     
     // ============================================================
     // BLOG
     // ============================================================
-    public function blog() {
-        $publicacoes = (new Publicacoes())->listar();
+    
+    /**
+     * Lists all blog posts.
+     */
+    public function blog()
+    {
+        $posts = (new Publicacoes())->listar();
         $config = new Configuracao();
+        
         Store::Layout([
             'layouts/html_header',
             'layouts/header',
             'blog',
             'layouts/footer',
             'layouts/html_footer'
-        ], ['publicacoes' => $publicacoes, 'config' => $config]);
+        ], [
+            'publicacoes' => $posts,
+            'config'      => $config
+        ]);
     }
     
-
-
-public function artigo() {
-    // O slug do artigo vem de $_GET['slug_artigo'] (definido pelo .htaccess)
-    $slug_artigo = $_GET['slug_artigo'] ?? '';
-    
-    if (empty($slug_artigo)) {
-        Store::redirect('blog');
-        return;
+    /**
+     * Displays a single blog article.
+     */
+    public function artigo()
+    {
+        // Article slug comes from $_GET['slug_artigo'] (set by .htaccess)
+        $articleSlug = $_GET['slug_artigo'] ?? '';
+        
+        if (empty($articleSlug)) {
+            Store::redirect('blog');
+            return;
+        }
+        
+        $postsModel = new Publicacoes(CLIENTE_ID);
+        $article = $postsModel->buscarPorSlug($articleSlug);
+        
+        if (!$article) {
+            Store::redirect('blog');
+            return;
+        }
+        
+        $config = new Configuracao(CLIENTE_ID);
+        
+        Store::Layout([
+            'layouts/html_header',
+            'layouts/header',
+            'artigo',
+            'layouts/footer',
+            'layouts/html_footer'
+        ], [
+            'artigo' => $article,
+            'config' => $config
+        ]);
     }
     
-    // Usar a constante CLIENTE_ID (já definida no index.php)
-    $publicacoesModel = new \core\models\Publicacoes(CLIENTE_ID);
-    $artigo = $publicacoesModel->buscarPorSlug($slug_artigo);
-    
-    if (!$artigo) {
-        Store::redirect('blog');
-        return;
-    }
-    
-    $config = new \core\models\Configuracao(CLIENTE_ID);
-    
-    Store::Layout([
-        'layouts/html_header',
-        'layouts/header',
-        'artigo',
-        'layouts/footer',
-        'layouts/html_footer'
-    ], [
-        'artigo' => $artigo,
-        'config' => $config
-    ]);
-}
     // ============================================================
-    // CONTACTO
+    // CONTACT FORM
     // ============================================================
-    public function contacto() {
+    
+    /**
+     * Displays the contact form and processes submissions.
+     */
+    public function contacto()
+    {
         $config = new Configuracao();
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nome = $_POST['nome'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $telefone = $_POST['telefone'] ?? '';
-            $mensagem = $_POST['mensagem'] ?? '';
-            $mailer = new EnviarEmail();
-            $para = $config->get('email_contacto', EMAIL_FROM);
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $name     = $_POST['nome'] ?? '';
+            $email    = $_POST['email'] ?? '';
+            $phone    = $_POST['telefone'] ?? '';
+            $message  = $_POST['mensagem'] ?? '';
+            $mailer   = new EnviarEmail();
+            $recipient = $config->get('email_contacto', EMAIL_FROM);
             
-            if($mailer->enviar_contacto($nome, $email, $telefone, $mensagem, $para)) {
+            if ($mailer->enviar_contacto($name, $email, $phone, $message, $recipient)) {
                 $_SESSION['msg_sucesso'] = "Mensagem enviada com sucesso!";
             } else {
                 $_SESSION['msg_erro'] = "Erro ao enviar. Tente mais tarde.";
             }
             Store::redirect('contacto');
         }
+        
         Store::Layout([
             'layouts/html_header',
             'layouts/header',
@@ -116,135 +148,152 @@ public function artigo() {
         ], ['config' => $config]);
     }
     
- // ============================================================
-// REGISTO DE NOVO CLIENTE (formulário)
-// ============================================================
-public function novo_cliente() {
-    $config = new Configuracao(); // para o layout
-    Store::Layout([
-        'layouts/html_header',
-        'layouts/header',
-        'criar_cliente',
-        'layouts/footer',
-        'layouts/html_footer'
-    ], ['config' => $config]);
-}
-
-// ============================================================
-// PROCESSAR REGISTO
-// ============================================================
-public function criar_cliente() {
-    // Se não for POST, redireciona para o formulário (usando URL absoluta para evitar slug)
-    if($_SERVER['REQUEST_METHOD'] != 'POST') {
-        header("Location: " . BASE_URL . "index.php?a=novo_cliente");
-        exit;
-    }
+    // ============================================================
+    // CLIENT REGISTRATION
+    // ============================================================
     
-    $email = trim($_POST['text_email'] ?? '');
-    $slug = $this->gerarSlug($_POST['text_slug'] ?? '');
-    $senha = $_POST['text_senha_1'] ?? '';
-    $confirmar_senha = $_POST['text_senha_2'] ?? '';
-    
-    // Validações
-    $erros = [];
-    if(empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $erros[] = 'Email inválido.';
-    }
-    if(empty($slug)) {
-        $erros[] = 'O nome do site (slug) é obrigatório.';
-    }
-    if(strlen($senha) < 6) {
-        $erros[] = 'A senha deve ter pelo menos 6 caracteres.';
-    }
-    if($senha !== $confirmar_senha) {
-        $erros[] = 'As senhas não coincidem.';
-    }
-    
-    if(!empty($erros)) {
-        $_SESSION['erro'] = implode(' ', $erros);
-        header("Location: " . BASE_URL . "index.php?a=novo_cliente");
-        exit;
-    }
-    
-    $clienteModel = new Clientes();
-    
-    if($clienteModel->verificar_email_existe($email)) {
-        $_SESSION['erro'] = 'Este email já está registado.';
-        header("Location: " . BASE_URL . "index.php?a=novo_cliente");
-        exit;
-    }
-    
-    if($clienteModel->verificar_slug_existe($slug)) {
-        $_SESSION['erro'] = 'Este nome de site já está a ser utilizado. Escolha outro.';
-        header("Location: " . BASE_URL . "index.php?a=novo_cliente");
-        exit;
-    }
-    
-    $purl = $clienteModel->registar_cliente($email, $slug, $senha);
-    
-    if($purl) {
-        // Enviar email (opcional)
-        $emailObj = new EnviarEmail();
-        $emailObj->enviar_confirmacao_registo($email, $purl, $slug);
-        
-        $_SESSION['email_temporario'] = $email;
-        
-        // Apresentar página de sucesso (sem redirecionamento, usando a mesma URL base)
+    /**
+     * Shows the registration form for a new client (store owner).
+     */
+    public function novo_cliente()
+    {
         $config = new Configuracao();
         Store::Layout([
             'layouts/html_header',
             'layouts/header',
-            'criar_cliente_sucesso',
+            'criar_cliente',
             'layouts/footer',
             'layouts/html_footer'
         ], ['config' => $config]);
-    } else {
-        $_SESSION['erro'] = 'Erro ao registar. Tente novamente.';
-        header("Location: " . BASE_URL . "index.php?a=novo_cliente");
-        exit;
     }
-}
-
-// ============================================================
-// CONFIRMAR EMAIL (link recebido por email)
-// ============================================================
-public function confirmar_email() {
-    $purl = $_GET['purl'] ?? '';
-    if(empty($purl)) Store::redirect('inicio');
     
-    $clienteModel = new \core\models\Clientes();
-    $cliente = $clienteModel->buscarPorPurl($purl);
-    
-    if($cliente && $clienteModel->confirmar_email($purl)) {
-        // Mensagem de sucesso
-        $_SESSION['sucesso_login'] = "✅ Conta confirmada com sucesso! Faça login para aceder ao seu site: " . $cliente->slug;
+    /**
+     * Processes the registration form submission.
+     */
+    public function criar_cliente()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: " . BASE_URL . "index.php?a=novo_cliente");
+            exit;
+        }
         
-        // Redirecionar para o login (usando index.php para evitar problemas)
-        header("Location: " . BASE_URL . "index.php?a=admin_login");
-        exit;
-    } else {
-        $_SESSION['erro'] = 'Link de confirmação inválido ou expirado.';
-        Store::redirect('inicio');
+        $email      = trim($_POST['text_email'] ?? '');
+        $slug       = $this->gerarSlug($_POST['text_slug'] ?? '');
+        $digits     = $_POST['text_digitos'] ?? '';
+        $questionId = (int) ($_POST['pergunta_id'] ?? 0);
+        $answerId   = (int) ($_POST['resposta_id'] ?? 0);
+        
+        // Validation
+        $errors = [];
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'Email inválido.';
+        }
+        if (empty($slug)) {
+            $errors[] = 'O nome do site (slug) é obrigatório.';
+        }
+        if (strlen($digits) < 1 || strlen($digits) > 7 || !ctype_digit($digits)) {
+            $errors[] = 'O código deve ter entre 1 e 7 dígitos.';
+        }
+        if ($questionId < 1 || $answerId < 1) {
+            $errors[] = 'Selecione a pergunta e a resposta.';
+        }
+        
+        if (!empty($errors)) {
+            $_SESSION['erro'] = implode(' ', $errors);
+            header("Location: " . BASE_URL . "index.php?a=novo_cliente");
+            exit;
+        }
+        
+        $clientModel = new Clientes();
+        
+        if ($clientModel->verificar_email_existe($email)) {
+            $_SESSION['erro'] = 'Este email já está registado.';
+            header("Location: " . BASE_URL . "index.php?a=novo_cliente");
+            exit;
+        }
+        
+        if ($clientModel->verificar_slug_existe($slug)) {
+            $_SESSION['erro'] = 'Este nome de site já está a ser utilizado. Escolha outro.';
+            header("Location: " . BASE_URL . "index.php?a=novo_cliente");
+            exit;
+        }
+        
+        $purl = $clientModel->registar_cliente($email, $slug, $digits, $questionId, $answerId);
+        
+        if ($purl) {
+            $emailer = new EnviarEmail();
+            $emailer->enviar_confirmacao_registo($email, $purl, $slug);
+            $_SESSION['email_temporario'] = $email;
+            $config = new Configuracao();
+            Store::Layout([
+                'layouts/html_header',
+                'layouts/header',
+                'criar_cliente_sucesso',
+                'layouts/footer',
+                'layouts/html_footer'
+            ], ['config' => $config]);
+        } else {
+            $_SESSION['erro'] = 'Erro ao registar. Tente novamente.';
+            header("Location: " . BASE_URL . "index.php?a=novo_cliente");
+            exit;
+        }
     }
-}
-
-// ============================================================
-// GERAR SLUG (texto amigável para URL)
-// ============================================================
-private function gerarSlug($texto) {
-    $texto = preg_replace('~[^\pL\d]+~u', '-', $texto);
-    $texto = iconv('utf-8', 'us-ascii//TRANSLIT', $texto);
-    $texto = preg_replace('~[^-\w]+~', '', $texto);
-    $texto = trim($texto, '-');
-    $texto = strtolower($texto);
-    if(empty($texto)) $texto = 'cliente-' . time();
-    return $texto;
-}
+    
+    /**
+     * Confirms a client's email address via the link sent after registration.
+     */
+    public function confirmar_email()
+    {
+        $purl = $_GET['purl'] ?? '';
+        if (empty($purl)) {
+            Store::redirect('inicio');
+        }
+        
+        $clientModel = new Clientes();
+        $client = $clientModel->buscarPorPurl($purl);
+        
+        if ($client && $clientModel->confirmar_email($purl)) {
+            $_SESSION['sucesso_login'] = "✅ Conta confirmada com sucesso! Faça login para aceder ao seu site: " . $client->slug;
+            header("Location: " . BASE_URL . "index.php?a=admin_login");
+            exit;
+        } else {
+            $_SESSION['erro'] = 'Link de confirmação inválido ou expirado.';
+            Store::redirect('inicio');
+        }
+    }
+    
+    /**
+     * Generates a URL-friendly slug from a given string.
+     *
+     * @param string $text
+     * @return string
+     */
+    private function gerarSlug($text)
+    {
+        $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+        $text = preg_replace('~[^-\w]+~', '', $text);
+        $text = trim($text, '-');
+        $text = strtolower($text);
+        if (empty($text)) {
+            $text = 'cliente-' . time();
+        }
+        return $text;
+    }
+    
     // ============================================================
-    // LOGIN/LOGOUT
+    // CLIENT LOGIN (front‑end area)
     // ============================================================
-    public function login() {
-        if(Store::adminLogado()) Store::redirect('admin');
+    
+    /**
+     * Displays the login form for the client area (distinct from admin login).
+     * Note: Admin login is handled by Admin controller.
+     */
+    public function login()
+    {
+        if (Store::adminLogado()) {
+            Store::redirect('admin');
+        }
         Store::Layout([
             'layouts/html_header',
             'layouts/header',
@@ -254,36 +303,56 @@ private function gerarSlug($texto) {
         ]);
     }
     
-     public function login_submit() {
-           if(Store::adminLogado()) Store::redirect('admin');
-           if($_SERVER['REQUEST_METHOD'] != 'POST') Store::redirect('login');
-           
-           $slug = trim($_POST['text_usuario'] ?? '');
-           $senha = trim($_POST['text_senha'] ?? '');
-           
-           $clienteModel = new Clientes();
-           $cliente = $clienteModel->validar_login($slug, $senha);
-           
-           if($cliente) {
-               $_SESSION['cliente_id'] = $cliente->id_cliente;
-               $_SESSION['cliente_slug'] = $cliente->slug;
-               Store::redirect('admin');
-           } else {
-               $_SESSION['erro'] = "Login inválido. Verifique o nome do seu site (slug) e senha.";
-               Store::redirect('login');
-           }
-       }
+    /**
+     * Processes the client login submission.
+     */
+    public function login_submit()
+    {
+        if (Store::adminLogado()) {
+            Store::redirect('admin');
+        }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            Store::redirect('login');
+        }
+        
+        $slug   = trim($_POST['text_slug'] ?? '');
+        $digits = trim($_POST['text_digitos'] ?? '');
+        
+        if (empty($slug) || empty($digits)) {
+            $_SESSION['erro'] = "Preencha o slug e o código de acesso.";
+            Store::redirect('login');
+            return;
+        }
+        
+        $clientModel = new Clientes();
+        $client = $clientModel->validar_login($slug, $digits);
+        
+        if ($client) {
+            $_SESSION['cliente_id']   = $client->id_cliente;
+            $_SESSION['cliente_slug'] = $client->slug;
+            Store::redirect('admin');
+        } else {
+            $_SESSION['erro'] = "Slug ou código incorretos.";
+            Store::redirect('login');
+        }
+    }
     
-  public function logout() {
-    session_destroy();
-    header("Location: " . BASE_URL . "index.php");
-    exit;
-}
+    /**
+     * Logs out the current client (destroys session and redirects to home).
+     */
+    public function logout()
+    {
+        session_destroy();
+        header("Location: " . BASE_URL . "index.php");
+        exit;
+    }
     
     // ============================================================
-    // RECUPERAÇÃO DE PASSWORD
+    // PASSWORD RECOVERY (email‑based)
     // ============================================================
-    public function recuperar_password() {
+    
+    public function recuperar_password()
+    {
         Store::Layout([
             'layouts/html_header',
             'layouts/header',
@@ -293,32 +362,36 @@ private function gerarSlug($texto) {
         ]);
     }
     
-    public function recuperar_password_submit() {
-        if($_SERVER['REQUEST_METHOD'] != 'POST') Store::redirect('recuperar_password');
+    public function recuperar_password_submit()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            Store::redirect('recuperar_password');
+        }
         
         $email = trim($_POST['text_email'] ?? '');
-        $clienteModel = new Clientes();
+        $clientModel = new Clientes();
         
-        if(!$clienteModel->verificar_email_existe($email)) {
+        if (!$clientModel->verificar_email_existe($email)) {
             $_SESSION['erro'] = "Email não encontrado.";
             Store::redirect('recuperar_password');
             return;
         }
         
-        $token = $clienteModel->gerarTokenRecuperacao($email);
-        $emailObj = new EnviarEmail();
-        $emailObj->enviar_recuperacao_password($email, $token);
+        $token = $clientModel->gerarTokenRecuperacao($email);
+        $mailer = new EnviarEmail();
+        $mailer->enviar_recuperacao_password($email, $token);
         
         $_SESSION['sucesso'] = "Enviamos um email com as instruções para recuperar a sua password.";
         Store::redirect('recuperar_password');
     }
     
-    public function recuperar_password_confirmar() {
+    public function recuperar_password_confirmar()
+    {
         $token = $_GET['token'] ?? '';
-        $clienteModel = new Clientes();
-        $cliente = $clienteModel->validarTokenRecuperacao($token);
+        $clientModel = new Clientes();
+        $client = $clientModel->validarTokenRecuperacao($token);
         
-        if(!$cliente) {
+        if (!$client) {
             $_SESSION['erro'] = "Link inválido ou expirado.";
             Store::redirect('recuperar_password');
             return;
@@ -334,57 +407,122 @@ private function gerarSlug($texto) {
         ]);
     }
     
-    public function nova_password_submit() {
+    public function nova_password_submit()
+    {
         $token = $_SESSION['reset_token'] ?? '';
-        $nova_senha = $_POST['text_nova_senha'] ?? '';
-        $confirmar_senha = $_POST['text_confirmar_senha'] ?? '';
+        $newPassword = $_POST['text_nova_senha'] ?? '';
+        $confirmPassword = $_POST['text_confirmar_senha'] ?? '';
         
-        if(empty($token)) {
+        if (empty($token)) {
             Store::redirect('recuperar_password');
             return;
         }
         
-        if(strlen($nova_senha) < 6) {
+        if (strlen($newPassword) < 6) {
             $_SESSION['erro'] = "A senha deve ter pelo menos 6 caracteres.";
             Store::redirect('recuperar_password_confirmar&token=' . $token);
             return;
         }
         
-        if($nova_senha !== $confirmar_senha) {
+        if ($newPassword !== $confirmPassword) {
             $_SESSION['erro'] = "As senhas não coincidem.";
             Store::redirect('recuperar_password_confirmar&token=' . $token);
             return;
         }
         
-        $clienteModel = new Clientes();
-        $cliente = $clienteModel->validarTokenRecuperacao($token);
+        $clientModel = new Clientes();
+        $client = $clientModel->validarTokenRecuperacao($token);
         
-        if(!$cliente) {
+        if (!$client) {
             $_SESSION['erro'] = "Link inválido ou expirado.";
             Store::redirect('recuperar_password');
             return;
         }
         
-        $clienteModel->atualizarPassword($cliente->id_cliente, $nova_senha);
+        $clientModel->atualizarPassword($client->id_cliente, $newPassword);
         unset($_SESSION['reset_token']);
         
         $_SESSION['sucesso'] = "Password alterada com sucesso! Já pode fazer login.";
         Store::redirect('login');
     }
     
-     public function conta_inativa() {
-            $slug = $_SESSION['cliente_inactivo'] ?? '';
-            Store::Layout([
-                'layouts/html_header',
-                'layouts/header',
-                'conta_inativa',
-                'layouts/footer',
-                'layouts/html_footer'
-            ], ['slug' => $slug]);
-      }
-
-
-
-
-
+    // ============================================================
+    // INACTIVE ACCOUNT PAGE (unused? kept for compatibility)
+    // ============================================================
+    
+    public function conta_inativa()
+    {
+        $slug = $_SESSION['cliente_inactivo'] ?? '';
+        Store::Layout([
+            'layouts/html_header',
+            'layouts/header',
+            'conta_inativa',
+            'layouts/footer',
+            'layouts/html_footer'
+        ], ['slug' => $slug]);
+    }
+    
+    // ============================================================
+    // DIGIT CODE RECOVERY (security question based)
+    // ============================================================
+    
+    /**
+     * Shows the form to recover a lost digit code using a security question.
+     */
+    public function recuperar_codigo()
+    {
+        $config = new Configuracao();
+        Store::Layout([
+            'layouts/html_header',
+            'layouts/header',
+            'recuperar_codigo',
+            'layouts/footer',
+            'layouts/html_footer'
+        ], ['config' => $config]);
+    }
+    
+    /**
+     * Processes the code recovery submission.
+     */
+    public function recuperar_codigo_submit()
+    {
+        $slug          = $_POST['text_slug'] ?? '';
+        $answerId      = (int) ($_POST['resposta_id'] ?? 0);
+        $newDigits     = $_POST['novos_digitos'] ?? '';
+        
+        $clientModel = new Clientes();
+        if ($clientModel->recuperarCodigo($slug, $answerId, $newDigits)) {
+            $_SESSION['sucesso'] = "Código redefinido com sucesso! Use o novo código para entrar.";
+        } else {
+            $_SESSION['erro'] = "Falha na recuperação. Verifique o slug, a resposta ou o novo código.";
+        }
+        Store::redirect('recuperar_codigo');
+    }
+    
+    /**
+     * AJAX endpoint to fetch the security question for a given slug.
+     */
+    public function ajax_get_pergunta()
+    {
+        $slug = $_GET['slug'] ?? '';
+        if (empty($slug)) {
+            echo json_encode(['pergunta' => null]);
+            exit;
+        }
+        
+        $clientModel = new Clientes();
+        $question = $clientModel->getPerguntaBySlug($slug);
+        
+        header('Content-Type: application/json');
+        
+        if ($question) {
+            echo json_encode([
+                'pergunta'  => $question['texto'],
+                'respostas' => $question['respostas']
+            ]);
+        } else {
+            echo json_encode(['pergunta' => null]);
+        }
+        exit;
+    }
 }
