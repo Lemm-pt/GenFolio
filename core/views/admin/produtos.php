@@ -1,6 +1,6 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Gestão de Produtos (máx 6)</h2>
+        <h2>Gestão de Produtos (máx 7)</h2>
         <a href="?a=admin_produto_criar" class="btn btn-gold">+ Novo Produto</a>
     </div>
     

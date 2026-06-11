@@ -14,14 +14,14 @@ class Produtos {
     }
     
     public function listar($limite = null) {
-        $sql = "SELECT * FROM produtos WHERE cliente_id = :cliente_id ORDER BY ordem, id DESC";
+        $sql = "SELECT * FROM sevenlux_produtos WHERE cliente_id = :cliente_id ORDER BY ordem, id DESC";
         if($limite) $sql .= " LIMIT " . intval($limite);
         $result = $this->bd->select($sql, [':cliente_id' => $this->cliente_id]);
         return $result ? $result : [];
     }
     
     public function buscar($id) {
-        $res = $this->bd->select("SELECT * FROM produtos WHERE id = :id AND cliente_id = :cliente_id", [
+        $res = $this->bd->select("SELECT * FROM sevenlux_produtos WHERE id = :id AND cliente_id = :cliente_id", [
             ':id' => $id,
             ':cliente_id' => $this->cliente_id
         ]);
@@ -29,13 +29,13 @@ class Produtos {
     }
     
     public function contar() {
-        $res = $this->bd->select("SELECT COUNT(*) as total FROM produtos WHERE cliente_id = :cliente_id", [':cliente_id' => $this->cliente_id]);
+        $res = $this->bd->select("SELECT COUNT(*) as total FROM sevenlux_produtos WHERE cliente_id = :cliente_id", [':cliente_id' => $this->cliente_id]);
         return $res ? $res[0]->total : 0;
     }
     
     public function criar($dados, $imagem = null) {
         $ordem = $this->contar() + 1;
-        $this->bd->insert("INSERT INTO produtos (cliente_id, nome, descricao, preco, imagem, ordem) VALUES (:cliente_id, :nome, :descricao, :preco, :imagem, :ordem)", [
+        $this->bd->insert("INSERT INTO sevenlux_produtos (cliente_id, nome, descricao, preco, imagem, ordem) VALUES (:cliente_id, :nome, :descricao, :preco, :imagem, :ordem)", [
             ':cliente_id' => $this->cliente_id,
             ':nome' => $dados['nome'],
             ':descricao' => $dados['descricao'] ?? null,
@@ -46,7 +46,7 @@ class Produtos {
     }
     
     public function atualizar($id, $dados, $imagem = null) {
-        $sql = "UPDATE produtos SET nome=:nome, descricao=:descricao, preco=:preco, ordem=:ordem";
+        $sql = "UPDATE sevenlux_produtos SET nome=:nome, descricao=:descricao, preco=:preco, ordem=:ordem";
         $params = [
             ':id' => $id,
             ':cliente_id' => $this->cliente_id,
@@ -69,6 +69,6 @@ class Produtos {
             $caminho = __DIR__ . '/../../public/assets/images/produtos/' . $item->imagem;
             if(file_exists($caminho)) unlink($caminho);
         }
-        $this->bd->delete("DELETE FROM produtos WHERE id=:id AND cliente_id=:cliente_id", [':id' => $id, ':cliente_id' => $this->cliente_id]);
+        $this->bd->delete("DELETE FROM sevenlux_produtos WHERE id=:id AND cliente_id=:cliente_id", [':id' => $id, ':cliente_id' => $this->cliente_id]);
     }
 }

@@ -182,6 +182,9 @@ class Main
         $digits     = $_POST['text_digitos'] ?? '';
         $questionId = (int) ($_POST['pergunta_id'] ?? 0);
         $answerId   = (int) ($_POST['resposta_id'] ?? 0);
+        $cidade     = trim($_POST['text_cidade'] ?? '');
+        $pais       = trim($_POST['text_pais'] ?? '');
+        $categoria  = trim($_POST['text_categoria'] ?? '');
         
         // Validation
         $errors = [];
@@ -218,7 +221,9 @@ class Main
             exit;
         }
         
-        $purl = $clientModel->registar_cliente($email, $slug, $digits, $questionId, $answerId);
+        $purl = $clientModel->registar_cliente($email, $slug, $digits, $questionId, $answerId, $cidade, $pais, $categoria);
+
+   
         
         if ($purl) {
             $emailer = new EnviarEmail();
@@ -253,9 +258,15 @@ class Main
         $client = $clientModel->buscarPorPurl($purl);
         
         if ($client && $clientModel->confirmar_email($purl)) {
-            $_SESSION['sucesso_login'] = "✅ Conta confirmada com sucesso! Faça login para aceder ao seu site: " . $client->slug;
-            header("Location: " . BASE_URL . "index.php?a=admin_login");
-            exit;
+    // Guarda o slug temporariamente para usar no redirecionamento
+    $slugCliente = $client->slug;
+    
+    // Mensagem de sucesso
+    $_SESSION['sucesso'] = "✅ Conta confirmada com sucesso! Agora faça login com o seu código de acesso.";
+    
+    // Redireciona diretamente para o login DAQUELE cliente (com slug bonito)
+    header("Location: " . BASE_URL . $slugCliente . "/admin_login");
+    exit;
         } else {
             $_SESSION['erro'] = 'Link de confirmação inválido ou expirado.';
             Store::redirect('inicio');

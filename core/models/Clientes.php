@@ -54,15 +54,18 @@ class Clientes
     // PRIVATE HELPERS
     // ============================================================
 
-    /**
-     * Generates a unique salt for password-equivalent digit hashing.
-     *
-     * @return string
-     */
-    private function generateSalt()
-    {
-        return hash('sha256', microtime(true) . rand(1000, 9999) . 'SEGREDO_VITRINE');
-    }
+  /**
+ * Generates a unique salt for password-equivalent digit hashing.
+ * Agora usa o slug do cliente para maior entropia e unicidade.
+ *
+ * @param string $slug
+ * @return string
+ */
+private function generateSalt($slug = null)
+{
+    $slugPart = $slug ?? ($_SESSION['cliente_slug'] ?? 'vitrine-demo');
+    return hash('sha256', microtime(true) . rand(1000, 9999) . $slugPart . date('YmdHis'));
+}
 
     /**
      * Hashes the digit code with the given salt.
@@ -86,7 +89,7 @@ class Clientes
     private function addWarning($slug, $reason, $ip)
     {
         $this->db->insert(
-            "INSERT INTO warnings (slug, motivo, ip) VALUES (:slug, :motivo, :ip)",
+            "INSERT INTO sevenlux_warnings (slug, motivo, ip) VALUES (:slug, :motivo, :ip)",
             [':slug' => $slug, ':motivo' => $reason, ':ip' => $ip]
         );
     }
@@ -105,32 +108,45 @@ class Clientes
      * @param int $answerId
      * @return string|false The confirmation PURL or false on failure.
      */
-    public function registar_cliente($email, $slug, $digits, $questionId, $answerId)
-    {
-        $purl = Store::criarHash();
-        $salt = $this->generateSalt();
-        $hash = $this->hashDigits($salt, $digits);
 
-        $params = [
-            ':email'        => strtolower(trim($email)),
-            ':slug'         => $slug,
-            ':salt'         => $salt,
-            ':hash_digitos' => $hash,
-            ':pergunta_id'  => $questionId,
-            ':resposta_id'  => $answerId,
-            ':purl'         => $purl,
-            ':activo'       => 0
-        ];
+    
 
-        $this->db->insert("
-            INSERT INTO clientes 
-            (email, slug, salt, hash_digitos, pergunta_id, resposta_id, purl, activo, created_at, updated_at) 
-            VALUES 
-            (:email, :slug, :salt, :hash_digitos, :pergunta_id, :resposta_id, :purl, :activo, NOW(), NOW())
-        ", $params);
 
-        return $purl;
+public function registar_cliente($email, $slug, $digits, $questionId, $answerId, $cidade = null, $pais = null, $categoria = null)
+{
+    $purl = Store::criarHash();
+    $salt = $this->generateSalt($slug);
+    $hash = $this->hashDigits($salt, $digits);
+
+    $params = [
+        ':email'        => strtolower(trim($email)),
+        ':slug'         => $slug,
+        ':salt'         => $salt,
+        ':hash_digitos' => $hash,
+        ':pergunta_id'  => $questionId,
+        ':resposta_id'  => $answerId,
+        ':purl'         => $purl,
+        ':activo'       => 0,
+        ':cidade'       => $cidade ?? null,
+        ':pais'         => $pais ?? null,
+        ':categoria'    => $categoria ?? null
+    ];
+
+    $result = $this->db->insert("
+        INSERT INTO sevenlux_clientes 
+        (email, slug, salt, hash_digitos, pergunta_id, resposta_id, purl, activo, cidade, pais, categoria, created_at, updated_at) 
+        VALUES 
+        (:email, :slug, :salt, :hash_digitos, :pergunta_id, :resposta_id, :purl, :activo, :cidade, :pais, :categoria, NOW(), NOW())
+    ", $params);
+
+    // Verificar se a inserção foi bem sucedida
+    if ($result === false) {
+        error_log("Erro ao inserir cliente: " . print_r($params, true));
+        return false;
     }
+
+    return $purl;
+}
 
     // ============================================================
     // LOGIN VALIDATION (slug + digit code)
@@ -147,7 +163,7 @@ class Clientes
     public function validar_login($slug, $digits)
     {
         $results = $this->db->select(
-            "SELECT * FROM clientes WHERE slug = :slug AND activo = 1 AND deleted_at IS NULL",
+            "SELECT * FROM sevenlux_clientes  WHERE slug = :slug AND activo = 1 AND deleted_at IS NULL",
             [':slug' => $slug]
         );
 
@@ -179,7 +195,7 @@ class Clientes
     private function resetAttempts($slug)
     {
         $this->db->update(
-            "UPDATE clientes SET tentativas_falhas = 0, bloqueio_ate = 0 WHERE slug = :slug",
+            "UPDATE sevenlux_clientes  SET tentativas_falhas = 0, bloqueio_ate = 0 WHERE slug = :slug",
             [':slug' => $slug]
         );
     }
@@ -206,7 +222,7 @@ class Clientes
         }
 
         $this->db->update(
-            "UPDATE clientes SET tentativas_falhas = :novas, bloqueio_ate = :bloqueio WHERE slug = :slug",
+            "UPDATE sevenlux_clientes  SET tentativas_falhas = :novas, bloqueio_ate = :bloqueio WHERE slug = :slug",
             [':novas' => $newAttempts, ':bloqueio' => $blockUntil, ':slug' => $slug]
         );
     }
@@ -225,7 +241,7 @@ class Clientes
      */
     public function recuperarCodigo($slug, $answerId, $newDigits)
     {
-        $client = $this->db->select("SELECT * FROM clientes WHERE slug = :slug", [':slug' => $slug]);
+        $client = $this->db->select("SELECT * FROM sevenlux_clientes  WHERE slug = :slug", [':slug' => $slug]);
         if (!$client) {
             return false;
         }
@@ -235,10 +251,10 @@ class Clientes
             return false;
         }
 
-        $newSalt = $this->generateSalt();
+        $newSalt = $this->generateSalt($slug);
         $newHash = $this->hashDigits($newSalt, $newDigits);
         $this->db->update(
-            "UPDATE clientes SET salt = :salt, hash_digitos = :hash, tentativas_falhas = 0, bloqueio_ate = 0 WHERE slug = :slug",
+            "UPDATE sevenlux_clientes  SET salt = :salt, hash_digitos = :hash, tentativas_falhas = 0, bloqueio_ate = 0 WHERE slug = :slug",
             [':salt' => $newSalt, ':hash' => $newHash, ':slug' => $slug]
         );
         $this->addWarning($slug, "Recuperação de código realizada", $_SERVER['REMOTE_ADDR']);
@@ -260,14 +276,14 @@ class Clientes
      */
     public function autorizarDispositivo($slug, $deviceId, $fingerprint, $ip)
     {
-        $count = $this->db->select("SELECT COUNT(*) as total FROM dispositivos WHERE slug = :slug", [':slug' => $slug]);
-        $max = $this->db->select("SELECT max_dispositivos FROM clientes WHERE slug = :slug", [':slug' => $slug]);
+        $count = $this->db->select("SELECT COUNT(*) as total FROM sevenlux_dispositivos WHERE slug = :slug", [':slug' => $slug]);
+        $max = $this->db->select("SELECT max_dispositivos FROM sevenlux_clientes  WHERE slug = :slug", [':slug' => $slug]);
         if ($count[0]->total >= $max[0]->max_dispositivos) {
             return false;
         }
 
         $this->db->insert(
-            "INSERT INTO dispositivos (slug, device_id, fingerprint_hash, ip_registo, ultimo_acesso) 
+            "INSERT INTO sevenlux_dispositivos (slug, device_id, fingerprint_hash, ip_registo, ultimo_acesso) 
              VALUES (:slug, :device_id, :fingerprint, :ip, NOW())",
             [':slug' => $slug, ':device_id' => $deviceId, ':fingerprint' => $fingerprint, ':ip' => $ip]
         );
@@ -305,24 +321,101 @@ class Clientes
         return $this->questions[$id] ?? null;
     }
 
-    /**
-     * Returns the security question for a given client slug.
-     *
-     * @param string $slug
-     * @return array|null
-     */
-    public function getPerguntaBySlug($slug)
-    {
-        $results = $this->db->select(
-            "SELECT pergunta_id FROM clientes WHERE slug = :slug AND activo = 1",
-            [':slug' => $slug]
-        );
-        if (count($results) == 0) {
-            return null;
-        }
-        $questionId = $results[0]->pergunta_id;
-        return $this->getPerguntaById($questionId);
+   /**
+ * Busca uma pergunta aleatória da tabela perguntas_magicas
+ * com as suas respostas correspondentes.
+ *
+ * @return array|null
+ */
+public function getPerguntaAleatoriaFromDB()
+{
+    // Buscar pergunta aleatória
+    $pergunta = $this->db->select(
+        "SELECT id, pergunta FROM sevenlux_perguntas_magicas ORDER BY RAND() LIMIT 1"
+    );
+    
+    if (!$pergunta || empty($pergunta)) {
+        // Fallback para perguntas antigas (caso a tabela esteja vazia)
+        return $this->getPerguntaAleatoria();
     }
+    
+    $perguntaId = $pergunta[0]->id;
+    
+    // Buscar respostas desta pergunta
+    $respostas = $this->db->select(
+        "SELECT id, resposta FROM sevenlux_respostas_magicas WHERE pergunta_id = :pergunta_id ORDER BY id",
+        [':pergunta_id' => $perguntaId]
+    );
+    
+    if (!$respostas || empty($respostas)) {
+        return $this->getPerguntaAleatoria();
+    }
+    
+    $listaRespostas = [];
+    foreach ($respostas as $resp) {
+        $listaRespostas[] = $resp->resposta;
+    }
+    
+    return [
+        'id' => $perguntaId,
+        'texto' => $pergunta[0]->pergunta,
+        'respostas' => $listaRespostas
+    ];
+}
+
+/**
+ * Busca uma pergunta pelo ID (para recuperação de código)
+ *
+ * @param int $id
+ * @return array|null
+ */
+public function getPerguntaByIdFromDB($id)
+{
+    $pergunta = $this->db->select(
+        "SELECT id, pergunta FROM sevenlux_perguntas_magicas WHERE id = :id",
+        [':id' => $id]
+    );
+    
+    if (!$pergunta || empty($pergunta)) {
+        return $this->getPerguntaById($id); // fallback
+    }
+    
+    $respostas = $this->db->select(
+        "SELECT id, resposta FROM sevenlux_respostas_magicas WHERE pergunta_id = :pergunta_id ORDER BY id",
+        [':pergunta_id' => $id]
+    );
+    
+    $listaRespostas = [];
+    foreach ($respostas as $resp) {
+        $listaRespostas[] = $resp->resposta;
+    }
+    
+    return [
+        'texto' => $pergunta[0]->pergunta,
+        'respostas' => $listaRespostas
+    ];
+}
+
+/**
+ * Busca a pergunta de segurança de um cliente pelo slug
+ *
+ * @param string $slug
+ * @return array|null
+ */
+public function getPerguntaBySlug($slug)
+{
+    $results = $this->db->select(
+        "SELECT pergunta_id FROM sevenlux_clientes  WHERE slug = :slug AND activo = 1",
+        [':slug' => $slug]
+    );
+    
+    if (count($results) == 0) {
+        return null;
+    }
+    
+    $questionId = $results[0]->pergunta_id;
+    return $this->getPerguntaByIdFromDB($questionId);
+}
 
     // ============================================================
     // EXISTENCE CHECKS
@@ -336,7 +429,7 @@ class Clientes
      */
     public function verificar_email_existe($email)
     {
-        $results = $this->db->select("SELECT id_cliente FROM clientes WHERE email = :email", [':email' => $email]);
+        $results = $this->db->select("SELECT id_cliente FROM sevenlux_clientes  WHERE email = :email", [':email' => $email]);
         return count($results) != 0;
     }
 
@@ -348,7 +441,7 @@ class Clientes
      */
     public function verificar_slug_existe($slug)
     {
-        $results = $this->db->select("SELECT id_cliente FROM clientes WHERE slug = :slug", [':slug' => $slug]);
+        $results = $this->db->select("SELECT id_cliente FROM sevenlux_clientes  WHERE slug = :slug", [':slug' => $slug]);
         return count($results) != 0;
     }
 
@@ -364,13 +457,13 @@ class Clientes
      */
     public function confirmar_email($purl)
     {
-        $results = $this->db->select("SELECT id_cliente FROM clientes WHERE purl = :purl", [':purl' => $purl]);
+        $results = $this->db->select("SELECT id_cliente FROM sevenlux_clientes  WHERE purl = :purl", [':purl' => $purl]);
         if (count($results) != 1) {
             return false;
         }
         $clientId = $results[0]->id_cliente;
         $this->db->update(
-            "UPDATE clientes SET purl = NULL, activo = 1, updated_at = NOW() WHERE id_cliente = :id_cliente",
+            "UPDATE sevenlux_clientes  SET purl = NULL, activo = 1, updated_at = NOW() WHERE id_cliente = :id_cliente",
             [':id_cliente' => $clientId]
         );
         $this->createDefaultConfigurations($clientId);
@@ -385,7 +478,7 @@ class Clientes
     private function createDefaultConfigurations($clientId)
     {
         $exists = $this->db->select(
-            "SELECT id FROM configuracoes_site WHERE cliente_id = :cliente_id LIMIT 1",
+            "SELECT id FROM sevenlux_configuracoes_site WHERE cliente_id = :cliente_id LIMIT 1",
             [':cliente_id' => $clientId]
         );
         if ($exists) {
@@ -407,7 +500,7 @@ class Clientes
 
         foreach ($configs as $config) {
             $this->db->insert(
-                "INSERT INTO configuracoes_site (cliente_id, chave, valor) VALUES (:cliente_id, :chave, :valor)",
+                "INSERT INTO sevenlux_configuracoes_site (cliente_id, chave, valor) VALUES (:cliente_id, :chave, :valor)",
                 $config
             );
         }
@@ -421,7 +514,7 @@ class Clientes
      */
     public function buscarPorPurl($purl)
     {
-        $res = $this->db->select("SELECT id_cliente, slug FROM clientes WHERE purl = :purl", [':purl' => $purl]);
+        $res = $this->db->select("SELECT id_cliente, slug FROM sevenlux_clientes  WHERE purl = :purl", [':purl' => $purl]);
         return $res ? $res[0] : null;
     }
 
@@ -439,7 +532,7 @@ class Clientes
     {
         $token = Store::criarHash(32);
         $this->db->update(
-            "UPDATE clientes SET purl = :token WHERE email = :email",
+            "UPDATE sevenlux_clientes  SET purl = :token WHERE email = :email",
             [':token' => $token, ':email' => $email]
         );
         return $token;
@@ -454,7 +547,7 @@ class Clientes
     public function validarTokenRecuperacao($token)
     {
         $results = $this->db->select(
-            "SELECT id_cliente, email FROM clientes WHERE purl = :token AND activo = 1",
+            "SELECT id_cliente, email FROM sevenlux_clientes  WHERE purl = :token AND activo = 1",
             [':token' => $token]
         );
         return count($results) == 1 ? $results[0] : false;
@@ -469,11 +562,14 @@ class Clientes
     public function atualizarPassword($clientId, $newPassword)
     {
         $this->db->update(
-            "UPDATE clientes SET senha = :senha, purl = NULL, updated_at = NOW() WHERE id_cliente = :id_cliente",
+            "UPDATE sevenlux_clientes  SET senha = :senha, purl = NULL, updated_at = NOW() WHERE id_cliente = :id_cliente",
             [
                 ':senha'       => password_hash($newPassword, PASSWORD_DEFAULT),
                 ':id_cliente'  => $clientId
             ]
         );
     }
+
+
+    
 }

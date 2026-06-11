@@ -14,18 +14,18 @@ class Publicacoes {
     }
     
   public function listar($limite = null) {
-    $sql = "SELECT * FROM publicacoes WHERE cliente_id = :cliente_id ORDER BY created_at DESC";
+    $sql = "SELECT * FROM sevenlux_publicacoes WHERE cliente_id = :cliente_id ORDER BY created_at DESC";
     if($limite) $sql .= " LIMIT " . intval($limite);
     $result = $this->bd->select($sql, [':cliente_id' => $this->cliente_id]);
     return $result ? $result : [];
 }
     
     public function listarTodas() {
-        return $this->bd->select("SELECT * FROM publicacoes WHERE cliente_id = :cliente_id ORDER BY created_at DESC", [':cliente_id' => $this->cliente_id]);
+        return $this->bd->select("SELECT * FROM sevenlux_publicacoes WHERE cliente_id = :cliente_id ORDER BY created_at DESC", [':cliente_id' => $this->cliente_id]);
     }
     
     public function buscar($id) {
-        $res = $this->bd->select("SELECT * FROM publicacoes WHERE id = :id AND cliente_id = :cliente_id", [
+        $res = $this->bd->select("SELECT * FROM sevenlux_publicacoes WHERE id = :id AND cliente_id = :cliente_id", [
             ':id' => $id,
             ':cliente_id' => $this->cliente_id
         ]);
@@ -33,7 +33,7 @@ class Publicacoes {
     }
     
    public function buscarPorSlug($slug) {
-    $res = $this->bd->select("SELECT * FROM publicacoes WHERE slug = :slug AND cliente_id = :cliente_id", [
+    $res = $this->bd->select("SELECT * FROM sevenlux_publicacoes WHERE slug = :slug AND cliente_id = :cliente_id", [
         ':slug' => $slug,
         ':cliente_id' => $this->cliente_id
     ]);
@@ -45,7 +45,7 @@ class Publicacoes {
 }
     
     public function contar() {
-        $res = $this->bd->select("SELECT COUNT(*) as total FROM publicacoes WHERE cliente_id = :cliente_id", [':cliente_id' => $this->cliente_id]);
+        $res = $this->bd->select("SELECT COUNT(*) as total FROM sevenlux_publicacoes WHERE cliente_id = :cliente_id", [':cliente_id' => $this->cliente_id]);
         return $res ? $res[0]->total : 0;
     }
     
@@ -60,13 +60,13 @@ class Publicacoes {
     public function criar($dados, $imagem = null) {
         $slug = $this->gerarSlug($dados['titulo']);
         // Verificar se slug já existe
-        $existe = $this->bd->select("SELECT id FROM publicacoes WHERE slug = :slug AND cliente_id = :cliente_id", [
+        $existe = $this->bd->select("SELECT id FROM sevenlux_publicacoes WHERE slug = :slug AND cliente_id = :cliente_id", [
             ':slug' => $slug,
             ':cliente_id' => $this->cliente_id
         ]);
         if($existe) $slug .= '-' . time();
         
-        $this->bd->insert("INSERT INTO publicacoes (cliente_id, titulo, slug, conteudo, imagem, publicado) VALUES (:cliente_id, :titulo, :slug, :conteudo, :imagem, :publicado)", [
+        $this->bd->insert("INSERT INTO sevenlux_publicacoes (cliente_id, titulo, slug, conteudo, imagem, publicado) VALUES (:cliente_id, :titulo, :slug, :conteudo, :imagem, :publicado)", [
             ':cliente_id' => $this->cliente_id,
             ':titulo' => $dados['titulo'],
             ':slug' => $slug,
@@ -78,7 +78,7 @@ class Publicacoes {
     }
     
     public function atualizar($id, $dados, $imagem = null) {
-        $sql = "UPDATE publicacoes SET titulo=:titulo, conteudo=:conteudo, publicado=:publicado";
+        $sql = "UPDATE sevenlux_publicacoes SET titulo=:titulo, conteudo=:conteudo, publicado=:publicado";
         $params = [
             ':id' => $id,
             ':cliente_id' => $this->cliente_id,
@@ -100,6 +100,6 @@ class Publicacoes {
             $caminho = __DIR__ . '/../../public/blog/' . $item->imagem;
             if(file_exists($caminho)) unlink($caminho);
         }
-        $this->bd->delete("DELETE FROM publicacoes WHERE id=:id AND cliente_id=:cliente_id", [':id' => $id, ':cliente_id' => $this->cliente_id]);
+        $this->bd->delete("DELETE FROM sevenlux_publicacoes WHERE id=:id AND cliente_id=:cliente_id", [':id' => $id, ':cliente_id' => $this->cliente_id]);
     }
 }

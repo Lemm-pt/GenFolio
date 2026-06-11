@@ -1,6 +1,6 @@
 <?php
 
-define('APP_NAME',          'Vitrine');
+define('APP_NAME',          'sevenlux');
 define('APP_VERSION',       '1.0');
 define('BASE_URL',          'http://localhost/sevenlux/public/');
 
@@ -17,7 +17,7 @@ define('MYSQL_CHARSET',     'utf8');
 // mail para para envio validação e Email (para formulário de contacto)
 define('EMAIL_HOST',        'smtp-pt.securemail.pro');
 define('EMAIL_FROM',        'luciano@lemm.pt');
-define('EMAIL_PASS',        '*********************');
+define('EMAIL_PASS',        'S&mStr&ss');
 define('EMAIL_PORT',        465);
 define('ESTADO',            ['PENDENTE','EM PROCESSAMENTO','ENVIADA','CANCELADA','CONCLUIDA']);
 

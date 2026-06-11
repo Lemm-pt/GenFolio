@@ -71,7 +71,13 @@
                                 </p>
 
                                 <?php if ($produto->preco): ?>
-                                    <p class="text-gold fw-bold mb-3">€ <?= number_format($produto->preco, 2, ',', '.') ?></p>
+                                    <p class="text-gold fw-bold mb-3">
+                                     <?php 
+                                     $moeda = defined('CLIENTE_CURRENCY') ? CLIENTE_CURRENCY : 'EUR';
+                                     $simbolo = \core\classes\LocaleHelper::getCurrencySymbol($moeda);
+                                     echo $simbolo . ' ' . number_format($produto->preco, 2, ',', '.');
+                                     ?>
+                                 </p>
                                 <?php endif; ?>
 
                                 <!-- Minimalist buttons -->

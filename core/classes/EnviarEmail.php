@@ -40,11 +40,16 @@ class EnviarEmail {
             
             $mail->send();
             return true;
-        } catch (Exception $e) {
-            // Regista o erro (pode ver no log do servidor)
-            error_log("Erro ao enviar email: " . $mail->ErrorInfo);
-            return false;
-        }
+     } catch (Exception $e) {
+    error_log("ERRO EMAIL COMPLETO: " . $e->getMessage());
+    error_log("ERRO EMAIL LINE: " . $e->getLine());
+    error_log("ERRO EMAIL FILE: " . $e->getFile());
+    error_log("EMAIL DESTINO: " . $email);
+    error_log("LINK: " . $link);
+    error_log("SMTP HOST: " . EMAIL_HOST);
+    error_log("SMTP PORT: " . EMAIL_PORT);
+    return false;
+}
     }
     
     // ============================================================

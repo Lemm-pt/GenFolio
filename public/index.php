@@ -89,7 +89,7 @@ if (in_array($action, $routes_without_slug)) {
         // Not logged in – verify the slug from database (public access)
         $db = new \core\classes\Database();
         $client = $db->select(
-            "SELECT id_cliente, slug FROM clientes WHERE slug = :slug AND activo = 1",
+            "SELECT id_cliente, slug FROM sevenlux_clientes WHERE slug = :slug AND activo = 1",
             [':slug' => $slug]
         );
 
@@ -102,6 +102,35 @@ if (in_array($action, $routes_without_slug)) {
             exit;
         }
     }
+}
+
+// ============================================================
+// Detetar idioma baseado no país do cliente (se existir)
+// ============================================================
+if (defined('CLIENTE_ID') && CLIENTE_ID > 0) {
+    $dbLocale = new \core\classes\Database();
+    $clienteInfo = $dbLocale->select(
+        "SELECT pais FROM sevenlux_clientes WHERE id_cliente = :id",
+        [':id' => CLIENTE_ID]
+    );
+    
+    if ($clienteInfo && !empty($clienteInfo[0]->pais)) {
+        $pais = $clienteInfo[0]->pais;
+        $idioma = \core\classes\LocaleHelper::getLanguageFromCountry($pais);
+        $moeda = \core\classes\LocaleHelper::getCurrencyFromCountry($pais);
+        
+        define('CLIENTE_LOCALE', $idioma);
+        define('CLIENTE_CURRENCY', $moeda);
+        
+        // Definir o locale do PHP
+        setlocale(LC_ALL, $idioma . '_' . strtoupper($idioma) . '.utf8');
+    } else {
+        define('CLIENTE_LOCALE', 'pt');
+        define('CLIENTE_CURRENCY', 'EUR');
+    }
+} else {
+    define('CLIENTE_LOCALE', 'pt');
+    define('CLIENTE_CURRENCY', 'EUR');
 }
 
 // ============================================================

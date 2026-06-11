@@ -82,7 +82,7 @@ class Admin
 
         // Check account blocking
         $clientInfo = $db->select(
-            "SELECT bloqueio_ate FROM clientes WHERE slug = :slug",
+            "SELECT bloqueio_ate FROM sevenlux_clientes WHERE slug = :slug",
             [':slug' => $slug]
         );
         if ($clientInfo && $clientInfo[0]->bloqueio_ate > time()) {
@@ -366,7 +366,7 @@ class Admin
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $model = new Produtos();
 
-            if ($model->contar() >= 6) {
+            if ($model->contar() >= 7) {
                 $_SESSION['erro'] = "Máximo de 6 produtos!";
                 Store::redirect('admin_produtos');
                 return;

@@ -1,4 +1,104 @@
 
+do telemovel
+
+
+ver recuperações de conta
+
+Mudar a pass no backoffice
+
+
+
+Colocar redes sociais
+
+
+
+Para criar conta e recuperar pass inserir as 7 perguntas mágicas com as suas 7 respostas
+
+
+
+Sistema de logs
+
+
+
+
+
+Se detetar um terceiro dispositivo fazer 1 pergunta mágica
+
+Se 4 dispositivos acionar 2 pergunta mágicas
+
+Se 5 -/>> 3 perguntas
+
+Se 6 —> 4 perguntas
+
+Se 7 -/-> 5 perguntas
+
+Se detetar  o oitavo 6 perguntas e o nono as 7 perguntas
+
+
+
+Colocar horário atendimento
+
+
+
+Colocar visualizações para pontos
+
+
+
+Colocar política de privacidade
+
+
+
+Melhorar bolhas 
+
+Colocar contacto nos produtos 
+
+
+Colocar logs
+
+Colocar admin principal
+
+
+
+Número cliente para login cadeado ajax
+
+Pass 1 e pass 2 para confirmar
+
+
+
+Colocar:
+
+Menu Mudar cor com css mas com 7 luzes
+
+tradução 
+
+agenda
+
+Meta tags
+
+Redes sociais
+
+Carrinho
+
+App personalizada fazer pedido
+
+
+
+
+___________________________________________________________________________________
+
+do computador
+ao colocar país colocar automaticamente o <html lang="pt"> e a moeda
+
+Produtos (max 6) para 7 e limitar também a 7, não sei se já está? os serviços, as publicaçoes e imagens da galeria.
+
+em vez de usar a constante: SEGREDO_VITRINE' em $salt = hash('sha256', microtime(true) . rand(1000,9999) . 'SEGREDO_VITRINE'); não podia ser e usar o nome/variável do slug
+
+ e podes colocar as pergunta e respostas de segurança que estão na bd a funcionar em vez das que estão no model?
+
+Adicionar reCAPTCHA no login público
+
+ criar um assistente IA
+
 sistema de logs
 
 colocar em espanhol frances e ingles automático
@@ -13,13 +113,7 @@ mais galeria
 para a loja
 
 
-
-O que precisamos corrigir/implementar amanhã:
-Tarefa	Prioridade
-URL amigável (ex: /vitrine/meu-negocio/)	Alta
-Ver Site redirecionar para URL com slug	Alta
-Frontend mostrar dados do cliente correto	Alta
-Registo de novos clientes com email de confirmação	Média
-Esqueceu-se da palavra-passe	Média
-Página "Onde Estamos" com mapa dinâmico	Baixa
-Corrigir textos pouco visíveis no admin	Já resolvido
+Proteção cross-tenant	verificarLogin() compara CLIENTE_SLUG com $_SESSION['cliente_slug']	✅ Excelente
+Bloqueio de conta	Exponential backoff: 3 tentativas → 2s, 4→4s, 5→8s, 6→16s, 7+→300s	✅ Bom
+Regeneração de session ID	session_regenerate_id(true) após login bem-sucedido	✅ Previne fixation
+Warnings	Tabela warnings regista tentativas excessivas	✅ Bom para auditoria

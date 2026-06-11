@@ -77,38 +77,37 @@ class Database{
     }
 
     // ============================================================
-    public function insert($sql, $parametros = null){
+    public function insert($sql, $parametros = null)
+{
+    $sql = trim($sql);
 
-        $sql = trim($sql);
-
-        // verifica se é uma instrução INSERT
-        if(!preg_match("/^INSERT/i", $sql)){
-            throw new Exception('Base de dados - Não é uma instrução INSERT.');
-        }
-
-        // liga
-        $this->ligar();
-
-        // comunica
-        try {
-            
-            // comunicação com a bd
-            if(!empty($parametros)){
-                $executar = $this->ligacao->prepare($sql);
-                $executar->execute($parametros);
-            } else {
-                $executar = $this->ligacao->prepare($sql);
-                $executar->execute();
-            }
-        } catch (PDOException $e) {
-            
-            // caso exista erro
-            return false;
-        }
-
-        // desliga da bd
-        $this->desligar();
+    if (!preg_match("/^INSERT/i", $sql)) {
+        throw new Exception('Base de dados - Não é uma instrução INSERT.');
     }
+
+    $this->ligar();
+
+    try {
+        if (!empty($parametros)) {
+            $executar = $this->ligacao->prepare($sql);
+            $executar->execute($parametros);
+        } else {
+            $executar = $this->ligacao->prepare($sql);
+            $executar->execute();
+        }
+        
+        $ultimoId = $this->ligacao->lastInsertId();
+        $this->desligar();
+        return $ultimoId;
+        
+    } catch (PDOException $e) {
+        error_log("ERRO INSERT: " . $e->getMessage());
+        error_log("SQL: " . $sql);
+        error_log("PARAMS: " . print_r($parametros, true));
+        $this->desligar();
+        return false;
+    }
+}
 
     // ============================================================
     public function update($sql, $parametros = null){

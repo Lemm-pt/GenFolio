@@ -14,11 +14,11 @@ class Servicos {
     }
     
     public function listar() {
-        return $this->bd->select("SELECT * FROM servicos WHERE cliente_id = :cliente_id ORDER BY ordem", [':cliente_id' => $this->cliente_id]);
+        return $this->bd->select("SELECT * FROM sevenlux_servicos WHERE cliente_id = :cliente_id ORDER BY ordem", [':cliente_id' => $this->cliente_id]);
     }
     
     public function buscar($id) {
-        $res = $this->bd->select("SELECT * FROM servicos WHERE id = :id AND cliente_id = :cliente_id", [
+        $res = $this->bd->select("SELECT * FROM sevenlux_servicos WHERE id = :id AND cliente_id = :cliente_id", [
             ':id' => $id,
             ':cliente_id' => $this->cliente_id
         ]);
@@ -26,13 +26,13 @@ class Servicos {
     }
     
     public function contar() {
-        $res = $this->bd->select("SELECT COUNT(*) as total FROM servicos WHERE cliente_id = :cliente_id", [':cliente_id' => $this->cliente_id]);
+        $res = $this->bd->select("SELECT COUNT(*) as total FROM sevenlux_servicos WHERE cliente_id = :cliente_id", [':cliente_id' => $this->cliente_id]);
         return $res ? $res[0]->total : 0;
     }
     
     public function criar($dados) {
         $ordem = $this->contar() + 1;
-        $this->bd->insert("INSERT INTO servicos (cliente_id, titulo, descricao, icone, ordem) VALUES (:cliente_id, :titulo, :descricao, :icone, :ordem)", [
+        $this->bd->insert("INSERT INTO sevenlux_servicos (cliente_id, titulo, descricao, icone, ordem) VALUES (:cliente_id, :titulo, :descricao, :icone, :ordem)", [
             ':cliente_id' => $this->cliente_id,
             ':titulo' => $dados['titulo'],
             ':descricao' => $dados['descricao'],
@@ -42,7 +42,7 @@ class Servicos {
     }
     
     public function atualizar($id, $dados) {
-        $this->bd->update("UPDATE servicos SET titulo=:titulo, descricao=:descricao, icone=:icone, ordem=:ordem WHERE id=:id AND cliente_id=:cliente_id", [
+        $this->bd->update("UPDATE sevenlux_servicos SET titulo=:titulo, descricao=:descricao, icone=:icone, ordem=:ordem WHERE id=:id AND cliente_id=:cliente_id", [
             ':id' => $id,
             ':cliente_id' => $this->cliente_id,
             ':titulo' => $dados['titulo'],
@@ -53,6 +53,6 @@ class Servicos {
     }
     
     public function deletar($id) {
-        $this->bd->delete("DELETE FROM servicos WHERE id=:id AND cliente_id=:cliente_id", [':id' => $id, ':cliente_id' => $this->cliente_id]);
+        $this->bd->delete("DELETE FROM sevenlux_servicos WHERE id=:id AND cliente_id=:cliente_id", [':id' => $id, ':cliente_id' => $this->cliente_id]);
     }
 }

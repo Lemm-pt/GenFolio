@@ -25,7 +25,7 @@
             <div class="card text-center dashboard-card">
                 <div class="card-body">
                     <h3 class="text-gold"><?= isset($produtos) ? count($produtos) : 0 ?></h3>
-                    <p class="text-dark">Produtos (max 6)</p>
+                    <p class="text-dark">Produtos (max 7)</p>
                     <a href="?a=admin_produtos" class="btn btn-sm btn-gold">Gerir</a>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-<div class="container py-5">
+<div class="container py-5" style="padding-top: 100px !important;"> <!-- Aumentei o padding-top -->
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card bg-dark text-white">
@@ -13,15 +13,49 @@
                     <?php endif; ?>
 
                     <form action="<?= BASE_URL ?>index.php?a=criar_cliente" method="POST" id="formRegisto">
+                        <!-- Email -->
                         <div class="mb-3">
                             <label class="form-label">Email *</label>
                             <input type="email" name="text_email" class="form-control" required>
                         </div>
+
+                        <!-- Slug (nome do site) -->
                         <div class="mb-3">
                             <label class="form-label">Nome do site (slug) *</label>
                             <input type="text" name="text_slug" class="form-control" placeholder="ex: meu-negocio" required>
                             <small class="text-muted">O seu site estará disponível em: <?= BASE_URL ?>[slug]/</small>
                         </div>
+
+                        <!-- ===== NOVOS CAMPOS: Cidade, País, Categoria ===== -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Cidade</label>
+                                <input type="text" name="text_cidade" class="form-control" placeholder="Ex: Lisboa, Porto, Braga">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">País</label>
+                                <input type="text" name="text_pais" class="form-control" placeholder="Ex: Portugal">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Categoria / Tipo de negócio</label>
+                            <select name="text_categoria" class="form-select">
+                                <option value="">Selecione...</option>
+                                <option value="Alimentação">🍔 Alimentação</option>
+                                <option value="Moda">👗 Moda</option>
+                                <option value="Tecnologia">💻 Tecnologia</option>
+                                <option value="Saúde">🏥 Saúde</option>
+                                <option value="Educação">📚 Educação</option>
+                                <option value="Construção">🏗️ Construção</option>
+                                <option value="Turismo">✈️ Turismo</option>
+                                <option value="Beleza">💅 Beleza</option>
+                                <option value="Automóvel">🚗 Automóvel</option>
+                                <option value="Outro">📦 Outro</option>
+                            </select>
+                            <small class="text-muted">Opcional. Ajuda a categorizar o seu negócio.</small>
+                        </div>
+                        <!-- ===== FIM DOS NOVOS CAMPOS ===== -->
 
                         <!-- Access code (digits) -->
                         <div class="mb-3">
@@ -47,7 +81,10 @@
                         <!-- Security question -->
                         <?php
                         $clienteModel = new \core\models\Clientes();
-                        $pergunta = $clienteModel->getPerguntaAleatoria();
+                        // Usar a versão da BD se existir, senão fallback
+                        $pergunta = method_exists($clienteModel, 'getPerguntaAleatoriaFromDB') 
+                            ? $clienteModel->getPerguntaAleatoriaFromDB() 
+                            : $clienteModel->getPerguntaAleatoria();
                         ?>
                         <div class="mb-3">
                             <label class="form-label">Pergunta de segurança *</label>
@@ -73,6 +110,47 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Estilo para o padding-top maior */
+.container.py-5 {
+    padding-top: 100px !important;
+}
+
+@media (max-width: 768px) {
+    .container.py-5 {
+        padding-top: 80px !important;
+    }
+}
+
+/* Estilo do keypad (igual ao que já tinhas) */
+.numpad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 250px;
+    margin: 0 auto;
+}
+.numpad-btn {
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    background: #2a2a35;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.code-display {
+    font-family: monospace;
+    font-size: 24px;
+    letter-spacing: 5px;
+    text-align: center;
+    background: #1e1e2e;
+    padding: 10px;
+    border-radius: 10px;
+}
+</style>
 
 <script>
     // Simple keypad script for registration form

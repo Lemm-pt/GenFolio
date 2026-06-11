@@ -8,8 +8,12 @@
                 <div class="card-body">
                     <p>Enviamos um email de confirmação para <strong><?= htmlspecialchars($_SESSION['email_temporario'] ?? 'seu email') ?></strong>.</p>
                     <p>Por favor, verifique a sua caixa de entrada e clique no link de confirmação para ativar a sua conta.</p>
-                    <p>Após confirmar o email, poderá fazer login e começar a personalizar o seu site!</p>
-                   <!-- <a href="<?= BASE_URL ?>index.php?a=login" class="btn btn-gold mt-3">Ir para o Login</a> -->
+                    <p>Após confirmar o email, será redirecionado automaticamente para o login.</p>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-envelope"></i> Não recebeu o email?  (Por vezes, não é reconhecido e poderá estar na pasta SPAN ou LIXO)
+                        <a href="?a=recuperar_codigo" class="alert-link">Clique aqui</a> para recuperar o acesso.
+                    </div>
                 </div>
             </div>
         </div>
