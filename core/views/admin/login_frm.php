@@ -39,7 +39,7 @@
                 </form>
 
                 <div class="login-footer">
-                    <a href="?a=recuperar_codigo" class="forgot-link">Esqueci o código</a>
+                   <a href="?a=recuperar_codigo&slug=<?= htmlspecialchars(CLIENTE_SLUG) ?>" class="forgot-link">Esqueci o código</a>
                 </div>
             </div>
         </div>

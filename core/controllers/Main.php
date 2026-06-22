@@ -180,8 +180,6 @@ class Main
         $email      = trim($_POST['text_email'] ?? '');
         $slug       = $this->gerarSlug($_POST['text_slug'] ?? '');
         $digits     = $_POST['text_digitos'] ?? '';
-        $questionId = (int) ($_POST['pergunta_id'] ?? 0);
-        $answerId   = (int) ($_POST['resposta_id'] ?? 0);
         $cidade     = trim($_POST['text_cidade'] ?? '');
         $pais       = trim($_POST['text_pais'] ?? '');
         $categoria  = trim($_POST['text_categoria'] ?? '');
@@ -197,9 +195,7 @@ class Main
         if (strlen($digits) < 1 || strlen($digits) > 7 || !ctype_digit($digits)) {
             $errors[] = 'O código deve ter entre 1 e 7 dígitos.';
         }
-        if ($questionId < 1 || $answerId < 1) {
-            $errors[] = 'Selecione a pergunta e a resposta.';
-        }
+        
         
         if (!empty($errors)) {
             $_SESSION['erro'] = implode(' ', $errors);
@@ -221,7 +217,7 @@ class Main
             exit;
         }
         
-        $purl = $clientModel->registar_cliente($email, $slug, $digits, $questionId, $answerId, $cidade, $pais, $categoria);
+        $purl = $clientModel->registar_cliente($email, $slug, $digits, $cidade, $pais, $categoria);
 
    
         
@@ -358,104 +354,7 @@ class Main
         exit;
     }
     
-    // ============================================================
-    // PASSWORD RECOVERY (email‑based)
-    // ============================================================
-    
-    public function recuperar_password()
-    {
-        Store::Layout([
-            'layouts/html_header',
-            'layouts/header',
-            'recuperar_password',
-            'layouts/footer',
-            'layouts/html_footer'
-        ]);
-    }
-    
-    public function recuperar_password_submit()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            Store::redirect('recuperar_password');
-        }
-        
-        $email = trim($_POST['text_email'] ?? '');
-        $clientModel = new Clientes();
-        
-        if (!$clientModel->verificar_email_existe($email)) {
-            $_SESSION['erro'] = "Email não encontrado.";
-            Store::redirect('recuperar_password');
-            return;
-        }
-        
-        $token = $clientModel->gerarTokenRecuperacao($email);
-        $mailer = new EnviarEmail();
-        $mailer->enviar_recuperacao_password($email, $token);
-        
-        $_SESSION['sucesso'] = "Enviamos um email com as instruções para recuperar a sua password.";
-        Store::redirect('recuperar_password');
-    }
-    
-    public function recuperar_password_confirmar()
-    {
-        $token = $_GET['token'] ?? '';
-        $clientModel = new Clientes();
-        $client = $clientModel->validarTokenRecuperacao($token);
-        
-        if (!$client) {
-            $_SESSION['erro'] = "Link inválido ou expirado.";
-            Store::redirect('recuperar_password');
-            return;
-        }
-        
-        $_SESSION['reset_token'] = $token;
-        Store::Layout([
-            'layouts/html_header',
-            'layouts/header',
-            'nova_password',
-            'layouts/footer',
-            'layouts/html_footer'
-        ]);
-    }
-    
-    public function nova_password_submit()
-    {
-        $token = $_SESSION['reset_token'] ?? '';
-        $newPassword = $_POST['text_nova_senha'] ?? '';
-        $confirmPassword = $_POST['text_confirmar_senha'] ?? '';
-        
-        if (empty($token)) {
-            Store::redirect('recuperar_password');
-            return;
-        }
-        
-        if (strlen($newPassword) < 6) {
-            $_SESSION['erro'] = "A senha deve ter pelo menos 6 caracteres.";
-            Store::redirect('recuperar_password_confirmar&token=' . $token);
-            return;
-        }
-        
-        if ($newPassword !== $confirmPassword) {
-            $_SESSION['erro'] = "As senhas não coincidem.";
-            Store::redirect('recuperar_password_confirmar&token=' . $token);
-            return;
-        }
-        
-        $clientModel = new Clientes();
-        $client = $clientModel->validarTokenRecuperacao($token);
-        
-        if (!$client) {
-            $_SESSION['erro'] = "Link inválido ou expirado.";
-            Store::redirect('recuperar_password');
-            return;
-        }
-        
-        $clientModel->atualizarPassword($client->id_cliente, $newPassword);
-        unset($_SESSION['reset_token']);
-        
-        $_SESSION['sucesso'] = "Password alterada com sucesso! Já pode fazer login.";
-        Store::redirect('login');
-    }
+  
     
     // ============================================================
     // INACTIVE ACCOUNT PAGE (unused? kept for compatibility)
@@ -473,67 +372,280 @@ class Main
         ], ['slug' => $slug]);
     }
     
-    // ============================================================
-    // DIGIT CODE RECOVERY (security question based)
-    // ============================================================
+/**
+ * Shows the form to recover a lost digit code via email.
+ */
+public function recuperar_codigo()
+{
+    // Tentar obter slug da URL (GET) ou da sessão
+    $slug = $_GET['slug'] ?? $_SESSION['cliente_slug'] ?? '';
     
-    /**
-     * Shows the form to recover a lost digit code using a security question.
-     */
-    public function recuperar_codigo()
-    {
-        $config = new Configuracao();
-        Store::Layout([
-            'layouts/html_header',
-            'layouts/header',
-            'recuperar_codigo',
-            'layouts/footer',
-            'layouts/html_footer'
-        ], ['config' => $config]);
-    }
-    
-    /**
-     * Processes the code recovery submission.
-     */
-    public function recuperar_codigo_submit()
-    {
-        $slug          = $_POST['text_slug'] ?? '';
-        $answerId      = (int) ($_POST['resposta_id'] ?? 0);
-        $newDigits     = $_POST['novos_digitos'] ?? '';
-        
-        $clientModel = new Clientes();
-        if ($clientModel->recuperarCodigo($slug, $answerId, $newDigits)) {
-            $_SESSION['sucesso'] = "Código redefinido com sucesso! Use o novo código para entrar.";
-        } else {
-            $_SESSION['erro'] = "Falha na recuperação. Verifique o slug, a resposta ou o novo código.";
-        }
-        Store::redirect('recuperar_codigo');
-    }
-    
-    /**
-     * AJAX endpoint to fetch the security question for a given slug.
-     */
-    public function ajax_get_pergunta()
-    {
-        $slug = $_GET['slug'] ?? '';
-        if (empty($slug)) {
-            echo json_encode(['pergunta' => null]);
-            exit;
-        }
-        
-        $clientModel = new Clientes();
-        $question = $clientModel->getPerguntaBySlug($slug);
-        
-        header('Content-Type: application/json');
-        
-        if ($question) {
-            echo json_encode([
-                'pergunta'  => $question['texto'],
-                'respostas' => $question['respostas']
-            ]);
-        } else {
-            echo json_encode(['pergunta' => null]);
-        }
+    // Se não houver slug, redirecionar para a página inicial do demo
+    if (empty($slug)) {
+        // Não conseguimos determinar o slug, redirecionar para home do demo
+        header("Location: " . BASE_URL . "vitrine-demo/");
         exit;
     }
+    
+    $config = new Configuracao();
+    
+    // Definir CLIENTE_SLUG temporariamente para a view
+    define('TEMP_CLIENTE_SLUG', $slug);
+    
+    Store::Layout([
+        'layouts/html_header',
+        'layouts/header',
+        'recuperar_codigo',
+        'layouts/footer',
+        'layouts/html_footer'
+    ], [
+        'config' => $config,
+        'recovery_slug' => $slug  // Passar o slug para a view
+    ]);
+}
+    
+public function recuperar_codigo_submit()
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        Store::redirect('recuperar_codigo');
+        return;
+    }
+    
+    $slug = trim($_POST['text_slug'] ?? '');
+    
+    if (empty($slug)) {
+        $_SESSION['erro'] = "Por favor, insira o slug do seu site.";
+        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo&slug=" . urlencode($slug));
+        exit;
+    }
+    
+    $clientModel = new Clientes();
+    $result = $clientModel->gerarTokenRecuperacaoCodigo($slug);
+    
+    // Verificar se o resultado é um array e tem as chaves necessárias
+    if (is_array($result) && isset($result['email']) && isset($result['token'])) {
+        // Enviar email com link de recuperação
+        $mailer = new EnviarEmail();
+        $emailEnviado = $mailer->enviar_recuperacao_codigo($result['email'], $result['token'], $slug);
+        
+        if ($emailEnviado) {
+            $_SESSION['sucesso'] = "✅ Enviamos um email com as instruções para recuperar o seu código de acesso.";
+        } else {
+            $_SESSION['erro'] = "❌ Erro ao enviar email. Tente novamente mais tarde.";
+        }
+    } else {
+        // Não revelar se o slug existe ou não (segurança)
+        $_SESSION['sucesso'] = "✅ Se o slug existir, enviamos um email com as instruções para recuperar o código de acesso.";
+    }
+    
+    header("Location: " . BASE_URL . "index.php?a=recuperar_codigo&slug=" . urlencode($slug));
+    exit;
+}
+
+public function recuperar_codigo_confirmar()
+{
+    $token = $_GET['token'] ?? '';
+    
+    if (empty($token)) {
+        $_SESSION['erro'] = "Link inválido.";
+        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo");
+        exit;
+    }
+    
+    $clientModel = new Clientes();
+    $client = $clientModel->validarTokenRecuperacaoCodigo($token);
+    
+    if (!$client) {
+        $_SESSION['erro'] = "Link inválido ou expirado.";
+        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo");
+        exit;
+    }
+    
+    $_SESSION['recovery_token'] = $token;
+    $_SESSION['recovery_slug'] = $client->slug;
+    
+    // 🔥 EM VEZ DE USAR Store::Layout, VAMOS CARREGAR UMA VIEW AUTÓNOMA 🔥
+    ?>
+    <!DOCTYPE html>
+    <html lang="pt">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Redefinir Código - Vitrine</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <style>
+            body { background: #0a0a1a; color: #eee; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding-top: 80px; }
+            .card { background: #1e1e2e; border-radius: 15px; border: none; }
+            .card-header { background: #C6A43F; color: #0a0a1a; border-radius: 15px 15px 0 0 !important; padding: 20px; }
+            .btn-gold { background: #C6A43F; color: #0a0a1a; border: none; padding: 12px; border-radius: 50px; font-weight: bold; width: 100%; }
+            .btn-gold:hover { background: #d4b96a; }
+            .code-display { font-family: monospace; font-size: 28px; letter-spacing: 8px; text-align: center; background: #0a0a1a; padding: 15px; border-radius: 10px; border: 2px solid #C6A43F; }
+            .numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 280px; margin: 0 auto; }
+            .numpad-btn { padding: 15px; font-size: 22px; font-weight: bold; background: #2a2a35; color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.1s; }
+            .numpad-btn:active { transform: scale(0.95); background: #C6A43F; color: #0a0a1a; }
+            .alert-danger { background: rgba(220, 53, 69, 0.2); border: 1px solid #dc3545; color: #ff6b6b; border-radius: 10px; padding: 10px; margin-bottom: 15px; }
+            .form-label { margin-bottom: 10px; font-weight: 500; }
+            .text-muted { color: #888 !important; }
+        </style>
+    </head>
+    <body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h3><i class="fas fa-lock"></i> Criar Novo Código</h3>
+                        <p class="mb-0">Defina o seu novo código de acesso (1 a 7 dígitos)</p>
+                    </div>
+                    <div class="card-body">
+                        <?php if(isset($_SESSION['erro'])): ?>
+                            <div class="alert-danger">
+                                <i class="fas fa-exclamation-triangle"></i> <?= $_SESSION['erro']; unset($_SESSION['erro']); ?>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <form action="?a=recuperar_codigo_novo_submit" method="POST" id="formNovoCodigo">
+                            <div class="mb-4">
+                                <label class="form-label">Novo código (1 a 7 dígitos) *</label>
+                                <input type="hidden" name="novos_digitos" id="novos_digitos" value="">
+                                
+                                <div class="code-display text-center mb-4" id="codeDisplay">▪ ▪ ▪ ▪ ▪ ▪ ▪</div>
+                                
+                                <div class="numpad-grid" id="numpadNovoCodigo"></div>
+                                <small class="text-muted d-block text-center mt-3">Clique nos botões para definir o seu novo código secreto.</small>
+                            </div>
+                            
+                            <button type="submit" class="btn-gold">
+                                <i class="fas fa-save"></i> Redefinir Código
+                            </button>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <a href="<?= BASE_URL . $client->slug ?>/admin_login" class="text-gold" style="color: #C6A43F; text-decoration: none;">
+                                <i class="fas fa-arrow-left"></i> Voltar ao login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    (function() {
+        let digits = "";
+        const MAX_DIGITS = 7;
+        
+        const inputHidden = document.getElementById('novos_digitos');
+        const codeDisplay = document.getElementById('codeDisplay');
+        const container = document.getElementById('numpadNovoCodigo');
+        
+        if (!container) return;
+        
+        function atualizarDisplay() {
+            let masked = '';
+            for (let i = 0; i < digits.length; i++) masked += '● ';
+            for (let i = digits.length; i < MAX_DIGITS; i++) masked += '▪ ';
+            codeDisplay.innerText = masked.trim();
+            if (inputHidden) inputHidden.value = digits;
+        }
+        
+        function adicionarDigito(num) {
+            if (digits.length < MAX_DIGITS) {
+                digits += num.toString();
+                atualizarDisplay();
+            }
+        }
+        
+        function resetDigitos() { digits = ""; atualizarDisplay(); }
+        function apagarDigito() { digits = digits.slice(0, -1); atualizarDisplay(); }
+        
+        container.innerHTML = '';
+        
+        for (let i = 1; i <= 9; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.className = 'numpad-btn';
+            btn.type = 'button';
+            btn.onclick = (function(num) { return function() { adicionarDigito(num); }; })(i);
+            container.appendChild(btn);
+        }
+        
+        const btnZero = document.createElement('button');
+        btnZero.textContent = '0';
+        btnZero.className = 'numpad-btn';
+        btnZero.type = 'button';
+        btnZero.onclick = () => adicionarDigito(0);
+        container.appendChild(btnZero);
+        
+        const btnReset = document.createElement('button');
+        btnReset.textContent = 'Reset';
+        btnReset.className = 'numpad-btn';
+        btnReset.type = 'button';
+        btnReset.onclick = resetDigitos;
+        container.appendChild(btnReset);
+        
+        const btnApagar = document.createElement('button');
+        btnApagar.textContent = '⌫';
+        btnApagar.className = 'numpad-btn';
+        btnApagar.type = 'button';
+        btnApagar.onclick = apagarDigito;
+        container.appendChild(btnApagar);
+        
+        atualizarDisplay();
+        
+        const form = document.getElementById('formNovoCodigo');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (digits.length === 0) {
+                    e.preventDefault();
+                    alert('❌ Por favor, defina o novo código de acesso (1-7 dígitos)!');
+                }
+            });
+        }
+    })();
+    </script>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
+public function recuperar_codigo_novo_submit()
+{
+    $token = $_SESSION['recovery_token'] ?? '';
+    $newDigits = $_POST['novos_digitos'] ?? '';
+    
+    if (empty($token)) {
+        $_SESSION['erro'] = "Sessão inválida.";
+        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo");
+        exit;
+    }
+    
+    if (strlen($newDigits) < 1 || strlen($newDigits) > 7 || !ctype_digit($newDigits)) {
+        $_SESSION['erro'] = "O código deve ter entre 1 e 7 dígitos.";
+        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo_confirmar&token=" . urlencode($token));
+        exit;
+    }
+    
+    $clientModel = new Clientes();
+    $result = $clientModel->redefinirCodigoPorToken($token, $newDigits);
+    
+    if ($result) {
+        $slug = $_SESSION['recovery_slug'] ?? '';
+        unset($_SESSION['recovery_token']);
+        unset($_SESSION['recovery_slug']);
+        $_SESSION['sucesso'] = "✅ Código redefinido com sucesso!";
+        header("Location: " . BASE_URL . $slug . "/admin_login");
+        exit;
+    } else {
+        $_SESSION['erro'] = "❌ Erro ao redefinir código. Tente novamente.";
+        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo_confirmar&token=" . urlencode($token));
+        exit;
+    }
+}
+  
+
+    
 }

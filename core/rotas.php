@@ -64,10 +64,12 @@ $rotas = [
     'admin_publicacao_editar'  => 'admin@admin_publicacao_editar',
     'admin_publicacao_deletar' => 'admin@admin_publicacao_deletar',
 
-    // Digit code recovery (security question based)
-    'recuperar_codigo'        => 'main@recuperar_codigo',
-    'recuperar_codigo_submit' => 'main@recuperar_codigo_submit',
-    'ajax_get_pergunta'       => 'main@ajax_get_pergunta',
+    
+    // Digit code recovery (email based)
+    'recuperar_codigo'              => 'main@recuperar_codigo',
+    'recuperar_codigo_submit'       => 'main@recuperar_codigo_submit',
+    'recuperar_codigo_confirmar'    => 'main@recuperar_codigo_confirmar',
+    'recuperar_codigo_novo_submit'  => 'main@recuperar_codigo_novo_submit',
 ];
 
 // ============================================================

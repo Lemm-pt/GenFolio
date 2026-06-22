@@ -52,41 +52,41 @@ class EnviarEmail {
 }
     }
     
-    // ============================================================
-    // ENVIAR EMAIL DE RECUPERAÇÃO DE PASSWORD
-    // ============================================================
-    public function enviar_recuperacao_password($email, $token) {
-        $link = BASE_URL . 'index.php?a=recuperar_password_confirmar&token=' . $token;
-        
-        $mail = new PHPMailer(true);
-        try {
-            $mail->isSMTP();
-            $mail->Host       = EMAIL_HOST;
-            $mail->SMTPAuth   = true;
-            $mail->Username   = EMAIL_FROM;
-            $mail->Password   = EMAIL_PASS;
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = EMAIL_PORT;
-            $mail->CharSet    = 'UTF-8';
+public function enviar_recuperacao_codigo($email, $token, $slug)
+{
+    $link = BASE_URL . 'index.php?a=recuperar_codigo_confirmar&token=' . urlencode($token);
+    
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host       = EMAIL_HOST;
+        $mail->SMTPAuth   = true;
+        $mail->Username   = EMAIL_FROM;
+        $mail->Password   = EMAIL_PASS;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port       = EMAIL_PORT;
+        $mail->CharSet    = 'UTF-8';
 
-            $mail->setFrom(EMAIL_FROM, APP_NAME);
-            $mail->addAddress($email);
-            $mail->isHTML(true);
-            $mail->Subject = APP_NAME . ' - Recuperação de password';
-            
-            $html = '<h2>Recuperação de Password</h2>';
-            $html .= '<p>Clique no link abaixo para criar uma nova password:</p>';
-            $html .= '<p><a href="'.$link.'">Redefinir Password</a></p>';
-            $html .= '<p>Se não solicitou esta alteração, ignore este email.</p>';
-            
-            $mail->Body = $html;
-            $mail->send();
-            return true;
-        } catch (Exception $e) {
-            error_log("Erro ao enviar email de recuperação: " . $mail->ErrorInfo);
-            return false;
-        }
+        $mail->setFrom(EMAIL_FROM, APP_NAME);
+        $mail->addAddress($email);
+        $mail->isHTML(true);
+        $mail->Subject = APP_NAME . ' - Recuperação de código de acesso';
+        
+        $html = '<h2>🔐 Recuperação de Código de Acesso</h2>';
+        $html .= '<p>Clique no link abaixo para criar um novo código de acesso (1 a 7 dígitos):</p>';
+        $html .= '<p><a href="'.$link.'">Redefinir Código</a></p>';
+        $html .= '<p>Se não solicitou esta alteração, ignore este email.</p>';
+        
+        $mail->Body = $html;
+        $mail->AltBody = "Redefina o seu código de acesso acedendo a: $link";
+        
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log("Erro ao enviar email: " . $mail->ErrorInfo);
+        return false;
     }
+}
     
     // ============================================================
     // ENVIAR CONTACTO

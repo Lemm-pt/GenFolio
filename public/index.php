@@ -32,6 +32,10 @@ $routes_without_slug = [
     'recuperar_password_submit',
     'recuperar_password_confirmar',
     'nova_password_submit',
+    'recuperar_codigo',
+    'recuperar_codigo_submit',
+    'recuperar_codigo_confirmar',
+    'recuperar_codigo_novo_submit',
 ];
 
 // ============================================================

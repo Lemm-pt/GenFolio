@@ -78,26 +78,8 @@
                             <small class="text-muted">Clique nos botões para definir o seu código secreto.</small>
                         </div>
 
-                        <!-- Security question -->
-                        <?php
-                        $clienteModel = new \core\models\Clientes();
-                        // Usar a versão da BD se existir, senão fallback
-                        $pergunta = method_exists($clienteModel, 'getPerguntaAleatoriaFromDB') 
-                            ? $clienteModel->getPerguntaAleatoriaFromDB() 
-                            : $clienteModel->getPerguntaAleatoria();
-                        ?>
-                        <div class="mb-3">
-                            <label class="form-label">Pergunta de segurança *</label>
-                            <input type="hidden" name="pergunta_id" value="<?= $pergunta['id'] ?>">
-                            <p class="bg-secondary p-2 rounded"><?= htmlspecialchars($pergunta['texto']) ?></p>
-                            <label class="form-label">Escolha a sua resposta *</label>
-                            <select name="resposta_id" class="form-select" required>
-                                <option value="">Selecione...</option>
-                                <?php foreach ($pergunta['respostas'] as $idx => $resp): ?>
-                                    <option value="<?= $idx + 1 ?>"><?= htmlspecialchars($resp) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
+                       
+                        
 
                         <button type="submit" class="btn btn-gold w-100">Registar</button>
                     </form>

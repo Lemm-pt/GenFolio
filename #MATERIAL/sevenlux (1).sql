@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 10-Jun-2026 às 00:46
+-- Tempo de geração: 15-Jun-2026 às 01:17
 -- Versão do servidor: 10.4.27-MariaDB
 -- versão do PHP: 8.2.0
 
@@ -24,10 +24,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `clientes`
+-- Estrutura da tabela `sevenlux_clientes`
 --
 
-CREATE TABLE `clientes` (
+CREATE TABLE `sevenlux_clientes` (
   `id_cliente` int(10) UNSIGNED NOT NULL,
   `email` varchar(100) NOT NULL,
   `slug` varchar(100) NOT NULL,
@@ -36,8 +36,6 @@ CREATE TABLE `clientes` (
   `pais` varchar(100) DEFAULT NULL,
   `salt` varchar(64) DEFAULT NULL,
   `hash_digitos` varchar(64) DEFAULT NULL,
-  `pergunta_id` int(11) DEFAULT NULL,
-  `resposta_id` int(11) DEFAULT NULL,
   `tentativas_falhas` int(11) DEFAULT 0,
   `bloqueio_ate` int(11) DEFAULT 0,
   `purl` varchar(50) DEFAULT NULL,
@@ -48,21 +46,20 @@ CREATE TABLE `clientes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `clientes`
+-- Extraindo dados da tabela `sevenlux_clientes`
 --
 
-INSERT INTO `clientes` (`id_cliente`, `email`, `slug`, `cidade`, `categoria`, `pais`, `salt`, `hash_digitos`, `pergunta_id`, `resposta_id`, `tentativas_falhas`, `bloqueio_ate`, `purl`, `activo`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'lemm.pt@gmail.com', 'vitrine-demo', NULL, NULL, NULL, 'f4f6d89255f13fa0d395b7c5aea6723d25e9cc426f37c220f778f60918f0482e', '36a2b3dfff85453c457bc918a11f10eea8f3f1deecdf7369f79b2985e399812e', 1, 1, 0, 0, NULL, 1, '2026-05-15 17:00:42', '2026-06-06 18:38:25', NULL),
-(35, 'lemm777@gmail.com', 'tester', NULL, NULL, NULL, '52d87781d8b0753514656abd23607645c15b883b9a07d18967b53fd2b3ed314b', '5c3671a8f738a588c98a7260fb9df6c48af8bbb0c63fde854b669b8dce814e8f', 15, 1, 0, 0, NULL, 1, '2026-05-31 20:34:00', '2026-06-06 18:38:46', NULL),
-(36, 'lubiomarona@gmail.com', 'lemm', NULL, NULL, NULL, '32e159abf28663bc93f7ac5d588f5b45c742c201de5dd9c092f35c3445704b0f', 'e6271fffa4275e07fe336f84d7b31eab5e9d2d252c0b41e1f678ace23a500b60', 6, 2, 0, 0, NULL, 1, '2026-06-06 18:46:01', '2026-06-09 19:48:53', NULL);
+INSERT INTO `sevenlux_clientes` (`id_cliente`, `email`, `slug`, `cidade`, `categoria`, `pais`, `salt`, `hash_digitos`, `tentativas_falhas`, `bloqueio_ate`, `purl`, `activo`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'lemm.pt@gmail.com', 'vitrine-demo', NULL, NULL, NULL, '5ea787c7c8904c473cf20eebc9e84bdaca4425ba325eb4deb731c2383d60e18f', '51221352a5ba998e1bed60602aeec1b56e485b9a82e64f3152d951a547d7cff3', 0, 0, 'SnW7NBcdbhtpTx54ZilCJQk68qA2G0mO', 1, '2026-05-15 17:00:42', '2026-06-14 23:13:00', NULL),
+(54, 'lubiomarona@gmail.com', 'lemm', 'Paris', 'Automóvel', 'France', '3619b65a2330fa319d49988a5108d05b2b1c8346f59d34139e757b4c16dc8c2b', '16534bff4f795c75db5f0eefe580aeea9e79873af886937790c33696093053c2', 0, 0, NULL, 1, '2026-06-14 11:58:03', '2026-06-15 00:14:55', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `configuracoes_site`
+-- Estrutura da tabela `sevenlux_configuracoes_site`
 --
 
-CREATE TABLE `configuracoes_site` (
+CREATE TABLE `sevenlux_configuracoes_site` (
   `id` int(10) UNSIGNED NOT NULL,
   `cliente_id` int(10) UNSIGNED NOT NULL,
   `chave` varchar(100) NOT NULL,
@@ -72,10 +69,10 @@ CREATE TABLE `configuracoes_site` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `configuracoes_site`
+-- Extraindo dados da tabela `sevenlux_configuracoes_site`
 --
 
-INSERT INTO `configuracoes_site` (`id`, `cliente_id`, `chave`, `valor`, `created_at`, `updated_at`) VALUES
+INSERT INTO `sevenlux_configuracoes_site` (`id`, `cliente_id`, `chave`, `valor`, `created_at`, `updated_at`) VALUES
 (1, 1, 'logo_parte1', 'Vitrine', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
 (2, 1, 'logo_parte2', '.lemm', '2026-05-15 17:00:42', '2026-05-15 17:00:42'),
 (3, 1, 'logo_imagem', 'logo.png', '2026-05-15 17:00:42', '2026-05-15 22:56:41'),
@@ -86,34 +83,24 @@ INSERT INTO `configuracoes_site` (`id`, `cliente_id`, `chave`, `valor`, `created
 (8, 1, 'email_contacto', 'luciano@lemm.pt', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
 (9, 1, 'telefone', '+351 964456930', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
 (10, 1, 'endereco', 'Esposende, Portugal', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
-(211, 35, 'logo_parte1', 'MY', '2026-05-31 20:34:59', '2026-05-31 20:42:01'),
-(212, 35, 'logo_parte2', 'Tester', '2026-05-31 20:34:59', '2026-05-31 20:42:01'),
-(213, 35, 'logo_imagem', '1780256521_6a1c8f0908a88.webp', '2026-05-31 20:34:59', '2026-05-31 20:42:01'),
-(214, 35, 'slogan', 'Soluções Personalizadas do meu tester', '2026-05-31 20:34:59', '2026-05-31 20:42:01'),
-(215, 35, 'texto_descritivo', 'Bem-vindo ao seu novo site! do tester', '2026-05-31 20:34:59', '2026-05-31 20:42:01'),
-(216, 35, 'email_contacto', 'lemm777@gmail.com', '2026-05-31 20:34:59', '2026-05-31 20:42:01'),
-(217, 35, 'telefone', '12333333333', '2026-05-31 20:34:59', '2026-05-31 20:42:01'),
-(218, 35, 'endereco', 'Povoa Varzim', '2026-05-31 20:34:59', '2026-05-31 20:42:01'),
-(219, 35, 'meta_description', '', '2026-05-31 20:34:59', '2026-05-31 20:34:59'),
-(220, 35, 'meta_keywords', '', '2026-05-31 20:34:59', '2026-05-31 20:34:59'),
-(221, 36, 'logo_parte1', 'Meu', '2026-06-06 18:49:52', '2026-06-06 18:49:52'),
-(222, 36, 'logo_parte2', 'Negócio', '2026-06-06 18:49:52', '2026-06-06 18:49:52'),
-(223, 36, 'logo_imagem', '', '2026-06-06 18:49:52', '2026-06-06 18:49:52'),
-(224, 36, 'slogan', 'Soluções Personalizadas', '2026-06-06 18:49:52', '2026-06-06 18:49:52'),
-(225, 36, 'texto_descritivo', 'Bem-vindo ao seu novo site!', '2026-06-06 18:49:52', '2026-06-06 18:49:52'),
-(226, 36, 'email_contacto', '', '2026-06-06 18:49:52', '2026-06-06 18:49:52'),
-(227, 36, 'telefone', '', '2026-06-06 18:49:52', '2026-06-06 18:49:52'),
-(228, 36, 'endereco', '', '2026-06-06 18:49:52', '2026-06-06 18:49:52'),
-(229, 36, 'meta_description', '', '2026-06-06 18:49:52', '2026-06-06 18:49:52'),
-(230, 36, 'meta_keywords', '', '2026-06-06 18:49:52', '2026-06-06 18:49:52');
+(261, 54, 'logo_parte1', 'Meu', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
+(262, 54, 'logo_parte2', 'Negócio', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
+(263, 54, 'logo_imagem', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
+(264, 54, 'slogan', 'Soluções Personalizadas', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
+(265, 54, 'texto_descritivo', 'Bem-vindo ao seu novo site!', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
+(266, 54, 'email_contacto', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
+(267, 54, 'telefone', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
+(268, 54, 'endereco', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
+(269, 54, 'meta_description', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
+(270, 54, 'meta_keywords', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `dispositivos`
+-- Estrutura da tabela `sevenlux_dispositivos`
 --
 
-CREATE TABLE `dispositivos` (
+CREATE TABLE `sevenlux_dispositivos` (
   `id` int(11) NOT NULL,
   `slug` varchar(100) NOT NULL,
   `device_id` varchar(255) NOT NULL,
@@ -126,10 +113,10 @@ CREATE TABLE `dispositivos` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `galeria`
+-- Estrutura da tabela `sevenlux_galeria`
 --
 
-CREATE TABLE `galeria` (
+CREATE TABLE `sevenlux_galeria` (
   `id` int(10) UNSIGNED NOT NULL,
   `cliente_id` int(10) UNSIGNED NOT NULL,
   `imagem` varchar(255) NOT NULL,
@@ -139,32 +126,31 @@ CREATE TABLE `galeria` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `galeria`
+-- Extraindo dados da tabela `sevenlux_galeria`
 --
 
-INSERT INTO `galeria` (`id`, `cliente_id`, `imagem`, `legenda`, `ordem`, `created_at`) VALUES
+INSERT INTO `sevenlux_galeria` (`id`, `cliente_id`, `imagem`, `legenda`, `ordem`, `created_at`) VALUES
 (1, 1, '1778879330_6a078b62d16b4.png', 'Design & Branding', 1, '2026-05-15 22:08:50'),
 (2, 1, '1778879354_6a078b7aa60f6.png', 'Desenvolvimento Web', 2, '2026-05-15 22:09:14'),
 (3, 1, '1778879372_6a078b8c47e6c.png', 'Marketing Digital', 3, '2026-05-15 22:09:32'),
-(5, 1, '1778880660_6a07909401875.png', 'Redesign de marca ', 4, '2026-05-15 22:31:00'),
-(14, 36, '1780768557_6a245f2de5099.jpg', '', 1, '2026-06-06 18:55:57');
+(5, 1, '1778880660_6a07909401875.png', 'Redesign de marca ', 4, '2026-05-15 22:31:00');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `perguntas_magicas`
+-- Estrutura da tabela `sevenlux_perguntas_magicas`
 --
 
-CREATE TABLE `perguntas_magicas` (
+CREATE TABLE `sevenlux_perguntas_magicas` (
   `id` int(10) UNSIGNED NOT NULL,
   `pergunta` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `perguntas_magicas`
+-- Extraindo dados da tabela `sevenlux_perguntas_magicas`
 --
 
-INSERT INTO `perguntas_magicas` (`id`, `pergunta`) VALUES
+INSERT INTO `sevenlux_perguntas_magicas` (`id`, `pergunta`) VALUES
 (1, 'Qual criatura mística protege os portais dos teus sonhos mais profundos?'),
 (2, 'Que elixir ou bebida mágica purifica a tua alma antes de um ritual?'),
 (3, 'Em qual pedra preciosa se encontra gravada a verdadeira essência do teu destino?'),
@@ -176,10 +162,10 @@ INSERT INTO `perguntas_magicas` (`id`, `pergunta`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `produtos`
+-- Estrutura da tabela `sevenlux_produtos`
 --
 
-CREATE TABLE `produtos` (
+CREATE TABLE `sevenlux_produtos` (
   `id` int(10) UNSIGNED NOT NULL,
   `cliente_id` int(10) UNSIGNED NOT NULL,
   `nome` varchar(200) NOT NULL,
@@ -191,10 +177,10 @@ CREATE TABLE `produtos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `produtos`
+-- Extraindo dados da tabela `sevenlux_produtos`
 --
 
-INSERT INTO `produtos` (`id`, `cliente_id`, `nome`, `descricao`, `preco`, `imagem`, `ordem`, `created_at`) VALUES
+INSERT INTO `sevenlux_produtos` (`id`, `cliente_id`, `nome`, `descricao`, `preco`, `imagem`, `ordem`, `created_at`) VALUES
 (1, 1, 'Website Profissional', '	Site institucional completo com CMS (até 5 páginas), otimizado para SEO e responsivo.', '245.00', '1778879186_6a078ad2cccc9.png', 1, '2026-05-15 22:00:32'),
 (2, 1, 'Loja Online (E‑commerce)', 'Plataforma de vendas completa, integração com pagamentos, gestão de stock e produtos ilimitados.', '477.00', '1778879168_6a078ac0d20a3.png', 2, '2026-05-15 22:01:06'),
 (3, 1, 'Landing Page de Conversão', 'Página de alto impacto para campanhas, com formulário, analytics e integração com email marketing.', '167.00', '1778879238_6a078b06cc11b.png', 3, '2026-05-15 22:07:18');
@@ -202,10 +188,10 @@ INSERT INTO `produtos` (`id`, `cliente_id`, `nome`, `descricao`, `preco`, `image
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `publicacoes`
+-- Estrutura da tabela `sevenlux_publicacoes`
 --
 
-CREATE TABLE `publicacoes` (
+CREATE TABLE `sevenlux_publicacoes` (
   `id` int(10) UNSIGNED NOT NULL,
   `cliente_id` int(10) UNSIGNED NOT NULL,
   `titulo` varchar(200) NOT NULL,
@@ -217,10 +203,10 @@ CREATE TABLE `publicacoes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `publicacoes`
+-- Extraindo dados da tabela `sevenlux_publicacoes`
 --
 
-INSERT INTO `publicacoes` (`id`, `cliente_id`, `titulo`, `slug`, `conteudo`, `imagem`, `publicado`, `created_at`) VALUES
+INSERT INTO `sevenlux_publicacoes` (`id`, `cliente_id`, `titulo`, `slug`, `conteudo`, `imagem`, `publicado`, `created_at`) VALUES
 (1, 1, '5 Tendências de Design para 2026', '5-tendencias-de-design-para-2026', 'A tendência de design para 2026 une o minimalismo à tipografia ousada e ao dark mode, criando interfaces limpas e impactantes. O texto explora como essa estética reduz distrações, realça o conteúdo com títulos marcantes e melhora a experiência do utilizador com fundos escuros. Saiba como aplicar estas estratégias para criar projetos visuais modernos, sofisticados e de fácil leitura.', '1778879729_6a078cf11e6bb.png', 1, '2026-05-15 22:15:29'),
 (2, 1, 'Como Escolher a Plataforma Ideal para o seu E‑commerce', 'como-escolher-a-plataforma-ideal-para-o-seu-e-commerce', ' Comparação entre Shopify, WooCommerce e Magento.\r\nO **Shopify** destaca-se pela rapidez e simplicidade com alojamento incluído, sendo ideal para quem quer focar apenas nas vendas. O **WooCommerce** oferece flexibilidade e controlo total sobre os dados, integrando-se perfeitamente em WordPress. Já o **Magento** surge como a solução robusta para grandes marcas com catálogos massivos e operações internacionais complexas.', '1778879794_6a078d328e258.png', 1, '2026-05-15 22:16:34'),
 (3, 1, 'SEO em 2026: O que mudou e como se adaptar', 'seo-em-2026-o-que-mudou-e-como-se-adaptar', ' Novas regras do Google, experiência do utilizador e Core Web Vitals.\r\n\r\nAs novas diretrizes do Google priorizam a experiência do utilizador como fator crítico de posicionamento orgânico. O foco central recai sobre os Core Web Vitals, métricas que avaliam a velocidade de carregamento, interatividade e estabilidade visual das páginas. Sites que não otimizarem estes indicadores técnicos correm o risco de perder visibilidade e tráfego qualificado em 2026.', '1778880086_6a078e5697ed5.png', 1, '2026-05-15 22:21:26');
@@ -228,20 +214,20 @@ INSERT INTO `publicacoes` (`id`, `cliente_id`, `titulo`, `slug`, `conteudo`, `im
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `respostas_magicas`
+-- Estrutura da tabela `sevenlux_respostas_magicas`
 --
 
-CREATE TABLE `respostas_magicas` (
+CREATE TABLE `sevenlux_respostas_magicas` (
   `id` int(10) UNSIGNED NOT NULL,
   `pergunta_id` int(10) UNSIGNED NOT NULL,
   `resposta` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `respostas_magicas`
+-- Extraindo dados da tabela `sevenlux_respostas_magicas`
 --
 
-INSERT INTO `respostas_magicas` (`id`, `pergunta_id`, `resposta`) VALUES
+INSERT INTO `sevenlux_respostas_magicas` (`id`, `pergunta_id`, `resposta`) VALUES
 (1, 1, 'O Fénix de Cinzas Eternas'),
 (2, 1, 'O Dragão de Névoa Argêntea'),
 (3, 1, 'O Quimera dos Espelhos'),
@@ -295,10 +281,10 @@ INSERT INTO `respostas_magicas` (`id`, `pergunta_id`, `resposta`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `servicos`
+-- Estrutura da tabela `sevenlux_servicos`
 --
 
-CREATE TABLE `servicos` (
+CREATE TABLE `sevenlux_servicos` (
   `id` int(10) UNSIGNED NOT NULL,
   `cliente_id` int(10) UNSIGNED NOT NULL,
   `titulo` varchar(100) NOT NULL,
@@ -308,10 +294,10 @@ CREATE TABLE `servicos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `servicos`
+-- Extraindo dados da tabela `sevenlux_servicos`
 --
 
-INSERT INTO `servicos` (`id`, `cliente_id`, `titulo`, `descricao`, `icone`, `ordem`) VALUES
+INSERT INTO `sevenlux_servicos` (`id`, `cliente_id`, `titulo`, `descricao`, `icone`, `ordem`) VALUES
 (1, 1, 'Design & Branding', 'Criamos identidades visuais memoráveis, desde o logotipo à paleta de cores, que contam a sua história.', 'fa-image', 1),
 (3, 1, '	Desenvolvimento Web', 'Sites, lojas online e aplicações web modernas, rápidas e responsivas, feitas à medida do seu negócio.', 'fa-code', 2),
 (4, 1, 'Marketing Digital', 'Estratégias de SEO, Google Ads e redes sociais para atrair mais clientes e aumentar as suas vendas.', 'fa-chart-line', 3);
@@ -319,10 +305,10 @@ INSERT INTO `servicos` (`id`, `cliente_id`, `titulo`, `descricao`, `icone`, `ord
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `warnings`
+-- Estrutura da tabela `sevenlux_warnings`
 --
 
-CREATE TABLE `warnings` (
+CREATE TABLE `sevenlux_warnings` (
   `id` int(11) NOT NULL,
   `slug` varchar(100) DEFAULT NULL,
   `motivo` text DEFAULT NULL,
@@ -332,77 +318,86 @@ CREATE TABLE `warnings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Extraindo dados da tabela `sevenlux_warnings`
+--
+
+INSERT INTO `sevenlux_warnings` (`id`, `slug`, `motivo`, `ip`, `data`, `resolvido`) VALUES
+(1, 'vitrine-demo', 'Recuperação de código realizada com sucesso', '::1', '2026-06-12 00:07:37', 0),
+(2, 'lemmteste', 'Recuperação de código realizada com sucesso', '::1', '2026-06-12 00:10:38', 0),
+(3, 'vitrine-demo', 'Recuperação de código realizada com sucesso', '::1', '2026-06-13 22:03:58', 0);
+
+--
 -- Índices para tabelas despejadas
 --
 
 --
--- Índices para tabela `clientes`
+-- Índices para tabela `sevenlux_clientes`
 --
-ALTER TABLE `clientes`
+ALTER TABLE `sevenlux_clientes`
   ADD PRIMARY KEY (`id_cliente`),
   ADD UNIQUE KEY `slug` (`slug`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Índices para tabela `configuracoes_site`
+-- Índices para tabela `sevenlux_configuracoes_site`
 --
-ALTER TABLE `configuracoes_site`
+ALTER TABLE `sevenlux_configuracoes_site`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `cliente_chave` (`cliente_id`,`chave`);
 
 --
--- Índices para tabela `dispositivos`
+-- Índices para tabela `sevenlux_dispositivos`
 --
-ALTER TABLE `dispositivos`
+ALTER TABLE `sevenlux_dispositivos`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_device` (`slug`,`device_id`);
 
 --
--- Índices para tabela `galeria`
+-- Índices para tabela `sevenlux_galeria`
 --
-ALTER TABLE `galeria`
+ALTER TABLE `sevenlux_galeria`
   ADD PRIMARY KEY (`id`),
   ADD KEY `cliente_id` (`cliente_id`);
 
 --
--- Índices para tabela `perguntas_magicas`
+-- Índices para tabela `sevenlux_perguntas_magicas`
 --
-ALTER TABLE `perguntas_magicas`
+ALTER TABLE `sevenlux_perguntas_magicas`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `produtos`
+-- Índices para tabela `sevenlux_produtos`
 --
-ALTER TABLE `produtos`
+ALTER TABLE `sevenlux_produtos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `cliente_id` (`cliente_id`);
 
 --
--- Índices para tabela `publicacoes`
+-- Índices para tabela `sevenlux_publicacoes`
 --
-ALTER TABLE `publicacoes`
+ALTER TABLE `sevenlux_publicacoes`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `slug_cliente` (`slug`,`cliente_id`),
   ADD KEY `cliente_id` (`cliente_id`);
 
 --
--- Índices para tabela `respostas_magicas`
+-- Índices para tabela `sevenlux_respostas_magicas`
 --
-ALTER TABLE `respostas_magicas`
+ALTER TABLE `sevenlux_respostas_magicas`
   ADD PRIMARY KEY (`id`),
   ADD KEY `pergunta_id` (`pergunta_id`);
 
 --
--- Índices para tabela `servicos`
+-- Índices para tabela `sevenlux_servicos`
 --
-ALTER TABLE `servicos`
+ALTER TABLE `sevenlux_servicos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `cliente_id` (`cliente_id`);
 
 --
--- Índices para tabela `warnings`
+-- Índices para tabela `sevenlux_warnings`
 --
-ALTER TABLE `warnings`
+ALTER TABLE `sevenlux_warnings`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -410,104 +405,104 @@ ALTER TABLE `warnings`
 --
 
 --
--- AUTO_INCREMENT de tabela `clientes`
+-- AUTO_INCREMENT de tabela `sevenlux_clientes`
 --
-ALTER TABLE `clientes`
-  MODIFY `id_cliente` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+ALTER TABLE `sevenlux_clientes`
+  MODIFY `id_cliente` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
--- AUTO_INCREMENT de tabela `configuracoes_site`
+-- AUTO_INCREMENT de tabela `sevenlux_configuracoes_site`
 --
-ALTER TABLE `configuracoes_site`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=231;
+ALTER TABLE `sevenlux_configuracoes_site`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=271;
 
 --
--- AUTO_INCREMENT de tabela `dispositivos`
+-- AUTO_INCREMENT de tabela `sevenlux_dispositivos`
 --
-ALTER TABLE `dispositivos`
+ALTER TABLE `sevenlux_dispositivos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `galeria`
+-- AUTO_INCREMENT de tabela `sevenlux_galeria`
 --
-ALTER TABLE `galeria`
+ALTER TABLE `sevenlux_galeria`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT de tabela `perguntas_magicas`
+-- AUTO_INCREMENT de tabela `sevenlux_perguntas_magicas`
 --
-ALTER TABLE `perguntas_magicas`
+ALTER TABLE `sevenlux_perguntas_magicas`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT de tabela `produtos`
+-- AUTO_INCREMENT de tabela `sevenlux_produtos`
 --
-ALTER TABLE `produtos`
+ALTER TABLE `sevenlux_produtos`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT de tabela `publicacoes`
+-- AUTO_INCREMENT de tabela `sevenlux_publicacoes`
 --
-ALTER TABLE `publicacoes`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+ALTER TABLE `sevenlux_publicacoes`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT de tabela `respostas_magicas`
+-- AUTO_INCREMENT de tabela `sevenlux_respostas_magicas`
 --
-ALTER TABLE `respostas_magicas`
+ALTER TABLE `sevenlux_respostas_magicas`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
--- AUTO_INCREMENT de tabela `servicos`
+-- AUTO_INCREMENT de tabela `sevenlux_servicos`
 --
-ALTER TABLE `servicos`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+ALTER TABLE `sevenlux_servicos`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT de tabela `warnings`
+-- AUTO_INCREMENT de tabela `sevenlux_warnings`
 --
-ALTER TABLE `warnings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `sevenlux_warnings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restrições para despejos de tabelas
 --
 
 --
--- Limitadores para a tabela `configuracoes_site`
+-- Limitadores para a tabela `sevenlux_configuracoes_site`
 --
-ALTER TABLE `configuracoes_site`
-  ADD CONSTRAINT `configuracoes_site_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id_cliente`) ON DELETE CASCADE;
+ALTER TABLE `sevenlux_configuracoes_site`
+  ADD CONSTRAINT `sevenlux_configuracoes_site_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `sevenlux_clientes` (`id_cliente`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `dispositivos`
+-- Limitadores para a tabela `sevenlux_dispositivos`
 --
-ALTER TABLE `dispositivos`
-  ADD CONSTRAINT `dispositivos_ibfk_1` FOREIGN KEY (`slug`) REFERENCES `clientes` (`slug`) ON DELETE CASCADE;
+ALTER TABLE `sevenlux_dispositivos`
+  ADD CONSTRAINT `sevenlux_dispositivos_ibfk_1` FOREIGN KEY (`slug`) REFERENCES `sevenlux_clientes` (`slug`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `galeria`
+-- Limitadores para a tabela `sevenlux_galeria`
 --
-ALTER TABLE `galeria`
-  ADD CONSTRAINT `galeria_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id_cliente`) ON DELETE CASCADE;
+ALTER TABLE `sevenlux_galeria`
+  ADD CONSTRAINT `sevenlux_galeria_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `sevenlux_clientes` (`id_cliente`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `produtos`
+-- Limitadores para a tabela `sevenlux_produtos`
 --
-ALTER TABLE `produtos`
-  ADD CONSTRAINT `produtos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id_cliente`) ON DELETE CASCADE;
+ALTER TABLE `sevenlux_produtos`
+  ADD CONSTRAINT `sevenlux_produtos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `sevenlux_clientes` (`id_cliente`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `publicacoes`
+-- Limitadores para a tabela `sevenlux_publicacoes`
 --
-ALTER TABLE `publicacoes`
-  ADD CONSTRAINT `publicacoes_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id_cliente`) ON DELETE CASCADE;
+ALTER TABLE `sevenlux_publicacoes`
+  ADD CONSTRAINT `sevenlux_publicacoes_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `sevenlux_clientes` (`id_cliente`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `servicos`
+-- Limitadores para a tabela `sevenlux_servicos`
 --
-ALTER TABLE `servicos`
-  ADD CONSTRAINT `servicos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id_cliente`) ON DELETE CASCADE;
+ALTER TABLE `sevenlux_servicos`
+  ADD CONSTRAINT `sevenlux_servicos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `sevenlux_clientes` (`id_cliente`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

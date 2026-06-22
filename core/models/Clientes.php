@@ -11,39 +11,12 @@
 namespace core\models;
 
 use core\classes\Database;
+use core\classes\EnviarEmail;
 use core\classes\Store;
 
 class Clientes
 {
     private $db;
-
-    // 24 security questions with 7 possible answers each
-    private $questions = [
-        1  => ["text" => "Qual a sua cor preferida?", "answers" => ["Vermelho", "Azul", "Verde", "Amarelo", "Preto", "Branco", "Roxo"]],
-        2  => ["text" => "Qual o seu prato preferido?", "answers" => ["Pizza", "Sushi", "Massa", "Hambúrguer", "Salada", "Frango", "Peixe"]],
-        3  => ["text" => "Qual a sua estação do ano?", "answers" => ["Primavera", "Verão", "Outono", "Inverno", "🌸", "☀️", "❄️"]],
-        4  => ["text" => "Qual o seu animal preferido?", "answers" => ["Cão", "Gato", "Leão", "Águia", "Golfinho", "Lobo", "Cavalo"]],
-        5  => ["text" => "Qual o planeta que mais se associa a si?", "answers" => ["Marte", "Vénus", "Júpiter", "Saturno", "Mercúrio", "Terra", "Neptuno"]],
-        6  => ["text" => "Qual o seu elemento?", "answers" => ["Fogo", "Água", "Terra", "Ar", "Madeira", "Metal", "Éter"]],
-        7  => ["text" => "Qual o seu signo?", "answers" => ["Áries", "Touro", "Gémeos", "Câncer", "Leão", "Virgem", "Libra"]],
-        8  => ["text" => "Qual a lua que mais gosta?", "answers" => ["Lua Cheia", "Lua Nova", "Quarto Crescente", "Quarto Minguante", "Lua Azul", "Lua de Sangue", "Lua Negra"]],
-        9  => ["text" => "Qual o seu destino de sonho?", "answers" => ["Praia", "Montanha", "Cidade", "Deserto", "Floresta", "Neve", "Campo"]],
-        10 => ["text" => "Qual o meio de transporte preferido?", "answers" => ["Carro", "Avião", "Comboio", "Barco", "Bicicleta", "Moto", "A pé"]],
-        11 => ["text" => "Qual o seu hobby favorito?", "answers" => ["Ler", "Viajar", "Desporto", "Música", "Cinema", "Jogar", "Cozinhar"]],
-        12 => ["text" => "Qual a sua bebida favorita?", "answers" => ["Café", "Chá", "Sumo", "Água", "Refrigerante", "Vinho", "Cerveja"]],
-        13 => ["text" => "Qual o seu número da sorte?", "answers" => ["1", "2", "3", "4", "5", "6", "7"]],
-        14 => ["text" => "Qual a forma geométrica que prefere?", "answers" => ["Círculo", "Quadrado", "Triângulo", "Espiral", "Estrela", "Hexágono", "Coração"]],
-        15 => ["text" => "Qual o seu herói favorito?", "answers" => ["Superman", "Batman", "Mulher Maravilha", "Homem-Aranha", "Capitão América", "Iron Man", "Thor"]],
-        16 => ["text" => "Qual a sua disciplina favorita?", "answers" => ["Matemática", "Ciências", "História", "Arte", "Música", "Desporto", "Literatura"]],
-        17 => ["text" => "Se fosse uma árvore, qual seria?", "answers" => ["Carvalho", "Oliveira", "Salgueiro", "Pinheiro", "Macieira", "Choupo", "Cerejeira"]],
-        18 => ["text" => "Se fosse um instrumento musical?", "answers" => ["Piano", "Guitarra", "Bateria", "Violino", "Flauta", "Saxofone", "Harpa"]],
-        19 => ["text" => "Qual a sua energia predominante?", "answers" => ["Calma", "Fogo", "Brisa", "Ondas", "Montanha", "Floresta", "Estrela"]],
-        20 => ["text" => "Qual o seu arquétipo?", "answers" => ["Herói", "Sábio", "Rebelde", "Amante", "Mago", "Explorador", "Cuidador"]],
-        21 => ["text" => "Nome da sua primeira escola?", "answers" => ["Sol", "Lua", "Estrela", "Mar", "Monte", "Vale", "Fonte"]],
-        22 => ["text" => "Marca do seu primeiro carro?", "answers" => ["Fiat", "Ford", "VW", "Toyota", "Honda", "Renault", "Peugeot"]],
-        23 => ["text" => "Nome do seu melhor amigo de infância?", "answers" => ["Ana", "João", "Maria", "Pedro", "Sofia", "Lucas", "Beatriz"]],
-        24 => ["text" => "Cidade onde nasceu?", "answers" => ["Lisboa", "Porto", "Coimbra", "Braga", "Faro", "Évora", "Funchal"]]
-    ];
 
     public function __construct()
     {
@@ -112,7 +85,7 @@ private function generateSalt($slug = null)
     
 
 
-public function registar_cliente($email, $slug, $digits, $questionId, $answerId, $cidade = null, $pais = null, $categoria = null)
+public function registar_cliente($email, $slug, $digits, $cidade = null, $pais = null, $categoria = null)
 {
     $purl = Store::criarHash();
     $salt = $this->generateSalt($slug);
@@ -123,8 +96,6 @@ public function registar_cliente($email, $slug, $digits, $questionId, $answerId,
         ':slug'         => $slug,
         ':salt'         => $salt,
         ':hash_digitos' => $hash,
-        ':pergunta_id'  => $questionId,
-        ':resposta_id'  => $answerId,
         ':purl'         => $purl,
         ':activo'       => 0,
         ':cidade'       => $cidade ?? null,
@@ -134,9 +105,9 @@ public function registar_cliente($email, $slug, $digits, $questionId, $answerId,
 
     $result = $this->db->insert("
         INSERT INTO sevenlux_clientes 
-        (email, slug, salt, hash_digitos, pergunta_id, resposta_id, purl, activo, cidade, pais, categoria, created_at, updated_at) 
+        (email, slug, salt, hash_digitos, purl, activo, cidade, pais, categoria, created_at, updated_at) 
         VALUES 
-        (:email, :slug, :salt, :hash_digitos, :pergunta_id, :resposta_id, :purl, :activo, :cidade, :pais, :categoria, NOW(), NOW())
+        (:email, :slug, :salt, :hash_digitos, :purl, :activo, :cidade, :pais, :categoria, NOW(), NOW())
     ", $params);
 
     // Verificar se a inserção foi bem sucedida
@@ -227,195 +198,11 @@ public function registar_cliente($email, $slug, $digits, $questionId, $answerId,
         );
     }
 
-    // ============================================================
-    // DIGIT CODE RECOVERY (via security question)
-    // ============================================================
+  
 
-    /**
-     * Resets the client's digit code after verifying the security answer.
-     *
-     * @param string $slug
-     * @param int $answerId
-     * @param string $newDigits
-     * @return bool
-     */
-    public function recuperarCodigo($slug, $answerId, $newDigits)
-    {
-        $client = $this->db->select("SELECT * FROM sevenlux_clientes  WHERE slug = :slug", [':slug' => $slug]);
-        if (!$client) {
-            return false;
-        }
-        $client = $client[0];
 
-        if ($answerId != $client->resposta_id) {
-            return false;
-        }
 
-        $newSalt = $this->generateSalt($slug);
-        $newHash = $this->hashDigits($newSalt, $newDigits);
-        $this->db->update(
-            "UPDATE sevenlux_clientes  SET salt = :salt, hash_digitos = :hash, tentativas_falhas = 0, bloqueio_ate = 0 WHERE slug = :slug",
-            [':salt' => $newSalt, ':hash' => $newHash, ':slug' => $slug]
-        );
-        $this->addWarning($slug, "Recuperação de código realizada", $_SERVER['REMOTE_ADDR']);
-        return true;
-    }
 
-    // ============================================================
-    // DEVICE MANAGEMENT (optional, currently unused)
-    // ============================================================
-
-    /**
-     * Authorizes a new device for a client (multi‑device limit).
-     *
-     * @param string $slug
-     * @param string $deviceId
-     * @param string $fingerprint
-     * @param string $ip
-     * @return bool
-     */
-    public function autorizarDispositivo($slug, $deviceId, $fingerprint, $ip)
-    {
-        $count = $this->db->select("SELECT COUNT(*) as total FROM sevenlux_dispositivos WHERE slug = :slug", [':slug' => $slug]);
-        $max = $this->db->select("SELECT max_dispositivos FROM sevenlux_clientes  WHERE slug = :slug", [':slug' => $slug]);
-        if ($count[0]->total >= $max[0]->max_dispositivos) {
-            return false;
-        }
-
-        $this->db->insert(
-            "INSERT INTO sevenlux_dispositivos (slug, device_id, fingerprint_hash, ip_registo, ultimo_acesso) 
-             VALUES (:slug, :device_id, :fingerprint, :ip, NOW())",
-            [':slug' => $slug, ':device_id' => $deviceId, ':fingerprint' => $fingerprint, ':ip' => $ip]
-        );
-        return true;
-    }
-
-    // ============================================================
-    // SECURITY QUESTIONS (getters)
-    // ============================================================
-
-    /**
-     * Returns a random security question with its possible answers.
-     *
-     * @return array
-     */
-    public function getPerguntaAleatoria()
-    {
-        $ids = array_keys($this->questions);
-        $id = $ids[array_rand($ids)];
-        return [
-            'id'       => $id,
-            'texto'    => $this->questions[$id]['text'],
-            'respostas' => $this->questions[$id]['answers']
-        ];
-    }
-
-    /**
-     * Returns a security question by its ID.
-     *
-     * @param int $id
-     * @return array|null
-     */
-    public function getPerguntaById($id)
-    {
-        return $this->questions[$id] ?? null;
-    }
-
-   /**
- * Busca uma pergunta aleatória da tabela perguntas_magicas
- * com as suas respostas correspondentes.
- *
- * @return array|null
- */
-public function getPerguntaAleatoriaFromDB()
-{
-    // Buscar pergunta aleatória
-    $pergunta = $this->db->select(
-        "SELECT id, pergunta FROM sevenlux_perguntas_magicas ORDER BY RAND() LIMIT 1"
-    );
-    
-    if (!$pergunta || empty($pergunta)) {
-        // Fallback para perguntas antigas (caso a tabela esteja vazia)
-        return $this->getPerguntaAleatoria();
-    }
-    
-    $perguntaId = $pergunta[0]->id;
-    
-    // Buscar respostas desta pergunta
-    $respostas = $this->db->select(
-        "SELECT id, resposta FROM sevenlux_respostas_magicas WHERE pergunta_id = :pergunta_id ORDER BY id",
-        [':pergunta_id' => $perguntaId]
-    );
-    
-    if (!$respostas || empty($respostas)) {
-        return $this->getPerguntaAleatoria();
-    }
-    
-    $listaRespostas = [];
-    foreach ($respostas as $resp) {
-        $listaRespostas[] = $resp->resposta;
-    }
-    
-    return [
-        'id' => $perguntaId,
-        'texto' => $pergunta[0]->pergunta,
-        'respostas' => $listaRespostas
-    ];
-}
-
-/**
- * Busca uma pergunta pelo ID (para recuperação de código)
- *
- * @param int $id
- * @return array|null
- */
-public function getPerguntaByIdFromDB($id)
-{
-    $pergunta = $this->db->select(
-        "SELECT id, pergunta FROM sevenlux_perguntas_magicas WHERE id = :id",
-        [':id' => $id]
-    );
-    
-    if (!$pergunta || empty($pergunta)) {
-        return $this->getPerguntaById($id); // fallback
-    }
-    
-    $respostas = $this->db->select(
-        "SELECT id, resposta FROM sevenlux_respostas_magicas WHERE pergunta_id = :pergunta_id ORDER BY id",
-        [':pergunta_id' => $id]
-    );
-    
-    $listaRespostas = [];
-    foreach ($respostas as $resp) {
-        $listaRespostas[] = $resp->resposta;
-    }
-    
-    return [
-        'texto' => $pergunta[0]->pergunta,
-        'respostas' => $listaRespostas
-    ];
-}
-
-/**
- * Busca a pergunta de segurança de um cliente pelo slug
- *
- * @param string $slug
- * @return array|null
- */
-public function getPerguntaBySlug($slug)
-{
-    $results = $this->db->select(
-        "SELECT pergunta_id FROM sevenlux_clientes  WHERE slug = :slug AND activo = 1",
-        [':slug' => $slug]
-    );
-    
-    if (count($results) == 0) {
-        return null;
-    }
-    
-    $questionId = $results[0]->pergunta_id;
-    return $this->getPerguntaByIdFromDB($questionId);
-}
 
     // ============================================================
     // EXISTENCE CHECKS
@@ -570,6 +357,217 @@ public function getPerguntaBySlug($slug)
         );
     }
 
+
+
+ 
+
+/**
+ * Valida token de recuperação de código
+ * 
+ * @param string $token
+ * @return object|false Cliente ou false
+ */
+public function validarTokenRecuperacaoCodigo($token)
+{
+    $client = $this->db->select(
+        "SELECT id_cliente, slug, email FROM sevenlux_clientes WHERE purl = :token AND activo = 1",
+        [':token' => $token]
+    );
+    
+    if (!$client || empty($client)) {
+        error_log("❌ Token inválido: $token");
+        return false;
+    }
+    
+    error_log("✅ Token válido para slug: {$client[0]->slug}");
+    return $client[0];
+}
+
+
+
+/**
+ * Gera token para recuperação de código (via email)
+ */
+public function gerarTokenRecuperacaoCodigo($slug)
+{
+    $client = $this->db->select(
+        "SELECT id_cliente, email, slug FROM sevenlux_clientes WHERE slug = :slug AND activo = 1",
+        [':slug' => $slug]
+    );
+    
+    if (!$client || empty($client)) {
+        return false;
+    }
+    
+    $client = $client[0];
+    $token = Store::criarHash(32);
+    
+    // Guardar token na BD (usa a mesma coluna purl que já existe)
+    $this->db->update(
+        "UPDATE sevenlux_clientes SET purl = :token WHERE id_cliente = :id",
+        [':token' => $token, ':id' => $client->id_cliente]
+    );
+    
+    return [
+        'token' => $token,
+        'email' => $client->email,
+        'slug' => $client->slug
+    ];
+}
+
+/**
+ * Valida token e redefinir código
+ */
+public function redefinirCodigoPorToken($token, $newDigits)
+{
+    $client = $this->db->select(
+        "SELECT id_cliente, slug FROM sevenlux_clientes WHERE purl = :token AND activo = 1",
+        [':token' => $token]
+    );
+    
+    if (!$client || empty($client)) {
+        return false;
+    }
+    
+    $client = $client[0];
+    
+    // Validar novo código
+    if (strlen($newDigits) < 1 || strlen($newDigits) > 7 || !ctype_digit($newDigits)) {
+        return false;
+    }
+    
+    $newSalt = $this->generateSalt($client->slug);
+    $newHash = $this->hashDigits($newSalt, $newDigits);
+    
+    $this->db->update(
+        "UPDATE sevenlux_clientes SET salt = :salt, hash_digitos = :hash, purl = NULL, updated_at = NOW() WHERE id_cliente = :id",
+        [
+            ':salt' => $newSalt,
+            ':hash' => $newHash,
+            ':id' => $client->id_cliente
+        ]
+    );
+    
+    return true;
+}
+
+/**
+ * Mostra formulário para recuperar código (apenas pede email/slug)
+ */
+public function recuperar_codigo()
+{
+    $config = new Configuracao();
+    Store::Layout([
+        'layouts/html_header',
+        'layouts/header',
+        'recuperar_codigo',
+        'layouts/footer',
+        'layouts/html_footer'
+    ], ['config' => $config]);
+}
+
+/**
+ * Envia email com link de recuperação
+ */
+public function recuperar_codigo_submit()
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        Store::redirect('recuperar_codigo');
+        return;
+    }
+    
+    $slug = trim($_POST['text_slug'] ?? '');
+    
+    if (empty($slug)) {
+        $_SESSION['erro'] = "Por favor, insira o slug do seu site.";
+        Store::redirect('recuperar_codigo');
+        return;
+    }
+    
+    $clientModel = new Clientes();
+    $result = $clientModel->gerarTokenRecuperacaoCodigo($slug);
+    
+    if ($result && isset($result['email'])) {
+        $mailer = new EnviarEmail();
+        $mailer->enviar_recuperacao_codigo($result['email'], $result['token'], $slug);
+        $_SESSION['sucesso'] = "✅ Enviamos um email com as instruções para recuperar o seu código de acesso.";
+    } else {
+        // Por segurança, não revelar se o slug existe
+        $_SESSION['sucesso'] = "✅ Se o slug existir, enviamos um email com as instruções.";
+    }
+    
+    Store::redirect('recuperar_codigo');
+}
+
+/**
+ * Formulário para definir novo código (após clicar no link do email)
+ */
+public function recuperar_codigo_confirmar()
+{
+    $token = $_GET['token'] ?? '';
+    
+    if (empty($token)) {
+        $_SESSION['erro'] = "Link inválido.";
+        Store::redirect('recuperar_codigo');
+        return;
+    }
+    
+    // Verificar se token existe na BD
+    $clientModel = new Clientes();
+    $client = $clientModel->db->select(
+        "SELECT id_cliente, slug FROM sevenlux_clientes WHERE purl = :token AND activo = 1",
+        [':token' => $token]
+    );
+    
+    if (!$client || empty($client)) {
+        $_SESSION['erro'] = "Link inválido ou expirado.";
+        Store::redirect('recuperar_codigo');
+        return;
+    }
+    
+    $_SESSION['recovery_token'] = $token;
+    
+    Store::Layout([
+        'layouts/html_header',
+        'layouts/header',
+        'recuperar_codigo_novo',
+        'layouts/footer',
+        'layouts/html_footer'
+    ]);
+}
+
+/**
+ * Processa o novo código
+ */
+public function recuperar_codigo_novo_submit()
+{
+    $token = $_SESSION['recovery_token'] ?? '';
+    $newDigits = $_POST['novos_digitos'] ?? '';
+    
+    if (empty($token)) {
+        $_SESSION['erro'] = "Sessão inválida.";
+        Store::redirect('recuperar_codigo');
+        return;
+    }
+    
+    if (strlen($newDigits) < 1 || strlen($newDigits) > 7 || !ctype_digit($newDigits)) {
+        $_SESSION['erro'] = "O código deve ter entre 1 e 7 dígitos.";
+        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo_confirmar&token=" . urlencode($token));
+        return;
+    }
+    
+    $clientModel = new Clientes();
+    $result = $clientModel->redefinirCodigoPorToken($token, $newDigits);
+    
+    if ($result) {
+        unset($_SESSION['recovery_token']);
+        $_SESSION['sucesso'] = "✅ Código redefinido com sucesso! Agora pode fazer login.";
+        Store::redirect('admin_login');
+    } else {
+        $_SESSION['erro'] = "❌ Erro ao redefinir código. Tente novamente.";
+        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo_confirmar&token=" . urlencode($token));
+    }
+}
 
     
 }
