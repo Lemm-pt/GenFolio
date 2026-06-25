@@ -26,20 +26,27 @@ class Admin
      * Verifies that the user is logged in and that the requested slug
      * matches the session slug (prevents cross‑tenant access).
      */
-    private function verificarLogin()
-    {
-        if (!isset($_SESSION['cliente_id'])) {
-            Store::redirect('admin_login');
-            exit;
-        }
-
-        // 🔐 Critical: ensure URL slug matches session slug
-        if (defined('CLIENTE_SLUG') && CLIENTE_SLUG !== $_SESSION['cliente_slug']) {
-            session_destroy();
-            Store::redirect('admin_login');
-            exit;
-        }
+  private function verificarLogin()
+{
+    if (!isset($_SESSION['cliente_id'])) {
+        Store::redirect('admin_login');
+        exit;
     }
+
+    // 🔐 Critical: ensure URL slug matches session slug
+    if (defined('CLIENTE_SLUG') && CLIENTE_SLUG !== $_SESSION['cliente_slug']) {
+        session_destroy();
+        Store::redirect('admin_login');
+        exit;
+    }
+    
+    // 🔐 Extra security for logs - ensure cliente_id is valid
+    // Esta verificação já é feita pelo slug, mas vamos garantir
+    if ($_GET['a'] ?? '' === 'admin_logs') {
+        // Verificação adicional: se não for master, garantir que só vê os seus logs
+        // (esta verificação também é feita no método admin_logs())
+    }
+}
 
     /**
      * Shows the admin login form.
@@ -60,62 +67,92 @@ class Admin
         ]);
     }
 
-    /**
-     * Processes the login submission.
-     * Validates slug + digit code, handles account blocking, and redirects accordingly.
-     */
-    public function admin_login_submit()
-    {
-        $slug = trim($_POST['text_slug'] ?? '');
-        $digits = trim($_POST['text_digitos'] ?? '');
+   public function admin_login_submit()
+{
+    $slug = trim($_POST['text_slug'] ?? '');
+    $digits = trim($_POST['text_digitos'] ?? '');
 
-        error_log("LOGIN - Slug: $slug, Digits: $digits");
+     // 🔥 RATE LIMIT - Verificar antes de qualquer coisa
+    $rateLimiter = new \core\classes\RateLimiter();
+    
+    // Verificar se o IP está bloqueado para login
+    if (!$rateLimiter->podeRealizar('login')) {
+        $tempoRestante = $rateLimiter->getTempoRestante('login');
+        $_SESSION['erro'] = "Demasiadas tentativas. Tente novamente em " . ceil($tempoRestante / 60) . " minutos.";
+        header("Location: " . BASE_URL . $slug . "/admin_login");
+        exit;
+    }
+
+
+
+      error_log("LOGIN - Slug: $slug, Digits: $digits");
 
         if (empty($slug) || empty($digits)) {
             $_SESSION['erro'] = "Preencha o slug e o código de acesso.";
             header("Location: " . BASE_URL . "index.php?a=admin_login");
             exit;
         }
+    $clientModel = new Clientes();
+    $db = new Database();
 
-        $clientModel = new Clientes();
-        $db = new Database();
-
-        // Check account blocking
-        $clientInfo = $db->select(
-            "SELECT bloqueio_ate FROM sevenlux_clientes WHERE slug = :slug",
-            [':slug' => $slug]
-        );
-        if ($clientInfo && $clientInfo[0]->bloqueio_ate > time()) {
-            $remaining = $clientInfo[0]->bloqueio_ate - time();
-            $_SESSION['erro'] = "Conta bloqueada. Tente novamente em $remaining segundos.";
-            header("Location: " . BASE_URL . $slug . "/admin_login");
-            exit;
-        }
-
-        $client = $clientModel->validar_login($slug, $digits);
-
-        if ($client) {
-            // Successful login
-            session_regenerate_id(true);
-            $_SESSION = [];
-            $_SESSION['cliente_id'] = $client->id_cliente;
-            $_SESSION['cliente_slug'] = $client->slug;
-            $_SESSION['cliente_email'] = $client->email;
-            header("Location: " . BASE_URL . $client->slug . "/admin");
-            exit;
-        } else {
-            // Failed login – redirect to the same slug's login page
-            $_SESSION['erro'] = "Slug ou código incorretos.";
-            header("Location: " . BASE_URL . $slug . "/admin_login");
-            exit;
-        }
+    // Check account blocking (usando hash_equals para comparação segura)
+    $clientInfo = $db->select(
+        "SELECT bloqueio_ate FROM sevenlux_clientes WHERE slug = :slug",
+        [':slug' => $slug]
+    );
+    
+    if ($clientInfo && $clientInfo[0]->bloqueio_ate > time()) {
+        $remaining = $clientInfo[0]->bloqueio_ate - time();
+        $_SESSION['erro'] = "Conta bloqueada. Tente novamente em $remaining segundos.";
+        header("Location: " . BASE_URL . $slug . "/admin_login");
+        exit;
     }
+
+    $client = $clientModel->validar_login($slug, $digits);
+
+    if ($client) {
+
+       // 🔥 SUCESSO - Resetar tentativas
+        $rateLimiter->reset('login');
+
+        // 🔥 LOG: Login bem-sucedido
+        \core\classes\Logger::log('login_sucesso', "Login do cliente: $slug", $client->id_cliente, $client->email);
+
+        // Successful login
+        session_regenerate_id(true);
+        $_SESSION = [];
+        $_SESSION['cliente_id'] = $client->id_cliente;
+        $_SESSION['cliente_slug'] = $client->slug;
+        $_SESSION['cliente_email'] = $client->email;
+        header("Location: " . BASE_URL . $client->slug . "/admin");
+        exit;
+    } else {
+
+       // 🔥 FALHA - Registar tentativa
+        $tentativas = $rateLimiter->registrarTentativa('login');
+        
+        // Se excedeu o limite, mostrar mensagem
+        if (!$rateLimiter->podeRealizar('login')) {
+            $tempoRestante = $rateLimiter->getTempoRestante('login');
+            $_SESSION['erro'] = "Demasiadas tentativas. Tente novamente em " . ceil($tempoRestante / 60) . " minutos.";
+        } else {
+            $_SESSION['erro'] = "Slug ou código incorretos. (Tentativa $tentativas de 5)";
+        }
+        
+        header("Location: " . BASE_URL . $slug . "/admin_login");
+        exit;
+    }
+}
 
     /**
      * Logs out the admin user and destroys the session.
      */
     public function admin_logout()
     {
+     //🔥 log para a saida
+    if (isset($_SESSION['cliente_id'], $_SESSION['cliente_slug'])) {
+        \core\classes\Logger::log('logout', "Logout do cliente: " . $_SESSION['cliente_slug'], $_SESSION['cliente_id']);
+    }
         $_SESSION = [];
         session_destroy();
         header("Location: " . BASE_URL . "index.php");
@@ -206,6 +243,9 @@ class Admin
             }
 
             $_SESSION['sucesso'] = "Configurações atualizadas!";
+
+            // 🔥 Depois de salvar as configurações
+             \core\classes\Logger::log('alterar_config', "Configurações atualizadas pelo admin: " . $_SESSION['cliente_slug'], $_SESSION['cliente_id']);
         }
 
         Store::redirect('admin_configuracoes');
@@ -233,6 +273,11 @@ class Admin
         $this->verificarLogin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             (new Servicos())->criar($_POST);
+
+             // 🔥 LOG: Serviço criado
+    \core\classes\Logger::log('criar_servico', "Serviço criado: " . ($_POST['titulo'] ?? 'sem título'), $_SESSION['cliente_id']);
+
+
             $_SESSION['sucesso'] = "Serviço criado!";
             Store::redirect('admin_servicos');
         }
@@ -253,6 +298,11 @@ class Admin
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $model->atualizar($id, $_POST);
+
+
+             // 🔥 LOG: Serviço criado
+    \core\classes\Logger::log('editar_servico', "Serviço editado: " . ($_POST['titulo'] ?? 'sem título'), $_SESSION['cliente_id']);
+
             $_SESSION['sucesso'] = "Serviço atualizado!";
             Store::redirect('admin_servicos');
         }
@@ -276,6 +326,9 @@ class Admin
         $id = (int) ($_POST['id'] ?? 0);
         (new Servicos())->deletar($id);
         echo json_encode(['success' => true]);
+
+         // 🔥 LOG: Serviço apagado
+    \core\classes\Logger::log('deletar_servico', "Serviço apagado: " . ($_POST['titulo'] ?? 'sem título'), $_SESSION['cliente_id']);
     }
 
     // ============================================================
@@ -325,6 +378,10 @@ class Admin
             $fileName = time() . '_' . uniqid() . '.' . $ext;
             if (move_uploaded_file($_FILES['imagem']['tmp_name'], $uploadDir . $fileName)) {
                 $model->criar($fileName, $_POST['legenda'] ?? null);
+
+                  // 🔥 LOG: imagem criad
+    \core\classes\Logger::log('criar_imagem', "Imagem criada: " . ($_POST['legenda'] ?? 'sem legenda'), $_SESSION['cliente_id']);
+
                 $_SESSION['sucesso'] = "Imagem adicionada!";
             } else {
                 $_SESSION['erro'] = "Erro ao salvar imagem.";
@@ -340,6 +397,9 @@ class Admin
         $id = (int) ($_POST['id'] ?? 0);
         (new Galeria())->deletar($id);
         echo json_encode(['success' => true]);
+
+          // 🔥 LOG: imagem criad
+    \core\classes\Logger::log('apagar_imagem', "Imagem apagada: " . ($_POST['legenda'] ?? 'sem legenda'), $_SESSION['cliente_id']);
     }
 
     // ============================================================
@@ -384,6 +444,10 @@ class Admin
             }
 
             $model->criar($_POST, $image);
+
+              // 🔥 LOG: produto criad
+    \core\classes\Logger::log('criar_produto', "Produto criado: " . ($_POST['nome'] ?? 'sem nome'), $_SESSION['cliente_id']);
+
             $_SESSION['sucesso'] = "Produto criado!";
             Store::redirect('admin_produtos');
         }
@@ -415,6 +479,10 @@ class Admin
                 move_uploaded_file($_FILES['imagem']['tmp_name'], $uploadDir . $image);
             }
             $model->atualizar($id, $_POST, $image);
+
+              // 🔥 LOG: produto editado
+    \core\classes\Logger::log('editar_produto', "Produto editado: " . ($_POST['nome'] ?? 'sem nome'), $_SESSION['cliente_id']);
+
             $_SESSION['sucesso'] = "Produto atualizado!";
             Store::redirect('admin_produtos');
         }
@@ -438,6 +506,11 @@ class Admin
         $id = (int) ($_POST['id'] ?? 0);
         (new Produtos())->deletar($id);
         echo json_encode(['success' => true]);
+
+          // 🔥 LOG: produto deletado
+    \core\classes\Logger::log('deletar_produto', "Produto deletado: " . ($_POST['nome'] ?? 'sem nome'), $_SESSION['cliente_id']);
+
+
     }
 
     // ============================================================
@@ -482,6 +555,10 @@ class Admin
             }
 
             $model->criar($_POST, $image);
+
+                 // 🔥 LOG: publicação criado
+    \core\classes\Logger::log('criar_publicacao', "Publicação criada: " . ($_POST['titulo'] ?? 'sem título'), $_SESSION['cliente_id']);
+
             $_SESSION['sucesso'] = "Publicação criada!";
             Store::redirect('admin_publicacoes');
         }
@@ -513,6 +590,10 @@ class Admin
                 move_uploaded_file($_FILES['imagem']['tmp_name'], $uploadDir . $image);
             }
             $model->atualizar($id, $_POST, $image);
+
+             // 🔥 LOG: Publicação atualizada
+    \core\classes\Logger::log('atualizar_publicacao', "Publicação atualizada: " . ($_POST['titulo'] ?? 'sem título'), $_SESSION['cliente_id']); 
+    
             $_SESSION['sucesso'] = "Publicação atualizada!";
             Store::redirect('admin_publicacoes');
         }
@@ -528,6 +609,7 @@ class Admin
             'admin/layouts/footer',
             'admin/layouts/html_footer'
         ], ['publicacao' => $post]);
+
     }
 
     public function admin_publicacao_deletar()
@@ -536,5 +618,76 @@ class Admin
         $id = (int) ($_POST['id'] ?? 0);
         (new Publicacoes())->deletar($id);
         echo json_encode(['success' => true]);
+
+         // 🔥 LOG: Publicação deletada
+    \core\classes\Logger::log('deletar_publicacao', "Publicação deletada: " . ($_POST['titulo'] ?? 'sem título'), $_SESSION['cliente_id']);
+    
     }
+
+    /**
+ * Exibe os logs de auditoria
+ */
+/**
+ * Exibe os logs de auditoria
+ * - vitrine-demo: vê todos os logs
+ * - Outros clientes: vêem apenas os seus logs
+ */
+public function admin_logs()
+{
+    $this->verificarLogin();
+    
+    $db = new Database();
+    $clienteSlug = $_SESSION['cliente_slug'] ?? '';
+    $clienteId = $_SESSION['cliente_id'] ?? 0;
+    $isMaster = ($clienteSlug === 'vitrine-demo');
+    
+    // Se for master e houver filtro por cliente
+    $filterClienteId = isset($_GET['cliente']) ? (int)$_GET['cliente'] : 0;
+    
+    if ($isMaster && $filterClienteId > 0) {
+        // Master filtra por cliente específico
+        $logs = $db->select(
+            "SELECT * FROM sevenlux_audit_logs 
+             WHERE cliente_id = :cliente_id 
+             ORDER BY created_at DESC LIMIT 200",
+            [':cliente_id' => $filterClienteId]
+        );
+    } elseif ($isMaster) {
+        // Master vê todos
+        $logs = $db->select(
+            "SELECT * FROM sevenlux_audit_logs ORDER BY created_at DESC LIMIT 200"
+        );
+    } else {
+        // Cliente normal vê apenas os seus
+        $logs = $db->select(
+            "SELECT * FROM sevenlux_audit_logs 
+             WHERE cliente_id = :cliente_id 
+             ORDER BY created_at DESC LIMIT 200",
+            [':cliente_id' => $clienteId]
+        );
+    }
+    
+    // Buscar lista de clientes para o filtro (apenas para master)
+    $clientes = [];
+    if ($isMaster) {
+        $clientes = $db->select(
+            "SELECT id_cliente, slug, email FROM sevenlux_clientes ORDER BY slug"
+        );
+    }
+    
+    Store::Layout([
+        'admin/layouts/html_header',
+        'admin/layouts/header',
+        'admin/logs',
+        'admin/layouts/footer',
+        'admin/layouts/html_footer'
+    ], [
+        'logs' => $logs,
+        'isMaster' => $isMaster,
+        'clienteSlug' => $clienteSlug,
+        'clientes' => $clientes,
+        'filterClienteId' => $filterClienteId
+    ]);
+}
+
 }

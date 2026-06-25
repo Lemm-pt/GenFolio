@@ -70,6 +70,8 @@ $rotas = [
     'recuperar_codigo_submit'       => 'main@recuperar_codigo_submit',
     'recuperar_codigo_confirmar'    => 'main@recuperar_codigo_confirmar',
     'recuperar_codigo_novo_submit'  => 'main@recuperar_codigo_novo_submit',
+
+    'admin_logs' => 'admin@admin_logs',
 ];
 
 // ============================================================

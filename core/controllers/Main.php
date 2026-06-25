@@ -124,6 +124,35 @@ class Main
         $config = new Configuracao();
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+         // 🔥 RATE LIMIT
+        $rateLimiter = new \core\classes\RateLimiter();
+        
+        if (!$rateLimiter->podeRealizar('contacto')) {
+            $_SESSION['msg_erro'] = "Demasiadas mensagens. Tente novamente mais tarde.";
+            Store::redirect('contacto');
+            return;
+        }
+
+
+               // Honeypot anti-spam
+           if (!empty($_POST['empresa_interna_777'])) {
+          
+              error_log(
+                  "BOT DETETADO | IP: " .
+                  ($_SERVER['REMOTE_ADDR'] ?? 'desconhecido')
+              );
+          
+              exit;
+          }
+
+            //Humano → 20 segundos, 30 segundos, 1 minuto. BOT = 0.1 morre logo
+            $tempo = time() - ($_SESSION['contact_form_time'] ?? 0);
+
+               if ($tempo < 5) {
+                   exit;
+             }
+
             $name     = $_POST['nome'] ?? '';
             $email    = $_POST['email'] ?? '';
             $phone    = $_POST['telefone'] ?? '';
@@ -132,8 +161,11 @@ class Main
             $recipient = $config->get('email_contacto', EMAIL_FROM);
             
             if ($mailer->enviar_contacto($name, $email, $phone, $message, $recipient)) {
+
+                $rateLimiter->reset('contacto');
                 $_SESSION['msg_sucesso'] = "Mensagem enviada com sucesso!";
             } else {
+                 $rateLimiter->registrarTentativa('contacto');
                 $_SESSION['msg_erro'] = "Erro ao enviar. Tente mais tarde.";
             }
             Store::redirect('contacto');
@@ -176,6 +208,16 @@ class Main
             header("Location: " . BASE_URL . "index.php?a=novo_cliente");
             exit;
         }
+
+         // 🔥 RATE LIMIT - Verificar antes de qualquer coisa
+        $rateLimiter = new \core\classes\RateLimiter();
+    
+        if (!$rateLimiter->podeRealizar('registro')) {
+             $tempoRestante = $rateLimiter->getTempoRestante('registro');
+             $_SESSION['erro'] = "Demasiadas tentativas de registo. Tente novamente em " . ceil($tempoRestante / 60) . " minutos.";
+             header("Location: " . BASE_URL . "index.php?a=novo_cliente");
+             exit;
+    }
         
         $email      = trim($_POST['text_email'] ?? '');
         $slug       = $this->gerarSlug($_POST['text_slug'] ?? '');
@@ -217,13 +259,18 @@ class Main
             exit;
         }
         
-        $purl = $clientModel->registar_cliente($email, $slug, $digits, $cidade, $pais, $categoria);
+      $token = $clientModel->registar_cliente($email, $slug, $digits, $cidade, $pais, $categoria);
 
-   
-        
-        if ($purl) {
+        if ($token) {
+
+         // 🔥 SUCESSO - Resetar tentativas (ou manter, mas já não importa)
+        $rateLimiter->reset('registro');
+
+         // 🔥 LOG: Novo cliente registado
+           \core\classes\Logger::log('registro_cliente', "Novo cliente registado: $slug (Email: $email)");
+
             $emailer = new EnviarEmail();
-            $emailer->enviar_confirmacao_registo($email, $purl, $slug);
+            $emailer->enviar_confirmacao_registo($email, $token, $slug);
             $_SESSION['email_temporario'] = $email;
             $config = new Configuracao();
             Store::Layout([
@@ -234,6 +281,9 @@ class Main
                 'layouts/html_footer'
             ], ['config' => $config]);
         } else {
+
+        // 🔥 FALHA - Registar tentativa
+        $rateLimiter->registrarTentativa('registro');
             $_SESSION['erro'] = 'Erro ao registar. Tente novamente.';
             header("Location: " . BASE_URL . "index.php?a=novo_cliente");
             exit;
@@ -243,31 +293,29 @@ class Main
     /**
      * Confirms a client's email address via the link sent after registration.
      */
-    public function confirmar_email()
-    {
-        $purl = $_GET['purl'] ?? '';
-        if (empty($purl)) {
-            Store::redirect('inicio');
-        }
-        
-        $clientModel = new Clientes();
-        $client = $clientModel->buscarPorPurl($purl);
-        
-        if ($client && $clientModel->confirmar_email($purl)) {
-    // Guarda o slug temporariamente para usar no redirecionamento
-    $slugCliente = $client->slug;
-    
-    // Mensagem de sucesso
-    $_SESSION['sucesso'] = "✅ Conta confirmada com sucesso! Agora faça login com o seu código de acesso.";
-    
-    // Redireciona diretamente para o login DAQUELE cliente (com slug bonito)
-    header("Location: " . BASE_URL . $slugCliente . "/admin_login");
-    exit;
-        } else {
-            $_SESSION['erro'] = 'Link de confirmação inválido ou expirado.';
-            Store::redirect('inicio');
-        }
+   public function confirmar_email()
+{
+    $token = $_GET['token'] ?? '';
+    if (empty($token)) {
+        Store::redirect('inicio');
     }
+    
+    $clientModel = new Clientes();
+    $client = $clientModel->buscarPorTokenConfirmacao($token);
+    
+    if ($client && $clientModel->confirmar_email($token)) {
+
+       // 🔥 LOG: Email confirmado
+        \core\classes\Logger::log('confirmar_email', "Email confirmado para: " . $client->slug, $client->id_cliente);
+
+        $_SESSION['sucesso'] = "✅ Conta confirmada com sucesso! Agora faça login com o seu código de acesso.";
+        header("Location: " . BASE_URL . $client->slug . "/admin_login");
+        exit;
+    } else {
+        $_SESSION['erro'] = 'Link de confirmação inválido ou expirado.';
+        Store::redirect('inicio');
+    }
+}
     
     /**
      * Generates a URL-friendly slug from a given string.
@@ -332,18 +380,38 @@ class Main
         }
         
         $clientModel = new Clientes();
-        $client = $clientModel->validar_login($slug, $digits);
-        
-        if ($client) {
-            $_SESSION['cliente_id']   = $client->id_cliente;
-            $_SESSION['cliente_slug'] = $client->slug;
-            Store::redirect('admin');
-        } else {
-            $_SESSION['erro'] = "Slug ou código incorretos.";
-            Store::redirect('login');
-        }
+         $client = $clientModel->validar_login($slug, $digits);
+         
+         if ($client) {
+             session_regenerate_id(true);
+             $_SESSION['cliente_id']   = $client->id_cliente;
+             $_SESSION['cliente_slug'] = $client->slug;
+             Store::redirect('admin');
+         } else {
+             $_SESSION['erro'] = "Slug ou código incorretos.";
+             Store::redirect('login');
+         }
     }
     
+
+    /**
+ * Verifica se um código corresponde ao hash
+ * Usa hash_equals para prevenir timing attacks
+ * 
+ * @param string $digits
+ * @param string $hash
+ * @return bool
+ */
+private function verificarCodigo($digits, $hash)
+{
+    // Se o hash estiver vazio (migração), retornar false
+    if (empty($hash)) {
+        return false;
+    }
+    
+    // Usar password_verify (já é resistente a timing attacks)
+    return password_verify($digits, $hash);
+}
     /**
      * Logs out the current client (destroys session and redirects to home).
      */
@@ -410,6 +478,16 @@ public function recuperar_codigo_submit()
         Store::redirect('recuperar_codigo');
         return;
     }
+
+    // 🔥 RATE LIMIT
+    $rateLimiter = new \core\classes\RateLimiter();
+    
+    if (!$rateLimiter->podeRealizar('recuperacao')) {
+        $tempoRestante = $rateLimiter->getTempoRestante('recuperacao');
+        $_SESSION['erro'] = "Demasiados pedidos. Tente novamente em " . ceil($tempoRestante / 60) . " minutos.";
+        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo&slug=" . urlencode($_POST['text_slug']));
+        exit;
+    }
     
     $slug = trim($_POST['text_slug'] ?? '');
     
@@ -420,6 +498,8 @@ public function recuperar_codigo_submit()
     }
     
     $clientModel = new Clientes();
+
+
     $result = $clientModel->gerarTokenRecuperacaoCodigo($slug);
     
     // Verificar se o resultado é um array e tem as chaves necessárias
@@ -429,11 +509,21 @@ public function recuperar_codigo_submit()
         $emailEnviado = $mailer->enviar_recuperacao_codigo($result['email'], $result['token'], $slug);
         
         if ($emailEnviado) {
+
+        // 🔥 SUCESSO - Resetar tentativas
+            $rateLimiter->reset('recuperacao');
+
+          // 🔥 LOG: Pedido de recuperação de código
+          \core\classes\Logger::log('recuperar_codigo', "Pedido de recuperação de código para slug: $slug");
+
             $_SESSION['sucesso'] = "✅ Enviamos um email com as instruções para recuperar o seu código de acesso.";
         } else {
             $_SESSION['erro'] = "❌ Erro ao enviar email. Tente novamente mais tarde.";
         }
     } else {
+
+        // 🔥 Slug inválido - registar tentativa
+        $rateLimiter->registrarTentativa('recuperacao');
         // Não revelar se o slug existe ou não (segurança)
         $_SESSION['sucesso'] = "✅ Se o slug existir, enviamos um email com as instruções para recuperar o código de acesso.";
     }
@@ -471,7 +561,7 @@ public function recuperar_codigo_confirmar()
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Redefinir Código - Vitrine</title>
+        <title>Redefinir Código </title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <style>

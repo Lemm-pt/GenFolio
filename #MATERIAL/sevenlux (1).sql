@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 15-Jun-2026 às 01:17
+-- Tempo de geração: 24-Jun-2026 às 23:26
 -- Versão do servidor: 10.4.27-MariaDB
 -- versão do PHP: 8.2.0
 
@@ -24,6 +24,42 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `sevenlux_audit_logs`
+--
+
+CREATE TABLE `sevenlux_audit_logs` (
+  `id` int(11) NOT NULL,
+  `cliente_id` int(11) DEFAULT NULL,
+  `usuario` varchar(100) DEFAULT NULL,
+  `acao` varchar(50) NOT NULL,
+  `detalhes` text DEFAULT NULL,
+  `ip` varchar(45) NOT NULL,
+  `user_agent` varchar(255) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `sevenlux_audit_logs`
+--
+
+INSERT INTO `sevenlux_audit_logs` (`id`, `cliente_id`, `usuario`, `acao`, `detalhes`, `ip`, `user_agent`, `created_at`) VALUES
+(1, 1, 'lemm.pt@gmail.com', 'login_sucesso', 'Login do cliente: vitrine-demo', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 21:23:30'),
+(2, 1, NULL, 'logout', 'Logout do cliente: vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 21:32:05'),
+(3, 73, 'luciano@lemm.pt', 'login_sucesso', 'Login do cliente: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 21:33:26'),
+(4, 73, NULL, 'criar_servico', 'Serviço criado: teste 88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 21:33:56'),
+(5, 73, NULL, 'logout', 'Logout do cliente: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 21:47:41'),
+(6, 1, 'lemm.pt@gmail.com', 'login_sucesso', 'Login do cliente: vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 21:47:48'),
+(7, 1, NULL, 'logout', 'Logout do cliente: vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 22:08:43'),
+(8, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para teste88: 1 segundos', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 22:09:44'),
+(9, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para teste88: 2 segundos', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 22:10:03'),
+(10, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para teste88: 4 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:23:42'),
+(11, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para teste88: 8 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:23:48'),
+(12, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para teste88: 16 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:23:57'),
+(13, NULL, NULL, 'bloqueio_limite', 'Limite de 7 tentativas atingido para teste88', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:23:57');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `sevenlux_clientes`
 --
 
@@ -34,11 +70,14 @@ CREATE TABLE `sevenlux_clientes` (
   `cidade` varchar(100) DEFAULT NULL,
   `categoria` varchar(100) DEFAULT NULL,
   `pais` varchar(100) DEFAULT NULL,
-  `salt` varchar(64) DEFAULT NULL,
-  `hash_digitos` varchar(64) DEFAULT NULL,
+  `hash_digitos` varchar(255) DEFAULT NULL,
   `tentativas_falhas` int(11) DEFAULT 0,
   `bloqueio_ate` int(11) DEFAULT 0,
-  `purl` varchar(50) DEFAULT NULL,
+  `email_confirmation_token` varchar(50) DEFAULT NULL,
+  `recovery_token` varchar(50) DEFAULT NULL,
+  `email_confirmed_at` datetime DEFAULT NULL,
+  `recovery_token_expires` datetime DEFAULT NULL,
+  `token_expires_at` datetime DEFAULT NULL,
   `activo` tinyint(4) DEFAULT 0,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -49,9 +88,11 @@ CREATE TABLE `sevenlux_clientes` (
 -- Extraindo dados da tabela `sevenlux_clientes`
 --
 
-INSERT INTO `sevenlux_clientes` (`id_cliente`, `email`, `slug`, `cidade`, `categoria`, `pais`, `salt`, `hash_digitos`, `tentativas_falhas`, `bloqueio_ate`, `purl`, `activo`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'lemm.pt@gmail.com', 'vitrine-demo', NULL, NULL, NULL, '5ea787c7c8904c473cf20eebc9e84bdaca4425ba325eb4deb731c2383d60e18f', '51221352a5ba998e1bed60602aeec1b56e485b9a82e64f3152d951a547d7cff3', 0, 0, 'SnW7NBcdbhtpTx54ZilCJQk68qA2G0mO', 1, '2026-05-15 17:00:42', '2026-06-14 23:13:00', NULL),
-(54, 'lubiomarona@gmail.com', 'lemm', 'Paris', 'Automóvel', 'France', '3619b65a2330fa319d49988a5108d05b2b1c8346f59d34139e757b4c16dc8c2b', '16534bff4f795c75db5f0eefe580aeea9e79873af886937790c33696093053c2', 0, 0, NULL, 1, '2026-06-14 11:58:03', '2026-06-15 00:14:55', NULL);
+INSERT INTO `sevenlux_clientes` (`id_cliente`, `email`, `slug`, `cidade`, `categoria`, `pais`, `hash_digitos`, `tentativas_falhas`, `bloqueio_ate`, `email_confirmation_token`, `recovery_token`, `email_confirmed_at`, `recovery_token_expires`, `token_expires_at`, `activo`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'lemm.pt@gmail.com', 'vitrine-demo', 'London', 'Tecnologia', 'England', '$argon2id$v=19$m=65536,t=4,p=2$aTRWQ0F6VWVVOTIxVlJMLw$yuaKGZ1snRXqqlMNCdV1lRIociPq8mDs1IU8NtWc3fo', 0, 0, NULL, NULL, NULL, NULL, '2026-06-24 00:25:37', 1, '2026-05-15 17:00:42', '2026-06-23 22:25:37', NULL),
+(59, 'lemm777@gmail.com', 'lemm', 'porto', 'Alimentação', 'portugal', '$argon2id$v=19$m=65536,t=4,p=2$bmJxSVRjVkRZMzdqeWd6cA$qfk+dGsbnjAfAZkziyC1sm+EptytAoPrGOy0roxtyJw', 0, 0, NULL, NULL, NULL, NULL, '2026-06-24 00:42:05', 1, '2026-06-22 20:58:04', '2026-06-23 22:42:05', NULL),
+(71, 'lubiomarona@gmail.com', 'teste77porto', 'EUA', 'Saúde', 'EUA', '$argon2id$v=19$m=65536,t=4,p=2$cmIxM2E3Q0NzMUZZSGVDVw$Z1e1/KPngwS6Db7IjsAYNX1Aa2ldhndQKb4KQ+mn+/8', 0, 0, 'itjPwE2s54fR', NULL, NULL, NULL, NULL, 0, '2026-06-24 20:03:09', '2026-06-24 20:03:09', NULL),
+(73, 'luciano@lemm.pt', 'teste88', 'eeeee', 'Educação', 'Africa', '$argon2id$v=19$m=65536,t=4,p=2$a3NxVXBhMkQxeVBBdUNGdA$VcHtrB+vhUHpcVw7iAMiaS1nF/tt6WkPElsDfDsPgUk', 7, 1782336537, NULL, NULL, '2026-06-24 20:08:18', NULL, NULL, 1, '2026-06-24 20:07:44', '2026-06-24 22:23:57', NULL);
 
 -- --------------------------------------------------------
 
@@ -73,26 +114,36 @@ CREATE TABLE `sevenlux_configuracoes_site` (
 --
 
 INSERT INTO `sevenlux_configuracoes_site` (`id`, `cliente_id`, `chave`, `valor`, `created_at`, `updated_at`) VALUES
-(1, 1, 'logo_parte1', 'Vitrine', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
-(2, 1, 'logo_parte2', '.lemm', '2026-05-15 17:00:42', '2026-05-15 17:00:42'),
+(1, 1, 'logo_parte1', 'Seven', '2026-05-15 17:00:42', '2026-06-24 17:00:11'),
+(2, 1, 'logo_parte2', 'Lux', '2026-05-15 17:00:42', '2026-06-24 17:00:11'),
 (3, 1, 'logo_imagem', 'logo.png', '2026-05-15 17:00:42', '2026-05-15 22:56:41'),
 (4, 1, 'slogan', 'Soluções Digitais que Transformam Negócios', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
 (5, 1, 'texto_descritivo', 'A Vitrine.lemm nasceu para ajudar empresas a crescer no digital. Combinamos criatividade, tecnologia e estratégia para criar experiências únicas. Do design à programação, passando pelo marketing, somos o parceiro que faltava ao seu negócio.', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
-(6, 1, 'meta_description', 'Vitrine.lemm - Soluções digitais', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
-(7, 1, 'meta_keywords', 'vitrine,lemm,digital,', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
+(6, 1, 'meta_description', 'SevenLux - Soluções digitais', '2026-05-15 17:00:42', '2026-06-24 17:00:11'),
+(7, 1, 'meta_keywords', 'web app,lemm,digital,', '2026-05-15 17:00:42', '2026-06-24 17:00:11'),
 (8, 1, 'email_contacto', 'luciano@lemm.pt', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
 (9, 1, 'telefone', '+351 964456930', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
 (10, 1, 'endereco', 'Esposende, Portugal', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
-(261, 54, 'logo_parte1', 'Meu', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
-(262, 54, 'logo_parte2', 'Negócio', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
-(263, 54, 'logo_imagem', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
-(264, 54, 'slogan', 'Soluções Personalizadas', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
-(265, 54, 'texto_descritivo', 'Bem-vindo ao seu novo site!', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
-(266, 54, 'email_contacto', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
-(267, 54, 'telefone', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
-(268, 54, 'endereco', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
-(269, 54, 'meta_description', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47'),
-(270, 54, 'meta_keywords', '', '2026-06-14 11:58:47', '2026-06-14 11:58:47');
+(281, 59, 'logo_parte1', 'LEMM', '2026-06-22 20:58:52', '2026-06-23 22:16:58'),
+(282, 59, 'logo_parte2', '.PT', '2026-06-22 20:58:52', '2026-06-23 22:16:58'),
+(283, 59, 'logo_imagem', '1782249418_6a3af7ca24086.png', '2026-06-22 20:58:52', '2026-06-23 22:16:58'),
+(284, 59, 'slogan', 'Soluções Personalizadas para web apps', '2026-06-22 20:58:52', '2026-06-23 22:16:58'),
+(285, 59, 'texto_descritivo', 'Bem-vindo ao seu novo site!', '2026-06-22 20:58:52', '2026-06-22 20:58:52'),
+(286, 59, 'email_contacto', '', '2026-06-22 20:58:52', '2026-06-22 20:58:52'),
+(287, 59, 'telefone', '', '2026-06-22 20:58:52', '2026-06-22 20:58:52'),
+(288, 59, 'endereco', '', '2026-06-22 20:58:52', '2026-06-22 20:58:52'),
+(289, 59, 'meta_description', 'web apps e sites', '2026-06-22 20:58:52', '2026-06-23 22:16:58'),
+(290, 59, 'meta_keywords', 'teste, web app, websites, porto', '2026-06-22 20:58:52', '2026-06-23 22:16:58'),
+(331, 73, 'logo_parte1', 'Meu', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
+(332, 73, 'logo_parte2', 'Negócio', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
+(333, 73, 'logo_imagem', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
+(334, 73, 'slogan', 'Soluções Personalizadas', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
+(335, 73, 'texto_descritivo', 'Bem-vindo ao seu novo site!', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
+(336, 73, 'email_contacto', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
+(337, 73, 'telefone', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
+(338, 73, 'endereco', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
+(339, 73, 'meta_description', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
+(340, 73, 'meta_keywords', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18');
 
 -- --------------------------------------------------------
 
@@ -214,6 +265,22 @@ INSERT INTO `sevenlux_publicacoes` (`id`, `cliente_id`, `titulo`, `slug`, `conte
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `sevenlux_rate_limits`
+--
+
+CREATE TABLE `sevenlux_rate_limits` (
+  `id` int(11) NOT NULL,
+  `ip` varchar(45) NOT NULL,
+  `acao` varchar(50) NOT NULL,
+  `tentativas` int(11) NOT NULL DEFAULT 1,
+  `primeira_tentativa` datetime NOT NULL,
+  `ultima_tentativa` datetime NOT NULL,
+  `bloqueado_ate` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `sevenlux_respostas_magicas`
 --
 
@@ -300,7 +367,8 @@ CREATE TABLE `sevenlux_servicos` (
 INSERT INTO `sevenlux_servicos` (`id`, `cliente_id`, `titulo`, `descricao`, `icone`, `ordem`) VALUES
 (1, 1, 'Design & Branding', 'Criamos identidades visuais memoráveis, desde o logotipo à paleta de cores, que contam a sua história.', 'fa-image', 1),
 (3, 1, '	Desenvolvimento Web', 'Sites, lojas online e aplicações web modernas, rápidas e responsivas, feitas à medida do seu negócio.', 'fa-code', 2),
-(4, 1, 'Marketing Digital', 'Estratégias de SEO, Google Ads e redes sociais para atrair mais clientes e aumentar as suas vendas.', 'fa-chart-line', 3);
+(4, 1, 'Marketing Digital', 'Estratégias de SEO, Google Ads e redes sociais para atrair mais clientes e aumentar as suas vendas.', 'fa-chart-line', 3),
+(15, 73, 'teste 88', 'primeiro serviço', 'fa-shirt', 1);
 
 -- --------------------------------------------------------
 
@@ -324,11 +392,31 @@ CREATE TABLE `sevenlux_warnings` (
 INSERT INTO `sevenlux_warnings` (`id`, `slug`, `motivo`, `ip`, `data`, `resolvido`) VALUES
 (1, 'vitrine-demo', 'Recuperação de código realizada com sucesso', '::1', '2026-06-12 00:07:37', 0),
 (2, 'lemmteste', 'Recuperação de código realizada com sucesso', '::1', '2026-06-12 00:10:38', 0),
-(3, 'vitrine-demo', 'Recuperação de código realizada com sucesso', '::1', '2026-06-13 22:03:58', 0);
+(3, 'vitrine-demo', 'Recuperação de código realizada com sucesso', '::1', '2026-06-13 22:03:58', 0),
+(4, 'vitrine-demo', 'Código redefinido via email', '::1', '2026-06-23 20:27:54', 0),
+(5, 'vitrine-demo', 'Código redefinido via email', '::1', '2026-06-23 20:29:43', 0),
+(6, 'lemm', 'Código redefinido via email', '::1', '2026-06-23 21:00:29', 0),
+(7, 'lemm', 'Código redefinido via email', '::1', '2026-06-23 21:04:47', 0),
+(8, 'vitrine-demo', 'Código redefinido via email', '::1', '2026-06-23 21:06:21', 0),
+(9, 'lubio', 'Limite de 7 tentativas atingido', '::1', '2026-06-23 21:06:55', 0),
+(10, 'lubio', 'Código redefinido via email', '::1', '2026-06-23 21:07:44', 0),
+(11, 'lubio', 'Código redefinido via email', '::1', '2026-06-23 21:09:00', 0),
+(12, 'lemm', 'Código redefinido via email', '::1', '2026-06-23 21:29:55', 0),
+(13, 'lemm', 'Código redefinido via email', '::1', '2026-06-23 21:36:45', 0),
+(14, 'teste88', 'Limite de 7 tentativas atingido', '::1', '2026-06-24 21:23:57', 0);
 
 --
 -- Índices para tabelas despejadas
 --
+
+--
+-- Índices para tabela `sevenlux_audit_logs`
+--
+ALTER TABLE `sevenlux_audit_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_cliente` (`cliente_id`),
+  ADD KEY `idx_acao` (`acao`),
+  ADD KEY `idx_created_at` (`created_at`);
 
 --
 -- Índices para tabela `sevenlux_clientes`
@@ -381,6 +469,16 @@ ALTER TABLE `sevenlux_publicacoes`
   ADD KEY `cliente_id` (`cliente_id`);
 
 --
+-- Índices para tabela `sevenlux_rate_limits`
+--
+ALTER TABLE `sevenlux_rate_limits`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_ip_acao` (`ip`,`acao`),
+  ADD KEY `idx_ip` (`ip`),
+  ADD KEY `idx_acao` (`acao`),
+  ADD KEY `idx_bloqueado_ate` (`bloqueado_ate`);
+
+--
 -- Índices para tabela `sevenlux_respostas_magicas`
 --
 ALTER TABLE `sevenlux_respostas_magicas`
@@ -405,16 +503,22 @@ ALTER TABLE `sevenlux_warnings`
 --
 
 --
+-- AUTO_INCREMENT de tabela `sevenlux_audit_logs`
+--
+ALTER TABLE `sevenlux_audit_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
 -- AUTO_INCREMENT de tabela `sevenlux_clientes`
 --
 ALTER TABLE `sevenlux_clientes`
-  MODIFY `id_cliente` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id_cliente` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT de tabela `sevenlux_configuracoes_site`
 --
 ALTER TABLE `sevenlux_configuracoes_site`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=271;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=341;
 
 --
 -- AUTO_INCREMENT de tabela `sevenlux_dispositivos`
@@ -447,6 +551,12 @@ ALTER TABLE `sevenlux_publicacoes`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
+-- AUTO_INCREMENT de tabela `sevenlux_rate_limits`
+--
+ALTER TABLE `sevenlux_rate_limits`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
 -- AUTO_INCREMENT de tabela `sevenlux_respostas_magicas`
 --
 ALTER TABLE `sevenlux_respostas_magicas`
@@ -456,13 +566,13 @@ ALTER TABLE `sevenlux_respostas_magicas`
 -- AUTO_INCREMENT de tabela `sevenlux_servicos`
 --
 ALTER TABLE `sevenlux_servicos`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de tabela `sevenlux_warnings`
 --
 ALTER TABLE `sevenlux_warnings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Restrições para despejos de tabelas

@@ -207,3 +207,63 @@ window.criarTecladoNumerico = criarTecladoNumerico;
 window.mostrarToast = mostrarToast;
 window.excluirItem = excluirItem;
 window.toggleMobileMenu = toggleMobileMenu;
+
+
+
+// assets/js/app.js - Adicionar ao final do arquivo
+// Inicialização do Seven Lux
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar se o SevenLux já foi inicializado
+    if (typeof window.sevenLux === 'undefined') {
+        // Carregar o script dinamicamente se necessário
+        const script = document.createElement('script');
+        script.src = BASE_URL + 'assets/js/seven-lux.js';
+        script.onload = function() {
+            // O SevenLux se inicializa automaticamente
+        };
+        document.head.appendChild(script);
+    }
+});
+
+// ============================================
+// FUNÇÕES AUXILIARES PARA TEMAS
+// ============================================
+
+/**
+ * Obtém o tema atual
+ * @returns {string} Nome do tema atual
+ */
+function getCurrentTheme() {
+    return localStorage.getItem('sevenlux_theme') || 'ruby';
+}
+
+/**
+ * Aplica um tema específico
+ * @param {string} themeKey - Nome do tema (ruby, sapphire, emerald, etc.)
+ */
+function setTheme(themeKey) {
+    if (window.sevenLux) {
+        window.sevenLux.selectTheme(themeKey);
+    } else {
+        // Fallback: salvar para quando o script carregar
+        localStorage.setItem('sevenlux_theme', themeKey);
+    }
+}
+
+/**
+ * Obtém as cores do tema atual
+ * @returns {Object} Cores do tema
+ */
+function getThemeColors() {
+    const themes = {
+        ruby: { primary: '#E74C3C', secondary: '#C0392B' },
+        sapphire: { primary: '#3498DB', secondary: '#2980B9' },
+        emerald: { primary: '#2ECC71', secondary: '#27AE60' },
+        amethyst: { primary: '#9B59B6', secondary: '#8E44AD' },
+        topaz: { primary: '#F39C12', secondary: '#E67E22' },
+        pearl: { primary: '#ECF0F1', secondary: '#BDC3C7' },
+        diamond: { primary: '#00D4FF', secondary: '#0099CC' }
+    };
+    return themes[getCurrentTheme()] || themes.ruby;
+}
+

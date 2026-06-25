@@ -9,8 +9,8 @@ class EnviarEmail {
     // ============================================================
     // ENVIAR EMAIL DE CONFIRMAÇÃO DE REGISTO
     // ============================================================
-    public function enviar_confirmacao_registo($email, $purl, $slug) {
-        $link = BASE_URL . 'index.php?a=confirmar_email&purl=' . $purl;
+    public function enviar_confirmacao_registo($email, $token, $slug) {
+    $link = BASE_URL . 'index.php?a=confirmar_email&token=' . $token;
         $site_link = BASE_URL . $slug . '/';
         
         $mail = new PHPMailer(true);
@@ -54,7 +54,8 @@ class EnviarEmail {
     
 public function enviar_recuperacao_codigo($email, $token, $slug)
 {
-    $link = BASE_URL . 'index.php?a=recuperar_codigo_confirmar&token=' . urlencode($token);
+      // 🔥 O link DEVE incluir o slug para identificar o cliente
+    $link = BASE_URL . 'index.php?a=recuperar_codigo_confirmar&token=' . urlencode($token) . '&slug=' . urlencode($slug);
     
     $mail = new PHPMailer(true);
     try {
@@ -83,9 +84,13 @@ public function enviar_recuperacao_codigo($email, $token, $slug)
         $mail->send();
         return true;
     } catch (Exception $e) {
-        error_log("Erro ao enviar email: " . $mail->ErrorInfo);
-        return false;
-    }
+    error_log("❌ ERRO EMAIL RECUPERAÇÃO: " . $e->getMessage());
+    error_log("❌ ERRO EMAIL LINE: " . $e->getLine());
+    error_log("❌ ERRO EMAIL FILE: " . $e->getFile());
+    error_log("❌ EMAIL DESTINO: " . $email);
+    error_log("❌ TOKEN: " . $token);
+    return false;
+}
 }
     
     // ============================================================

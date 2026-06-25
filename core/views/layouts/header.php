@@ -19,7 +19,7 @@ $base_url = BASE_URL . CLIENTE_SLUG . '/';
            <?php if($config->get('logo_imagem')): ?>
                <img src="<?= BASE_URL ?>assets/images/<?= $config->get('logo_imagem') ?>" alt="Logotipo" style="height: 40px; width: auto; margin-right: 8px;">
            <?php endif; ?>
-           <span class="logo-part1"><?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?></span><span class="logo-part2"><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></span>
+           <span class="logo-part1"><?= htmlspecialchars($config->get('logo_parte1', 'Seven')) ?></span><span class="logo-part2"><?= htmlspecialchars($config->get('logo_parte2', 'Lux')) ?></span>
        </a>
         
         <button class="nav-toggle" id="navToggle">

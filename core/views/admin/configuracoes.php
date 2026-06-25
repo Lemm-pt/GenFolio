@@ -19,12 +19,12 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Logotipo - Parte 1 (cor normal)</label>
-                <input type="text" name="logo_parte1" class="form-control" value="<?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?>">
+                <input type="text" name="logo_parte1" class="form-control" value="<?= htmlspecialchars($config->get('logo_parte1', 'Seven')) ?>">
                 <small class="text-muted">Ex: "Vitrine" – aparecerá em branco</small>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Logotipo - Parte 2 (cor dourada)</label>
-                <input type="text" name="logo_parte2" class="form-control" value="<?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?>">
+                <input type="text" name="logo_parte2" class="form-control" value="<?= htmlspecialchars($config->get('logo_parte2', 'Lux')) ?>">
                 <small class="text-muted">Ex: ".lemm" – aparecerá dourado</small>
             </div>
         </div>
@@ -43,7 +43,7 @@
         
         <div class="mb-3">
             <label class="form-label fw-bold">Slogan</label>
-            <input type="text" name="slogan" class="form-control" value="<?= htmlspecialchars($config->get('slogan', 'Soluções Personalizadas para web vitrine')) ?>">
+            <input type="text" name="slogan" class="form-control" value="<?= htmlspecialchars($config->get('slogan', 'Soluções Personalizadas para web ')) ?>">
         </div>
 
         <div class="mb-3">
@@ -54,13 +54,13 @@
         
         <div class="mb-3">
             <label class="form-label fw-bold">Meta Description</label>
-            <textarea name="meta_description" class="form-control" rows="2"><?= htmlspecialchars($config->get('meta_description', 'Vitrine.lemm - Soluções digitais para o seu negócio')) ?></textarea>
+            <textarea name="meta_description" class="form-control" rows="2"><?= htmlspecialchars($config->get('meta_description', 'SevenLux - Soluções digitais para o seu negócio')) ?></textarea>
             <small class="text-muted">Descrição que aparece nos resultados de busca (max 160 caracteres)</small>
         </div>
         
         <div class="mb-3">
             <label class="form-label fw-bold">Keywords (max 7, separadas por vírgula)</label>
-            <input type="text" name="meta_keywords" class="form-control" value="<?= htmlspecialchars($config->get('meta_keywords', 'vitrine,lemm,digital')) ?>">
+            <input type="text" name="meta_keywords" class="form-control" value="<?= htmlspecialchars($config->get('meta_keywords', 'Apps,lemm,digital')) ?>">
         </div>
         
         <div class="row">
@@ -89,8 +89,8 @@
         <h4>Pré-visualização do Logotipo</h4>
         <div class="text-center p-4" style="background: #1a1a2e; border-radius: 10px;">
             <h2 class="mb-0">
-                <span style="color: white;"><?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?></span>
-                <span style="color: #C6A43F;"><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></span>
+                <span style="color: white;"><?= htmlspecialchars($config->get('logo_parte1', 'Seven')) ?></span>
+                <span style="color: #C6A43F;"><?= htmlspecialchars($config->get('logo_parte2', 'Lux')) ?></span>
             </h2>
             <p class="text-white-50 mt-2"><?= htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) ?></p>
         </div>

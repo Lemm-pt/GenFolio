@@ -2,8 +2,8 @@
 <section class="hero" style="padding-top: 40px; min-height: 60vh; display: flex; align-items: center;">
     <div class="container text-center text-white">
         <h1>
-            <span class="logo-part1"><?= htmlspecialchars($config->get('logo_parte1', 'Vitrine')) ?></span>
-            <span style="color:#C6A43F"><?= htmlspecialchars($config->get('logo_parte2', '.lemm')) ?></span>
+            <span class="logo-part1"><?= htmlspecialchars($config->get('logo_parte1', 'Seven')) ?></span>
+            <span style="color:#C6A43F"><?= htmlspecialchars($config->get('logo_parte2', 'Lux')) ?></span>
         </h1>
         <p class="lead"><?= htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) ?></p>
 
@@ -186,6 +186,14 @@
                         unset($_SESSION['msg_erro']); ?></div>
                 <?php endif; ?>
                 <form action="?a=contacto" method="POST">
+                    
+                    <?php // para evitar os BOT automáticos ?>
+                    <input type="text" name="empresa_interna_777" style="display:none">
+
+                     <?php  //  Humano → 20 segundos, 30 segundos, 1 minuto.  Bot → 0.1 segundos.
+                          $_SESSION['contact_form_time'] = time();
+                      ?>
+
                     <input type="text" name="nome" class="form-control mb-3" placeholder="Seu nome" required>
                     <input type="email" name="email" class="form-control mb-3" placeholder="Seu email" required>
                     <input type="tel" name="telefone" class="form-control mb-3" placeholder="Telefone">

@@ -12,6 +12,11 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/app.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/seven-lux.css">
+    <script>
+    // Definir BASE_URL para o JavaScript
+    var BASE_URL = '<?= BASE_URL ?>';
+   </script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;

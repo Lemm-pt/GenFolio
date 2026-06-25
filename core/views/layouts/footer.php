@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-12 text-center">
                 <small class="text-white-50">
-                    <?= $config->get('logo_parte1', 'Vitrine') ?><?= $config->get('logo_parte2', '.lemm') ?> &copy; <?= date('Y') ?>
+                    <?= $config->get('logo_parte1', 'Seven') ?><?= $config->get('logo_parte2', 'Lux') ?> &copy; <?= date('Y') ?>
                 </small>
                 <br>
                 <small class="text-white-50">

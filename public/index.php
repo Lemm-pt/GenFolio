@@ -8,6 +8,27 @@
  * @package SevenLux
  */
 
+// ============================================================
+// CONFIGURAÇÕES SEGURAS DE SESSÃO (Cookies)
+// ============================================================
+
+// Definir parâmetros seguros para os cookies de sessão
+// HttpOnly → JS não acede ao cookie
+// Secure → só enviado por HTTPS
+// SameSite=Strict → impede CSRF via cross-site
+
+// Detetar se está em HTTPS (para ativar Secure apenas em produção)
+$isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') 
+            || $_SERVER['SERVER_PORT'] == 443;
+
+session_set_cookie_params([
+    'httponly' => true,           // Proteção contra XSS
+    'secure'   => $isSecure,      // Só HTTPS (em produção)
+    'samesite' => 'Strict'        // Proteção CSRF
+]);
+
+// Iniciar sessão (com as novas configurações)
+
 session_start();
 
 require_once('../vendor/autoload.php');
@@ -48,6 +69,7 @@ $admin_routes = [
     'admin_galeria',
     'admin_produtos',
     'admin_publicacoes',
+    'admin_logs', 
 ];
 
 // ============================================================

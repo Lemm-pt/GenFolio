@@ -5,7 +5,7 @@
 
 <div class="admin-sidebar">
     <div class="sidebar-header">
-        <h4><i class="fas fa-crown"></i> Vitrine<span class="text-gold">.lemm</span></h4>
+        <h4><i class="fas fa-crown"></i> Seven<span class="text-gold">Lux</span></h4>
         <button class="sidebar-close d-md-none" onclick="toggleMobileMenu()">
             <i class="fas fa-times"></i>
         </button>
@@ -30,12 +30,15 @@
         <a href="?a=admin_configuracoes" class="nav-item <?= ($_GET['a'] ?? '') == 'admin_configuracoes' ? 'active' : '' ?>">
             <i class="fas fa-cog"></i> Configurações
         </a>
+        <a href="?a=admin_logs" class="nav-item <?= ($_GET['a'] ?? '') == 'admin_logs' ? 'active' : '' ?>">
+    <i class="fas fa-clipboard-list"></i> Logs
+</a>
     </nav>
     
     <div class="sidebar-footer">
      <a href="<?= BASE_URL . ($_SESSION['cliente_slug'] ?? 'vitrine-demo') ?>/" target="_blank" class="btn btn-outline-light w-100">
-    <i class="fas fa-external-link-alt"></i> Ver Site
-</a>
+          <i class="fas fa-external-link-alt"></i> Ver Site
+    </a>
     </div>
 </div>
 

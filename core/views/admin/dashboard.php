@@ -48,7 +48,7 @@
                     <i class="fas fa-cog"></i> Configurações Rápidas
                 </div>
                 <div class="card-body">
-                    <p><strong>Logotipo:</strong> <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('logo_parte1', 'Vitrine')) : 'Vitrine' ?><?= isset($config) ? htmlspecialchars($config->get('logo_parte2', '.lemm')) : '.lemm' ?></span></p>
+                    <p><strong>Logotipo:</strong> <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('logo_parte1', 'Seven')) : 'Seven' ?><?= isset($config) ? htmlspecialchars($config->get('logo_parte2', 'Lux')) : 'Lux' ?></span></p>
                     <p><strong>Slogan:</strong> <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) : 'Soluções Personalizadas' ?></span></p>
                     <p><strong>Email:</strong> <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('email_contacto', 'Não definido')) : 'Não definido' ?></span></p>
                     <p><strong>Telefone:</strong> <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('telefone', 'Não definido')) : 'Não definido' ?></span></p>
@@ -64,8 +64,8 @@
                 </div>
                 <div class="card-body text-center">
                     <h3 class="mb-0">
-                        <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('logo_parte1', 'Vitrine')) : 'Vitrine' ?></span>
-                        <span class="text-gold"><?= isset($config) ? htmlspecialchars($config->get('logo_parte2', '.lemm')) : '.lemm' ?></span>
+                        <span class="text-dark"><?= isset($config) ? htmlspecialchars($config->get('logo_parte1', 'Seven')) : 'Seven' ?></span>
+                        <span class="text-gold"><?= isset($config) ? htmlspecialchars($config->get('logo_parte2', 'Lux')) : 'Lux' ?></span>
                     </h3>
                     <p class="text-muted mt-2"><?= isset($config) ? htmlspecialchars($config->get('slogan', 'Soluções Personalizadas')) : 'Soluções Personalizadas' ?></p>
                 </div>
