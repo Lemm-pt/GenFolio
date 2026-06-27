@@ -5,7 +5,7 @@
                 <div class="card-header bg-success text-white">
                     <h3><i class="fas fa-check-circle"></i> Registo Efetuado!</h3>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="color: #013f04 !important;">
                     <p>Enviamos um email de confirmação para <strong><?= htmlspecialchars($_SESSION['email_temporario'] ?? 'seu email') ?></strong>.</p>
                     <p>Por favor, verifique a sua caixa de entrada e clique no link de confirmação para ativar a sua conta.</p>
                     <p>Após confirmar o email, será redirecionado automaticamente para o login.</p>

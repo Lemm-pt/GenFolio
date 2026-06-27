@@ -2,16 +2,17 @@
 namespace core\models;
 
 use core\classes\Database;
+use core\classes\ImageHelper;
 
 class Galeria {
     private $bd;
     private $cliente_id;
     
-   // Recebe cliente_id como parâmetro, padrão = 1 (apenas fallback)
     public function __construct($cliente_id = null) {
         $this->bd = new Database();
         $this->cliente_id = $cliente_id ?? (defined('CLIENTE_ID') ? CLIENTE_ID : 1);
     }
+    
     public function listar() {
         $result = $this->bd->select("SELECT * FROM sevenlux_galeria WHERE cliente_id = :cliente_id ORDER BY ordem", [':cliente_id' => $this->cliente_id]);
         return $result ? $result : [];
@@ -32,9 +33,18 @@ class Galeria {
     
     public function criar($imagem, $legenda = null) {
         $ordem = $this->contar() + 1;
+        
+        // 🔥 COMPRIMIR IMAGEM
+        $uploadDir = __DIR__ . '/../../public/assets/images/galeria/';
+        $filename = ImageHelper::processarImagem($imagem, 'galeria', $uploadDir);
+        
+        if (!$filename) {
+            return false;
+        }
+        
         $this->bd->insert("INSERT INTO sevenlux_galeria (cliente_id, imagem, legenda, ordem) VALUES (:cliente_id, :imagem, :legenda, :ordem)", [
             ':cliente_id' => $this->cliente_id,
-            ':imagem' => $imagem,
+            ':imagem' => $filename,
             ':legenda' => $legenda,
             ':ordem' => $ordem
         ]);

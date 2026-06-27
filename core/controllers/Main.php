@@ -395,24 +395,6 @@ class Main
     
 
     /**
- * Verifica se um código corresponde ao hash
- * Usa hash_equals para prevenir timing attacks
- * 
- * @param string $digits
- * @param string $hash
- * @return bool
- */
-private function verificarCodigo($digits, $hash)
-{
-    // Se o hash estiver vazio (migração), retornar false
-    if (empty($hash)) {
-        return false;
-    }
-    
-    // Usar password_verify (já é resistente a timing attacks)
-    return password_verify($digits, $hash);
-}
-    /**
      * Logs out the current client (destroys session and redirects to home).
      */
     public function logout()
@@ -450,15 +432,24 @@ public function recuperar_codigo()
     
     // Se não houver slug, redirecionar para a página inicial do demo
     if (empty($slug)) {
-        // Não conseguimos determinar o slug, redirecionar para home do demo
         header("Location: " . BASE_URL . "vitrine-demo/");
         exit;
     }
     
-    $config = new Configuracao();
+    // 🔥 Buscar o cliente_id a partir do slug
+    $db = new \core\classes\Database();
+    $cliente = $db->select(
+        "SELECT id_cliente FROM sevenlux_clientes WHERE slug = :slug AND activo = 1",
+        [':slug' => $slug]
+    );
     
-    // Definir CLIENTE_SLUG temporariamente para a view
-    define('TEMP_CLIENTE_SLUG', $slug);
+    $clienteId = ($cliente && !empty($cliente)) ? (int)$cliente[0]->id_cliente : 1;
+    
+    // 🔥 Passar o cliente_id para o Configuracao
+    $config = new Configuracao($clienteId, true);
+    
+    // 🔥 Guardar o slug na sessão para usar depois
+    $_SESSION['recovery_slug'] = $slug;
     
     Store::Layout([
         'layouts/html_header',
@@ -468,7 +459,7 @@ public function recuperar_codigo()
         'layouts/html_footer'
     ], [
         'config' => $config,
-        'recovery_slug' => $slug  // Passar o slug para a view
+        'recovery_slug' => $slug
     ]);
 }
     
@@ -493,13 +484,11 @@ public function recuperar_codigo_submit()
     
     if (empty($slug)) {
         $_SESSION['erro'] = "Por favor, insira o slug do seu site.";
-        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo&slug=" . urlencode($slug));
+        header("Location: " . BASE_URL . "index.php?a=recuperar_codigo");
         exit;
     }
     
     $clientModel = new Clientes();
-
-
     $result = $clientModel->gerarTokenRecuperacaoCodigo($slug);
     
     // Verificar se o resultado é um array e tem as chaves necessárias
@@ -509,19 +498,17 @@ public function recuperar_codigo_submit()
         $emailEnviado = $mailer->enviar_recuperacao_codigo($result['email'], $result['token'], $slug);
         
         if ($emailEnviado) {
-
-        // 🔥 SUCESSO - Resetar tentativas
+            // 🔥 SUCESSO - Resetar tentativas
             $rateLimiter->reset('recuperacao');
 
-          // 🔥 LOG: Pedido de recuperação de código
-          \core\classes\Logger::log('recuperar_codigo', "Pedido de recuperação de código para slug: $slug");
+            // 🔥 LOG: Pedido de recuperação de código
+            \core\classes\Logger::log('recuperar_codigo', "Pedido de recuperação de código para slug: $slug");
 
             $_SESSION['sucesso'] = "✅ Enviamos um email com as instruções para recuperar o seu código de acesso.";
         } else {
             $_SESSION['erro'] = "❌ Erro ao enviar email. Tente novamente mais tarde.";
         }
     } else {
-
         // 🔥 Slug inválido - registar tentativa
         $rateLimiter->registrarTentativa('recuperacao');
         // Não revelar se o slug existe ou não (segurança)

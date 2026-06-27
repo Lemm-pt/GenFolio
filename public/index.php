@@ -3,33 +3,40 @@
  * Front Controller
  * 
  * Handles routing, slug detection, and session management for the multi-tenant system.
- * Each client has a unique slug (e.g., /my-business/) which determines which site is loaded.
- * 
- * @package SevenLux
  */
 
 // ============================================================
-// CONFIGURAÇÕES SEGURAS DE SESSÃO (Cookies)
+// CONFIGURAÇÕES SEGURAS DE SESSÃO
 // ============================================================
 
-// Definir parâmetros seguros para os cookies de sessão
-// HttpOnly → JS não acede ao cookie
-// Secure → só enviado por HTTPS
-// SameSite=Strict → impede CSRF via cross-site
+// No index.php ou config.php
+// Aumentar limites de upload (se permitido pelo host)
 
-// Detetar se está em HTTPS (para ativar Secure apenas em produção)
+@ini_set('upload_max_filesize', '10M');
+@ini_set('post_max_size', '10M');
+@ini_set('memory_limit', '128M');
+@ini_set('max_execution_time', 120);
+@ini_set('max_input_time', 120);
+
 $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') 
             || $_SERVER['SERVER_PORT'] == 443;
 
 session_set_cookie_params([
-    'httponly' => true,           // Proteção contra XSS
-    'secure'   => $isSecure,      // Só HTTPS (em produção)
-    'samesite' => 'Strict'        // Proteção CSRF
+    'httponly' => true,
+    'secure'   => $isSecure,
+    'samesite' => 'Strict'
 ]);
 
-// Iniciar sessão (com as novas configurações)
-
 session_start();
+
+// No index.php ou config.php
+// Aumentar limites de upload (se permitido pelo host)
+
+@ini_set('upload_max_filesize', '10M');
+@ini_set('post_max_size', '10M');
+@ini_set('memory_limit', '128M');
+@ini_set('max_execution_time', 120);
+@ini_set('max_input_time', 120);
 
 require_once('../vendor/autoload.php');
 
@@ -41,7 +48,6 @@ $slug   = $_GET['slug'] ?? $_GET['c'] ?? null;
 
 // ============================================================
 // Routes that do NOT require a client slug in the URL
-// (authentication, registration, password recovery, etc.)
 // ============================================================
 $routes_without_slug = [
     'admin_login_submit',
@@ -60,7 +66,7 @@ $routes_without_slug = [
 ];
 
 // ============================================================
-// Admin routes that require the user to be logged in
+// Admin routes
 // ============================================================
 $admin_routes = [
     'admin',
@@ -73,7 +79,7 @@ $admin_routes = [
 ];
 
 // ============================================================
-// Check admin login for protected routes
+// Check admin login
 // ============================================================
 if (in_array($action, $admin_routes) && !isset($_SESSION['cliente_id'])) {
     header("Location: " . BASE_URL . "index.php?a=admin_login");
@@ -84,7 +90,6 @@ if (in_array($action, $admin_routes) && !isset($_SESSION['cliente_id'])) {
 // Define constants CLIENTE_SLUG and CLIENTE_ID
 // ============================================================
 if (in_array($action, $routes_without_slug)) {
-    // Routes without slug: use session if available, otherwise fallback to demo client
     if (isset($_SESSION['cliente_id'], $_SESSION['cliente_slug'])) {
         define('CLIENTE_SLUG', $_SESSION['cliente_slug']);
         define('CLIENTE_ID', (int) $_SESSION['cliente_id']);
@@ -93,37 +98,32 @@ if (in_array($action, $routes_without_slug)) {
         define('CLIENTE_ID', 1);
     }
 } else {
-    // Routes that require a valid client slug from the URL
     if (empty($slug)) {
-        // No slug provided – redirect to the demo client
         header("Location: " . BASE_URL . "vitrine-demo/");
         exit;
     }
 
-    // 🔐 SECURITY: If user is already logged in, they can only access their own slug
     if (isset($_SESSION['cliente_id'], $_SESSION['cliente_slug'])) {
         if ($slug !== $_SESSION['cliente_slug']) {
-            // Attempt to access another client's admin – log out and force login
             session_destroy();
             header("Location: " . BASE_URL . $slug . "/admin_login?erro=acesso_negado");
             exit;
         }
-        // Use session data directly (fast, no DB query)
         define('CLIENTE_SLUG', $_SESSION['cliente_slug']);
         define('CLIENTE_ID', (int) $_SESSION['cliente_id']);
     } else {
-        // Not logged in – verify the slug from database (public access)
         $db = new \core\classes\Database();
         $client = $db->select(
-            "SELECT id_cliente, slug FROM sevenlux_clientes WHERE slug = :slug AND activo = 1",
+            "SELECT id_cliente, slug, locale, currency FROM sevenlux_clientes WHERE slug = :slug AND activo = 1",
             [':slug' => $slug]
         );
 
         if ($client && !empty($client)) {
             define('CLIENTE_SLUG', $client[0]->slug);
             define('CLIENTE_ID', (int) $client[0]->id_cliente);
+            define('CLIENTE_LOCALE', $client[0]->locale ?? 'pt');
+            define('CLIENTE_CURRENCY', $client[0]->currency ?? 'EUR');
         } else {
-            // Invalid slug – redirect to demo client
             header("Location: " . BASE_URL . "vitrine-demo/");
             exit;
         }
@@ -131,35 +131,45 @@ if (in_array($action, $routes_without_slug)) {
 }
 
 // ============================================================
-// Detetar idioma baseado no país do cliente (se existir)
+// Fallback: se CLIENTE_LOCALE ou CLIENTE_CURRENCY não estiverem definidos
 // ============================================================
-if (defined('CLIENTE_ID') && CLIENTE_ID > 0) {
-    $dbLocale = new \core\classes\Database();
-    $clienteInfo = $dbLocale->select(
-        "SELECT pais FROM sevenlux_clientes WHERE id_cliente = :id",
-        [':id' => CLIENTE_ID]
-    );
-    
-    if ($clienteInfo && !empty($clienteInfo[0]->pais)) {
-        $pais = $clienteInfo[0]->pais;
-        $idioma = \core\classes\LocaleHelper::getLanguageFromCountry($pais);
-        $moeda = \core\classes\LocaleHelper::getCurrencyFromCountry($pais);
-        
-        define('CLIENTE_LOCALE', $idioma);
-        define('CLIENTE_CURRENCY', $moeda);
-        
-        // Definir o locale do PHP
-        setlocale(LC_ALL, $idioma . '_' . strtoupper($idioma) . '.utf8');
+if (!defined('CLIENTE_LOCALE')) {
+    if (defined('CLIENTE_ID') && CLIENTE_ID > 0) {
+        $dbLocale = new \core\classes\Database();
+        $clienteInfo = $dbLocale->select(
+            "SELECT locale, currency FROM sevenlux_clientes WHERE id_cliente = :id",
+            [':id' => CLIENTE_ID]
+        );
+        if ($clienteInfo && !empty($clienteInfo[0])) {
+            define('CLIENTE_LOCALE', $clienteInfo[0]->locale ?? 'pt');
+            define('CLIENTE_CURRENCY', $clienteInfo[0]->currency ?? 'EUR');
+        } else {
+            define('CLIENTE_LOCALE', 'pt');
+            define('CLIENTE_CURRENCY', 'EUR');
+        }
     } else {
         define('CLIENTE_LOCALE', 'pt');
         define('CLIENTE_CURRENCY', 'EUR');
     }
-} else {
-    define('CLIENTE_LOCALE', 'pt');
-    define('CLIENTE_CURRENCY', 'EUR');
+}
+
+// Definir o locale do PHP
+setlocale(LC_ALL, CLIENTE_LOCALE . '_' . strtoupper(CLIENTE_LOCALE) . '.utf8');
+
+// ============================================================
+// 🔥 REGISTAR VISITA (apenas para páginas públicas, não admin)
+// ============================================================
+if (!in_array($action, $admin_routes) && !in_array($action, $routes_without_slug)) {
+    try {
+        $visitas = new \core\models\Visitas(CLIENTE_ID, CLIENTE_SLUG);
+        $visitas->registrarVisita();
+    } catch (Exception $e) {
+        // Silencioso - não interrompe o funcionamento
+        error_log("Erro ao registar visita: " . $e->getMessage());
+    }
 }
 
 // ============================================================
-// Load route definitions (maps actions to controllers)
+// Load route definitions
 // ============================================================
 require_once('../core/rotas.php');

@@ -7,8 +7,8 @@
             <i class="fas fa-bars"></i>
         </button>
           <a class="navbar-brand" href="<?= Store::getBaseUrl() ?>admin">
-               <i class="fas fa-crown"></i>  Admin
-         </a
+              <i class="fas fa-crown"></i> Admin
+         </a>
         <div>
             <a href="?a=admin_configuracoes" class="btn btn-sm btn-outline-gold me-2">
                 <i class="fas fa-cog"></i> Configs

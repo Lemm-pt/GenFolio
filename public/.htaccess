@@ -19,3 +19,16 @@ RewriteRule ^([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$ index.php?slug=$1&a=$2 [QSA,L]
 
 # Página inicial do cliente: /{slug}/
 RewriteRule ^([a-zA-Z0-9_-]+)/?$ index.php?slug=$1&a=inicio [QSA,L]
+
+
+# .htaccess
+# Configurações PHP
+
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value memory_limit 128M
+php_value max_execution_time 120
+php_value max_input_time 120
+
+# Ativar GD (se o host permitir)
+php_value extension gd

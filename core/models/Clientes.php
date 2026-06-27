@@ -23,32 +23,18 @@ class Clientes
     }
 
     // ============================================================
-    // 🔐 MÉTODOS DE HASH COM ARGON2ID (substitui SHA256)
+    // 🔐 MÉTODOS DE HASH COM ARGON2ID
     // ============================================================
     
-    /**
-     * Gera hash do código usando Argon2id
-     * O salt é gerado automaticamente pelo password_hash()
-     * 
-     * @param string $digits Código de acesso (7 dígitos)
-     * @return string Hash seguro
-     */
     private function hashDigits($digits)
     {
         return password_hash($digits, PASSWORD_ARGON2ID, [
-            'memory_cost' => 65536,  // 64 MB
-            'time_cost'   => 4,      // 4 iterações
-            'threads'     => 2       // 2 threads
+            'memory_cost' => 65536,
+            'time_cost'   => 4,
+            'threads'     => 2
         ]);
     }
 
-    /**
-     * Verifica se o código corresponde ao hash
-     * 
-     * @param string $digits Código fornecido
-     * @param string $hash Hash guardado
-     * @return bool
-     */
     private function verifyDigits($digits, $hash)
     {
         return password_verify($digits, $hash);
@@ -58,89 +44,261 @@ class Clientes
     // REGISTO DE CLIENTE
     // ============================================================
 
-   public function registar_cliente($email, $slug, $digits, $cidade = null, $pais = null, $categoria = null)
-{
-    if (strlen($digits) < 1 || strlen($digits) > 7 || !ctype_digit($digits)) {
-        error_log("❌ Código inválido: deve ter entre 1 e 7 dígitos");
-        return false;
+    public function registar_cliente($email, $slug, $digits, $cidade = null, $pais = null, $categoria = null)
+    {
+        if (strlen($digits) < 1 || strlen($digits) > 7 || !ctype_digit($digits)) {
+            error_log("❌ Código inválido: deve ter entre 1 e 7 dígitos");
+            return false;
+        }
+
+        $token = Store::criarHash();
+        $hash = $this->hashDigits($digits);
+        $expiresAt = date('Y-m-d H:i:s', time() + 86400);
+
+        // 🔥 Detetar idioma e moeda com base no país
+        $locale = $this->getLocaleFromCountry($pais);
+        $currency = $this->getCurrencyFromCountry($pais);
+
+        $params = [
+            ':email'        => strtolower(trim($email)),
+            ':slug'         => $slug,
+            ':hash_digitos' => $hash,
+            ':email_confirmation_token' => $token,
+            ':token_expires_at' => $expiresAt,
+            ':activo'       => 0,
+            ':cidade'       => $cidade ?? null,
+            ':pais'         => $pais ?? null,
+            ':categoria'    => $categoria ?? null,
+            ':locale'       => $locale,
+            ':currency'     => $currency
+        ];
+
+        $result = $this->db->insert("
+            INSERT INTO sevenlux_clientes 
+            (email, slug, hash_digitos, email_confirmation_token, token_expires_at, activo, cidade, pais, categoria, locale, currency, created_at, updated_at) 
+            VALUES 
+            (:email, :slug, :hash_digitos, :email_confirmation_token, :token_expires_at, :activo, :cidade, :pais, :categoria, :locale, :currency, NOW(), NOW())
+        ", $params);
+
+        if ($result === false) {
+            error_log("❌ Erro ao inserir cliente: " . print_r($params, true));
+            return false;
+        }
+
+        error_log("✅ Cliente registado com sucesso: $slug (locale: $locale, currency: $currency)");
+        return $token;
     }
 
-    $token = Store::criarHash();
-    $hash = $this->hashDigits($digits);
     
-    // 🔥 DEFINIR EXPIRAÇÃO (24 HORAS)
-    $expiresAt = date('Y-m-d H:i:s', time() + 86400); // 24 horas
+   /**
+     * Deteta o idioma com base no país
+     */
+    private function getLocaleFromCountry($pais)
+    {
+        if (empty($pais)) {
+            return 'pt';
+        }
 
-    $params = [
-        ':email'        => strtolower(trim($email)),
-        ':slug'         => $slug,
-        ':hash_digitos' => $hash,
-        ':email_confirmation_token' => $token,
-        ':token_expires_at' => $expiresAt,  // ← ADICIONAR ESTA LINHA
-        ':activo'       => 0,
-        ':cidade'       => $cidade ?? null,
-        ':pais'         => $pais ?? null,
-        ':categoria'    => $categoria ?? null
-    ];
+        $map = [
+            'portugal' => 'pt',
+            'brasil' => 'pt-br',
+            'angola' => 'pt',
+            'moçambique' => 'pt',
+            'cabo verde' => 'pt',
+            'guiné-bissau' => 'pt',
+            'são tomé' => 'pt',
+            'timor-leste' => 'pt',
+            'espanha' => 'es',
+            'frança' => 'fr',
+            'reino unido' => 'en',
+            'inglaterra' => 'en',
+            'estados unidos' => 'en',
+            'eua' => 'en',
+            'alemanha' => 'de',
+            'itália' => 'it',
+            'holanda' => 'nl',
+            'bélgica' => 'nl',
+            'suíça' => 'de',
+            'áustria' => 'de',
+            'irlanda' => 'en',
+            'canadá' => 'en',
+            'austrália' => 'en',
+            'japão' => 'ja',
+            'china' => 'zh',
+            'rússia' => 'ru',
+            'méxico' => 'es',
+            'argentina' => 'es',
+            'colômbia' => 'es',
+            'peru' => 'es',
+            'chile' => 'es',
+            'venezuela' => 'es',
+            'índia' => 'hi',
+            'áfrica do sul' => 'en',
+            'egito' => 'ar',
+            'israel' => 'he',
+            'coreia do sul' => 'ko',
+            'singapura' => 'en',
+            'malásia' => 'ms',
+            'indonésia' => 'id',
+            'turquia' => 'tr',
+            'grécia' => 'el',
+            'polónia' => 'pl',
+            'suécia' => 'sv',
+            'noruega' => 'no',
+            'dinamarca' => 'da',
+            'finlândia' => 'fi',
+            'ucrânia' => 'uk',
+            'roménia' => 'ro',
+            'bulgária' => 'bg',
+            'hungria' => 'hu',
+            'república checa' => 'cs',
+            'eslováquia' => 'sk',
+            'eslovénia' => 'sl',
+            'croácia' => 'hr',
+            'sérvia' => 'sr',
+            'marrocos' => 'ar',
+            'emirados árabes' => 'ar',
+            'arábia saudita' => 'ar',
+            'tailândia' => 'th',
+            'vietname' => 'vi',
+            'filipinas' => 'tl',
+            'paquistão' => 'ur',
+            'bangladesh' => 'bn',
+            'nigéria' => 'en',
+            'quénia' => 'sw',
+            'nova zelândia' => 'en'
+        ];
 
-    $result = $this->db->insert("
-        INSERT INTO sevenlux_clientes 
-        (email, slug, hash_digitos, email_confirmation_token, token_expires_at, activo, cidade, pais, categoria, created_at, updated_at) 
-        VALUES 
-        (:email, :slug, :hash_digitos, :email_confirmation_token, :token_expires_at, :activo, :cidade, :pais, :categoria, NOW(), NOW())
-    ", $params);
+        $paisLower = strtolower(trim($pais));
+        $paisLower = iconv('utf-8', 'ascii//TRANSLIT', $paisLower);
 
-    if ($result === false) {
-        error_log("❌ Erro ao inserir cliente: " . print_r($params, true));
-        return false;
+        foreach ($map as $key => $locale) {
+            if (strpos($paisLower, $key) !== false) {
+                return $locale;
+            }
+        }
+
+        return 'pt'; // fallback
     }
 
-    error_log("✅ Cliente registado com sucesso: $slug (token expira em 24h)");
-    return $token;
-}
+    /**
+     * Deteta a moeda com base no país
+     */
+    private function getCurrencyFromCountry($pais)
+    {
+        if (empty($pais)) {
+            return 'EUR';
+        }
 
-    // ============================================================
+        $map = [
+            'portugal' => 'EUR',
+            'brasil' => 'BRL',
+            'angola' => 'AOA',
+            'moçambique' => 'MZN',
+            'cabo verde' => 'CVE',
+            'guiné-bissau' => 'XOF',
+            'são tomé' => 'STN',
+            'timor-leste' => 'USD',
+            'espanha' => 'EUR',
+            'frança' => 'EUR',
+            'alemanha' => 'EUR',
+            'itália' => 'EUR',
+            'holanda' => 'EUR',
+            'bélgica' => 'EUR',
+            'irlanda' => 'EUR',
+            'estados unidos' => 'USD',
+            'reino unido' => 'GBP',
+            'suíça' => 'CHF',
+            'áustria' => 'EUR',
+            'canadá' => 'CAD',
+            'austrália' => 'AUD',
+            'japão' => 'JPY',
+            'china' => 'CNY',
+            'rússia' => 'RUB',
+            'méxico' => 'MXN',
+            'argentina' => 'ARS',
+            'colômbia' => 'COP',
+            'peru' => 'PEN',
+            'chile' => 'CLP',
+            'venezuela' => 'VES',
+            'índia' => 'INR',
+            'áfrica do sul' => 'ZAR',
+            'egito' => 'EGP',
+            'israel' => 'ILS',
+            'coreia do sul' => 'KRW',
+            'singapura' => 'SGD',
+            'malásia' => 'MYR',
+            'indonésia' => 'IDR',
+            'turquia' => 'TRY',
+            'grécia' => 'EUR',
+            'polónia' => 'PLN',
+            'suécia' => 'SEK',
+            'noruega' => 'NOK',
+            'dinamarca' => 'DKK',
+            'finlândia' => 'EUR',
+            'ucrânia' => 'UAH',
+            'roménia' => 'RON',
+            'bulgária' => 'BGN',
+            'hungria' => 'HUF',
+            'república checa' => 'CZK',
+            'eslováquia' => 'EUR',
+            'eslovénia' => 'EUR',
+            'croácia' => 'EUR',
+            'sérvia' => 'RSD',
+            'marrocos' => 'MAD',
+            'emirados árabes' => 'AED',
+            'arábia saudita' => 'SAR',
+            'tailândia' => 'THB',
+            'vietname' => 'VND',
+            'filipinas' => 'PHP',
+            'paquistão' => 'PKR',
+            'bangladesh' => 'BDT',
+            'nigéria' => 'NGN',
+            'quénia' => 'KES',
+            'nova zelândia' => 'NZD'
+        ];
+
+        $paisLower = strtolower(trim($pais));
+        $paisLower = iconv('utf-8', 'ascii//TRANSLIT', $paisLower);
+
+        foreach ($map as $key => $currency) {
+            if (strpos($paisLower, $key) !== false) {
+                return $currency;
+            }
+        }
+
+        return 'EUR'; // fallback
+    }
+
+ // ============================================================
     // LOGIN VALIDATION
     // ============================================================
 
-   // ============================================================
-// LOGIN VALIDATION
-// ============================================================
+    public function validar_login($slug, $digits)
+    {
+        $results = $this->db->select(
+            "SELECT * FROM sevenlux_clientes WHERE slug = :slug AND activo = 1 AND deleted_at IS NULL",
+            [':slug' => $slug]
+        );
 
-public function validar_login($slug, $digits)
-{
-    $results = $this->db->select(
-        "SELECT * FROM sevenlux_clientes WHERE slug = :slug AND activo = 1 AND deleted_at IS NULL",
-        [':slug' => $slug]
-    );
+        if (count($results) != 1) {
+            error_log("⚠️ Cliente não encontrado ou inativo: $slug");
+            return false;
+        }
 
-    if (count($results) != 1) {
-        error_log("⚠️ Cliente não encontrado ou inativo: $slug");
-        return false;
+        $client = $results[0];
+        $result = $this->verifyDigits($digits, $client->hash_digitos);
+        
+        if ($result) {
+            error_log("✅ Login bem-sucedido: $slug");
+            $this->resetAttempts($slug);
+            return $client;
+        } else {
+            error_log("❌ Falha de login: $slug (código incorreto)");
+            $this->incrementAttempts($slug, $client->tentativas_falhas);
+            return false;
+        }
     }
-
-    $client = $results[0];
-
-    // 🔥 DEBUG (remove depois de resolver)
-    error_log("=== VERIFICAÇÃO DE LOGIN ===");
-    error_log("Slug: $slug");
-    error_log("Código fornecido: '$digits' (tamanho: " . strlen($digits) . ")");
-    error_log("Hash guardado: " . substr($client->hash_digitos, 0, 30) . "...");
-    
-    $result = $this->verifyDigits($digits, $client->hash_digitos);
-    error_log("Resultado password_verify(): " . ($result ? 'VERDADEIRO ✅' : 'FALSO ❌'));
-    error_log("=============================");
-    
-    if ($result) {
-        error_log("✅ Login bem-sucedido: $slug");
-        $this->resetAttempts($slug);
-        return $client;
-    } else {
-        error_log("❌ Falha de login: $slug (código incorreto)");
-        $this->incrementAttempts($slug, $client->tentativas_falhas);
-        return false;
-    }
-}
 
     // ============================================================
     // RECUPERAÇÃO DE CÓDIGO

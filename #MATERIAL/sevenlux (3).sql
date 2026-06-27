@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 24-Jun-2026 às 23:26
+-- Tempo de geração: 26-Jun-2026 às 18:25
 -- Versão do servidor: 10.4.27-MariaDB
 -- versão do PHP: 8.2.0
 
@@ -55,7 +55,52 @@ INSERT INTO `sevenlux_audit_logs` (`id`, `cliente_id`, `usuario`, `acao`, `detal
 (10, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para teste88: 4 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:23:42'),
 (11, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para teste88: 8 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:23:48'),
 (12, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para teste88: 16 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:23:57'),
-(13, NULL, NULL, 'bloqueio_limite', 'Limite de 7 tentativas atingido para teste88', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:23:57');
+(13, NULL, NULL, 'bloqueio_limite', 'Limite de 7 tentativas atingido para teste88', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:23:57'),
+(14, 73, 'luciano@lemm.pt', 'login_sucesso', 'Login do cliente: teste88', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:29:15'),
+(15, 73, NULL, 'logout', 'Logout do cliente: teste88', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:38:08'),
+(16, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para vitrine-demo: 1 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:42:28'),
+(17, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para vitrine-demo: 2 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:42:33'),
+(18, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para vitrine-demo: 4 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:43:57'),
+(19, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para vitrine-demo: 8 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:44:02'),
+(20, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para vitrine-demo: 16 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:44:13'),
+(21, NULL, NULL, 'bloqueio_limite', 'Limite de 7 tentativas atingido para vitrine-demo', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:44:13'),
+(22, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para vitrine-demo: 32 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:49:19'),
+(23, NULL, NULL, 'bloqueio_limite', 'Limite de 7 tentativas atingido para vitrine-demo', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:49:19'),
+(24, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para vitrine-demo: 64 segundos', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:56:28'),
+(25, NULL, NULL, 'bloqueio_limite', 'Limite de 7 tentativas atingido para vitrine-demo', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-24 22:56:28'),
+(26, NULL, NULL, 'registro_cliente', 'Novo cliente registado: teste77 (Email: lubiomarona@gmail.com)', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 23:05:37'),
+(27, NULL, NULL, 'registro_cliente', 'Novo cliente registado: teste77 (Email: luciano@lemm.pt)', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 23:08:24'),
+(28, 75, NULL, 'confirmar_email', 'Email confirmado para: teste77', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 23:08:46'),
+(29, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para vitrine-demo: 128 segundos', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 23:20:14'),
+(30, NULL, NULL, 'bloqueio_limite', 'Limite de 7 tentativas atingido para vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 23:20:14'),
+(31, NULL, NULL, 'bloqueio_tentativa', 'Bloqueio progressivo para vitrine-demo: 256 segundos', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 23:27:19'),
+(32, NULL, NULL, 'bloqueio_limite', 'Limite de 7 tentativas atingido para vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-24 23:27:19'),
+(33, NULL, NULL, 'registro_cliente', 'Novo cliente registado: teste10 (Email: lubiomarona@gmail.com)', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 22:44:23'),
+(34, NULL, NULL, 'registro_cliente', 'Novo cliente registado: teste12 (Email: luciano@lemm.pt)', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 22:49:43'),
+(35, NULL, NULL, 'registro_cliente', 'Novo cliente registado: teste88 (Email: lubiomarona@gmail.com)', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:15:39'),
+(36, NULL, NULL, 'registro_cliente', 'Novo cliente registado: teste88 (Email: lubiomarona@gmail.com)', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:17:09'),
+(37, 79, NULL, 'confirmar_email', 'Email confirmado para: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:21:12'),
+(38, 79, 'lubiomarona@gmail.com', 'login_sucesso', 'Login do cliente: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:23:44'),
+(39, 79, 'lubiomarona@gmail.com', 'login_sucesso', 'Login do cliente: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:23:44'),
+(40, 79, 'lubiomarona@gmail.com', 'login_sucesso', 'Login do cliente: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:24:21'),
+(41, 79, NULL, 'logout', 'Logout do cliente: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:24:36'),
+(42, NULL, NULL, 'recuperar_codigo', 'Pedido de recuperação de código para slug: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:26:49'),
+(43, 79, 'lubiomarona@gmail.com', 'login_sucesso', 'Login do cliente: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:28:08'),
+(44, 79, 'lubiomarona@gmail.com', 'login_sucesso', 'Login do cliente: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:44:06'),
+(45, 79, NULL, 'logout', 'Logout do cliente: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:44:25'),
+(46, 1, 'lemm.pt@gmail.com', 'login_sucesso', 'Login do cliente: vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-25 23:44:34'),
+(47, 59, 'lemm777@gmail.com', 'login_sucesso', 'Login do cliente: lemm', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-26 00:18:07'),
+(48, 1, 'lemm.pt@gmail.com', 'login_sucesso', 'Login do cliente: vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-26 15:46:58'),
+(49, 1, NULL, 'alterar_config', 'Configurações atualizadas pelo admin: vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-26 15:47:24'),
+(50, 59, 'lemm777@gmail.com', 'login_sucesso', 'Login do cliente: lemm', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-26 15:48:04'),
+(51, NULL, NULL, 'recuperar_codigo', 'Pedido de recuperação de código para slug: lemm', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-26 15:55:39'),
+(52, 59, 'lemm777@gmail.com', 'login_sucesso', 'Login do cliente: lemm', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-26 15:56:30'),
+(53, 59, NULL, 'logout', 'Logout do cliente: lemm', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-26 16:14:55'),
+(54, NULL, NULL, 'recuperar_codigo', 'Pedido de recuperação de código para slug: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-26 16:36:01'),
+(55, NULL, NULL, 'recuperar_codigo', 'Pedido de recuperação de código para slug: teste88', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-26 16:45:49'),
+(56, NULL, NULL, 'recuperar_codigo', 'Pedido de recuperação de código para slug: teste88', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-26 16:56:08'),
+(57, NULL, NULL, 'recuperar_codigo', 'Pedido de recuperação de código para slug: teste88', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '2026-06-26 17:02:22'),
+(58, 79, 'lubiomarona@gmail.com', 'login_sucesso', 'Login do cliente: teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '2026-06-26 17:03:18');
 
 -- --------------------------------------------------------
 
@@ -70,6 +115,8 @@ CREATE TABLE `sevenlux_clientes` (
   `cidade` varchar(100) DEFAULT NULL,
   `categoria` varchar(100) DEFAULT NULL,
   `pais` varchar(100) DEFAULT NULL,
+  `locale` varchar(10) DEFAULT 'pt',
+  `currency` varchar(10) DEFAULT 'EUR',
   `hash_digitos` varchar(255) DEFAULT NULL,
   `tentativas_falhas` int(11) DEFAULT 0,
   `bloqueio_ate` int(11) DEFAULT 0,
@@ -88,11 +135,10 @@ CREATE TABLE `sevenlux_clientes` (
 -- Extraindo dados da tabela `sevenlux_clientes`
 --
 
-INSERT INTO `sevenlux_clientes` (`id_cliente`, `email`, `slug`, `cidade`, `categoria`, `pais`, `hash_digitos`, `tentativas_falhas`, `bloqueio_ate`, `email_confirmation_token`, `recovery_token`, `email_confirmed_at`, `recovery_token_expires`, `token_expires_at`, `activo`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'lemm.pt@gmail.com', 'vitrine-demo', 'London', 'Tecnologia', 'England', '$argon2id$v=19$m=65536,t=4,p=2$aTRWQ0F6VWVVOTIxVlJMLw$yuaKGZ1snRXqqlMNCdV1lRIociPq8mDs1IU8NtWc3fo', 0, 0, NULL, NULL, NULL, NULL, '2026-06-24 00:25:37', 1, '2026-05-15 17:00:42', '2026-06-23 22:25:37', NULL),
-(59, 'lemm777@gmail.com', 'lemm', 'porto', 'Alimentação', 'portugal', '$argon2id$v=19$m=65536,t=4,p=2$bmJxSVRjVkRZMzdqeWd6cA$qfk+dGsbnjAfAZkziyC1sm+EptytAoPrGOy0roxtyJw', 0, 0, NULL, NULL, NULL, NULL, '2026-06-24 00:42:05', 1, '2026-06-22 20:58:04', '2026-06-23 22:42:05', NULL),
-(71, 'lubiomarona@gmail.com', 'teste77porto', 'EUA', 'Saúde', 'EUA', '$argon2id$v=19$m=65536,t=4,p=2$cmIxM2E3Q0NzMUZZSGVDVw$Z1e1/KPngwS6Db7IjsAYNX1Aa2ldhndQKb4KQ+mn+/8', 0, 0, 'itjPwE2s54fR', NULL, NULL, NULL, NULL, 0, '2026-06-24 20:03:09', '2026-06-24 20:03:09', NULL),
-(73, 'luciano@lemm.pt', 'teste88', 'eeeee', 'Educação', 'Africa', '$argon2id$v=19$m=65536,t=4,p=2$a3NxVXBhMkQxeVBBdUNGdA$VcHtrB+vhUHpcVw7iAMiaS1nF/tt6WkPElsDfDsPgUk', 7, 1782336537, NULL, NULL, '2026-06-24 20:08:18', NULL, NULL, 1, '2026-06-24 20:07:44', '2026-06-24 22:23:57', NULL);
+INSERT INTO `sevenlux_clientes` (`id_cliente`, `email`, `slug`, `cidade`, `categoria`, `pais`, `locale`, `currency`, `hash_digitos`, `tentativas_falhas`, `bloqueio_ate`, `email_confirmation_token`, `recovery_token`, `email_confirmed_at`, `recovery_token_expires`, `token_expires_at`, `activo`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'lemm.pt@gmail.com', 'vitrine-demo', 'London', 'Tecnologia', 'England', 'pt', 'EUR', '$argon2id$v=19$m=65536,t=4,p=2$aTRWQ0F6VWVVOTIxVlJMLw$yuaKGZ1snRXqqlMNCdV1lRIociPq8mDs1IU8NtWc3fo', 0, 0, NULL, NULL, NULL, NULL, '2026-06-24 00:25:37', 1, '2026-05-15 17:00:42', '2026-06-25 23:44:34', NULL),
+(59, 'lemm777@gmail.com', 'lemm', 'porto', 'Alimentação', 'portugal', 'pt', 'EUR', '$argon2id$v=19$m=65536,t=4,p=2$L0xiSm92Q1JmS0U2NXVXWA$s9lJ2kp2wEuVpEI8bLyNPj3fKrjmICkj1L84UHG7b8o', 0, 0, NULL, NULL, NULL, NULL, '2026-06-24 00:42:05', 1, '2026-06-22 20:58:04', '2026-06-26 15:56:23', NULL),
+(79, 'lubiomarona@gmail.com', 'teste88', 'Berlin', 'Imobiliário', 'Alemanha', 'de', 'EUR', '$argon2id$v=19$m=65536,t=4,p=2$dTYzWEYxTW45WGNWbmg0OA$+B2XMZrYFIrcw9bsl0M15XLfsJHfZOgn2Lp9jZwQs2k', 0, 0, NULL, NULL, '2026-06-25 23:21:12', NULL, NULL, 1, '2026-06-25 23:17:09', '2026-06-26 17:03:12', NULL);
 
 -- --------------------------------------------------------
 
@@ -118,7 +164,7 @@ INSERT INTO `sevenlux_configuracoes_site` (`id`, `cliente_id`, `chave`, `valor`,
 (2, 1, 'logo_parte2', 'Lux', '2026-05-15 17:00:42', '2026-06-24 17:00:11'),
 (3, 1, 'logo_imagem', 'logo.png', '2026-05-15 17:00:42', '2026-05-15 22:56:41'),
 (4, 1, 'slogan', 'Soluções Digitais que Transformam Negócios', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
-(5, 1, 'texto_descritivo', 'A Vitrine.lemm nasceu para ajudar empresas a crescer no digital. Combinamos criatividade, tecnologia e estratégia para criar experiências únicas. Do design à programação, passando pelo marketing, somos o parceiro que faltava ao seu negócio.', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
+(5, 1, 'texto_descritivo', 'A Seven Lux nasceu para ajudar empresas a crescer no digital. Combinamos criatividade, tecnologia e estratégia para criar experiências únicas. Do design à programação, passando pelo marketing, somos o parceiro que faltava ao seu negócio.', '2026-05-15 17:00:42', '2026-06-26 15:47:24'),
 (6, 1, 'meta_description', 'SevenLux - Soluções digitais', '2026-05-15 17:00:42', '2026-06-24 17:00:11'),
 (7, 1, 'meta_keywords', 'web app,lemm,digital,', '2026-05-15 17:00:42', '2026-06-24 17:00:11'),
 (8, 1, 'email_contacto', 'luciano@lemm.pt', '2026-05-15 17:00:42', '2026-05-15 22:26:51'),
@@ -134,16 +180,16 @@ INSERT INTO `sevenlux_configuracoes_site` (`id`, `cliente_id`, `chave`, `valor`,
 (288, 59, 'endereco', '', '2026-06-22 20:58:52', '2026-06-22 20:58:52'),
 (289, 59, 'meta_description', 'web apps e sites', '2026-06-22 20:58:52', '2026-06-23 22:16:58'),
 (290, 59, 'meta_keywords', 'teste, web app, websites, porto', '2026-06-22 20:58:52', '2026-06-23 22:16:58'),
-(331, 73, 'logo_parte1', 'Meu', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
-(332, 73, 'logo_parte2', 'Negócio', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
-(333, 73, 'logo_imagem', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
-(334, 73, 'slogan', 'Soluções Personalizadas', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
-(335, 73, 'texto_descritivo', 'Bem-vindo ao seu novo site!', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
-(336, 73, 'email_contacto', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
-(337, 73, 'telefone', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
-(338, 73, 'endereco', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
-(339, 73, 'meta_description', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18'),
-(340, 73, 'meta_keywords', '', '2026-06-24 20:08:18', '2026-06-24 20:08:18');
+(351, 79, 'logo_parte1', 'Meu', '2026-06-25 23:21:12', '2026-06-25 23:21:12'),
+(352, 79, 'logo_parte2', 'Negócio', '2026-06-25 23:21:12', '2026-06-25 23:21:12'),
+(353, 79, 'logo_imagem', '', '2026-06-25 23:21:12', '2026-06-25 23:21:12'),
+(354, 79, 'slogan', 'Soluções Personalizadas', '2026-06-25 23:21:12', '2026-06-25 23:21:12'),
+(355, 79, 'texto_descritivo', 'Bem-vindo ao seu novo site!', '2026-06-25 23:21:12', '2026-06-25 23:21:12'),
+(356, 79, 'email_contacto', '', '2026-06-25 23:21:12', '2026-06-25 23:21:12'),
+(357, 79, 'telefone', '', '2026-06-25 23:21:12', '2026-06-25 23:21:12'),
+(358, 79, 'endereco', '', '2026-06-25 23:21:12', '2026-06-25 23:21:12'),
+(359, 79, 'meta_description', '', '2026-06-25 23:21:12', '2026-06-25 23:21:12'),
+(360, 79, 'meta_keywords', '', '2026-06-25 23:21:12', '2026-06-25 23:21:12');
 
 -- --------------------------------------------------------
 
@@ -278,6 +324,13 @@ CREATE TABLE `sevenlux_rate_limits` (
   `bloqueado_ate` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Extraindo dados da tabela `sevenlux_rate_limits`
+--
+
+INSERT INTO `sevenlux_rate_limits` (`id`, `ip`, `acao`, `tentativas`, `primeira_tentativa`, `ultima_tentativa`, `bloqueado_ate`) VALUES
+(15, '::1', 'login', 0, '2026-06-26 17:03:17', '2026-06-26 17:03:17', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -367,8 +420,65 @@ CREATE TABLE `sevenlux_servicos` (
 INSERT INTO `sevenlux_servicos` (`id`, `cliente_id`, `titulo`, `descricao`, `icone`, `ordem`) VALUES
 (1, 1, 'Design & Branding', 'Criamos identidades visuais memoráveis, desde o logotipo à paleta de cores, que contam a sua história.', 'fa-image', 1),
 (3, 1, '	Desenvolvimento Web', 'Sites, lojas online e aplicações web modernas, rápidas e responsivas, feitas à medida do seu negócio.', 'fa-code', 2),
-(4, 1, 'Marketing Digital', 'Estratégias de SEO, Google Ads e redes sociais para atrair mais clientes e aumentar as suas vendas.', 'fa-chart-line', 3),
-(15, 73, 'teste 88', 'primeiro serviço', 'fa-shirt', 1);
+(4, 1, 'Marketing Digital', 'Estratégias de SEO, Google Ads e redes sociais para atrair mais clientes e aumentar as suas vendas.', 'fa-chart-line', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `sevenlux_visitas`
+--
+
+CREATE TABLE `sevenlux_visitas` (
+  `id` int(11) NOT NULL,
+  `cliente_id` int(10) UNSIGNED NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `ip` varchar(45) NOT NULL,
+  `user_agent` varchar(255) DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  `referer` varchar(255) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `sevenlux_visitas`
+--
+
+INSERT INTO `sevenlux_visitas` (`id`, `cliente_id`, `slug`, `ip`, `user_agent`, `url`, `referer`, `created_at`) VALUES
+(1, 79, 'teste88', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '/sevenlux/public/teste88/', 'http://localhost/sevenlux/public/teste88/blog', '2026-06-25 23:42:55'),
+(2, 1, 'vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '/sevenlux/public/vitrine-demo/', 'http://localhost/sevenlux/public/teste88/', '2026-06-25 23:43:12'),
+(3, 1, 'vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '/sevenlux/public/vitrine-demo/', 'http://localhost/sevenlux/public/vitrine-demo/admin?a=admin_logs', '2026-06-26 00:17:52'),
+(4, 59, 'lemm', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '/sevenlux/public/lemm/admin_login?erro=acesso_negado', NULL, '2026-06-26 00:18:01'),
+(5, 1, 'vitrine-demo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '/sevenlux/public/vitrine-demo/', 'http://localhost/sevenlux/public/vitrine-demo/admin', '2026-06-26 15:46:36'),
+(6, 59, 'lemm', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '/sevenlux/public/lemm/admin_login?erro=acesso_negado', NULL, '2026-06-26 15:47:57'),
+(7, 59, 'lemm', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', '/sevenlux/public/lemm/admin_login', 'http://localhost/sevenlux/public/lemm/', '2026-06-26 16:23:41'),
+(8, 79, 'teste88', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '/sevenlux/public/teste88/', NULL, '2026-06-26 16:31:09'),
+(9, 79, 'teste88', '::1', 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', '/sevenlux/public/teste88/admin_login', 'http://localhost/sevenlux/public/teste88/', '2026-06-26 17:01:59');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `sevenlux_visitas_resumo`
+--
+
+CREATE TABLE `sevenlux_visitas_resumo` (
+  `id` int(11) NOT NULL,
+  `cliente_id` int(10) UNSIGNED NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `total_visitas` int(11) DEFAULT 0,
+  `visitas_hoje` int(11) DEFAULT 0,
+  `visitas_semana` int(11) DEFAULT 0,
+  `visitas_mes` int(11) DEFAULT 0,
+  `ultima_atualizacao` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `sevenlux_visitas_resumo`
+--
+
+INSERT INTO `sevenlux_visitas_resumo` (`id`, `cliente_id`, `slug`, `total_visitas`, `visitas_hoje`, `visitas_semana`, `visitas_mes`, `ultima_atualizacao`) VALUES
+(1, 79, 'teste88', 3, 2, 3, 3, '2026-06-26 17:01:59'),
+(2, 1, 'vitrine-demo', 3, 2, 3, 3, '2026-06-26 15:46:36'),
+(3, 59, 'lemm', 3, 3, 3, 3, '2026-06-26 16:23:41');
 
 -- --------------------------------------------------------
 
@@ -403,7 +513,15 @@ INSERT INTO `sevenlux_warnings` (`id`, `slug`, `motivo`, `ip`, `data`, `resolvid
 (11, 'lubio', 'Código redefinido via email', '::1', '2026-06-23 21:09:00', 0),
 (12, 'lemm', 'Código redefinido via email', '::1', '2026-06-23 21:29:55', 0),
 (13, 'lemm', 'Código redefinido via email', '::1', '2026-06-23 21:36:45', 0),
-(14, 'teste88', 'Limite de 7 tentativas atingido', '::1', '2026-06-24 21:23:57', 0);
+(14, 'teste88', 'Limite de 7 tentativas atingido', '::1', '2026-06-24 21:23:57', 0),
+(15, 'vitrine-demo', 'Limite de 7 tentativas atingido', '::1', '2026-06-24 21:44:13', 0),
+(16, 'vitrine-demo', 'Limite de 7 tentativas atingido', '::1', '2026-06-24 21:49:19', 0),
+(17, 'vitrine-demo', 'Limite de 7 tentativas atingido', '::1', '2026-06-24 21:56:28', 0),
+(18, 'vitrine-demo', 'Limite de 7 tentativas atingido', '::1', '2026-06-24 22:20:14', 0),
+(19, 'vitrine-demo', 'Limite de 7 tentativas atingido', '::1', '2026-06-24 22:27:19', 0),
+(20, 'teste88', 'Código redefinido via email', '::1', '2026-06-25 22:28:01', 0),
+(21, 'lemm', 'Código redefinido via email', '::1', '2026-06-26 14:56:23', 0),
+(22, 'teste88', 'Código redefinido via email', '::1', '2026-06-26 16:03:12', 0);
 
 --
 -- Índices para tabelas despejadas
@@ -493,6 +611,24 @@ ALTER TABLE `sevenlux_servicos`
   ADD KEY `cliente_id` (`cliente_id`);
 
 --
+-- Índices para tabela `sevenlux_visitas`
+--
+ALTER TABLE `sevenlux_visitas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_cliente` (`cliente_id`),
+  ADD KEY `idx_slug` (`slug`),
+  ADD KEY `idx_ip` (`ip`),
+  ADD KEY `idx_created_at` (`created_at`);
+
+--
+-- Índices para tabela `sevenlux_visitas_resumo`
+--
+ALTER TABLE `sevenlux_visitas_resumo`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_slug` (`slug`),
+  ADD KEY `idx_cliente` (`cliente_id`);
+
+--
 -- Índices para tabela `sevenlux_warnings`
 --
 ALTER TABLE `sevenlux_warnings`
@@ -506,19 +642,19 @@ ALTER TABLE `sevenlux_warnings`
 -- AUTO_INCREMENT de tabela `sevenlux_audit_logs`
 --
 ALTER TABLE `sevenlux_audit_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT de tabela `sevenlux_clientes`
 --
 ALTER TABLE `sevenlux_clientes`
-  MODIFY `id_cliente` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+  MODIFY `id_cliente` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 --
 -- AUTO_INCREMENT de tabela `sevenlux_configuracoes_site`
 --
 ALTER TABLE `sevenlux_configuracoes_site`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=341;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=361;
 
 --
 -- AUTO_INCREMENT de tabela `sevenlux_dispositivos`
@@ -554,7 +690,7 @@ ALTER TABLE `sevenlux_publicacoes`
 -- AUTO_INCREMENT de tabela `sevenlux_rate_limits`
 --
 ALTER TABLE `sevenlux_rate_limits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de tabela `sevenlux_respostas_magicas`
@@ -569,10 +705,22 @@ ALTER TABLE `sevenlux_servicos`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
+-- AUTO_INCREMENT de tabela `sevenlux_visitas`
+--
+ALTER TABLE `sevenlux_visitas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT de tabela `sevenlux_visitas_resumo`
+--
+ALTER TABLE `sevenlux_visitas_resumo`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT de tabela `sevenlux_warnings`
 --
 ALTER TABLE `sevenlux_warnings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Restrições para despejos de tabelas
@@ -613,6 +761,18 @@ ALTER TABLE `sevenlux_publicacoes`
 --
 ALTER TABLE `sevenlux_servicos`
   ADD CONSTRAINT `sevenlux_servicos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `sevenlux_clientes` (`id_cliente`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `sevenlux_visitas`
+--
+ALTER TABLE `sevenlux_visitas`
+  ADD CONSTRAINT `sevenlux_visitas_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `sevenlux_clientes` (`id_cliente`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `sevenlux_visitas_resumo`
+--
+ALTER TABLE `sevenlux_visitas_resumo`
+  ADD CONSTRAINT `sevenlux_visitas_resumo_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `sevenlux_clientes` (`id_cliente`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

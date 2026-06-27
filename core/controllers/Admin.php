@@ -348,48 +348,40 @@ class Admin
         ], ['galeria' => $gallery]);
     }
 
-    public function admin_galeria_criar()
-    {
-        $this->verificarLogin();
+   public function admin_galeria_criar()
+{
+    $this->verificarLogin();
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['imagem'])) {
-            $model = new Galeria();
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['imagem'])) {
+        $model = new Galeria();
 
-            if ($model->contar() >= 7) {
-                $_SESSION['erro'] = "Máximo de 7 fotos!";
-                Store::redirect('admin_galeria');
-                return;
-            }
-
-            $uploadDir = __DIR__ . '/../../public/assets/images/galeria/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-
-            $ext = strtolower(pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION));
-            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
-            if (!in_array($ext, $allowedExtensions)) {
-                $_SESSION['erro'] = "Formato inválido!";
-                Store::redirect('admin_galeria');
-                return;
-            }
-
-            $fileName = time() . '_' . uniqid() . '.' . $ext;
-            if (move_uploaded_file($_FILES['imagem']['tmp_name'], $uploadDir . $fileName)) {
-                $model->criar($fileName, $_POST['legenda'] ?? null);
-
-                  // 🔥 LOG: imagem criad
-    \core\classes\Logger::log('criar_imagem', "Imagem criada: " . ($_POST['legenda'] ?? 'sem legenda'), $_SESSION['cliente_id']);
-
-                $_SESSION['sucesso'] = "Imagem adicionada!";
-            } else {
-                $_SESSION['erro'] = "Erro ao salvar imagem.";
-            }
+        if ($model->contar() >= 7) {
+            $_SESSION['erro'] = "Máximo de 7 fotos!";
+            Store::redirect('admin_galeria');
+            return;
         }
 
-        Store::redirect('admin_galeria');
+        // 🔥 VALIDAR IMAGEM
+        $validation = \core\classes\ImageHelper::validarImagem($_FILES['imagem']);
+        if (!$validation['valid']) {
+            $_SESSION['erro'] = $validation['error'];
+            Store::redirect('admin_galeria');
+            return;
+        }
+
+        // 🔥 A IMAGEM É COMPRIMIDA DENTRO DO MODEL
+        $result = $model->criar($_FILES['imagem'], $_POST['legenda'] ?? null);
+
+        if ($result) {
+            \core\classes\Logger::log('criar_imagem', "Imagem criada: " . ($_POST['legenda'] ?? 'sem legenda'), $_SESSION['cliente_id']);
+            $_SESSION['sucesso'] = "Imagem adicionada com sucesso!";
+        } else {
+            $_SESSION['erro'] = "Erro ao processar imagem. Verifique o formato e tamanho (max 5MB).";
+        }
     }
+
+    Store::redirect('admin_galeria');
+}
 
     public function admin_galeria_deletar()
     {
@@ -419,47 +411,44 @@ class Admin
         ], ['produtos' => $products]);
     }
 
-    public function admin_produto_criar()
-    {
-        $this->verificarLogin();
+   public function admin_produto_criar()
+{
+    $this->verificarLogin();
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $model = new Produtos();
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $model = new Produtos();
 
-            if ($model->contar() >= 7) {
-                $_SESSION['erro'] = "Máximo de 6 produtos!";
+        if ($model->contar() >= 7) {
+            $_SESSION['erro'] = "Máximo de 6 produtos!";
+            Store::redirect('admin_produtos');
+            return;
+        }
+
+        // 🔥 VALIDAR IMAGEM (se enviada)
+        if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+            $validation = \core\classes\ImageHelper::validarImagem($_FILES['imagem']);
+            if (!$validation['valid']) {
+                $_SESSION['erro'] = $validation['error'];
                 Store::redirect('admin_produtos');
                 return;
             }
-
-            $image = null;
-            if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === 0) {
-                $uploadDir = __DIR__ . '/../../public/assets/images/produtos/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                $ext = pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION);
-                $image = time() . '_' . uniqid() . '.' . $ext;
-                move_uploaded_file($_FILES['imagem']['tmp_name'], $uploadDir . $image);
-            }
-
-            $model->criar($_POST, $image);
-
-              // 🔥 LOG: produto criad
-    \core\classes\Logger::log('criar_produto', "Produto criado: " . ($_POST['nome'] ?? 'sem nome'), $_SESSION['cliente_id']);
-
-            $_SESSION['sucesso'] = "Produto criado!";
-            Store::redirect('admin_produtos');
         }
 
-        Store::Layout([
-            'admin/layouts/html_header',
-            'admin/layouts/header',
-            'admin/produto_form',
-            'admin/layouts/footer',
-            'admin/layouts/html_footer'
-        ]);
+        $model->criar($_POST, $_FILES['imagem'] ?? null);
+
+        \core\classes\Logger::log('criar_produto', "Produto criado: " . ($_POST['nome'] ?? 'sem nome'), $_SESSION['cliente_id']);
+        $_SESSION['sucesso'] = "Produto criado!";
+        Store::redirect('admin_produtos');
     }
+
+    Store::Layout([
+        'admin/layouts/html_header',
+        'admin/layouts/header',
+        'admin/produto_form',
+        'admin/layouts/footer',
+        'admin/layouts/html_footer'
+    ]);
+}
 
     public function admin_produto_editar()
     {
@@ -687,6 +676,40 @@ public function admin_logs()
         'clienteSlug' => $clienteSlug,
         'clientes' => $clientes,
         'filterClienteId' => $filterClienteId
+    ]);
+}
+
+
+public function admin_estatisticas()
+{
+    $this->verificarLogin();
+    
+    $visitasModel = new \core\models\Visitas(CLIENTE_ID, CLIENTE_SLUG);
+    $stats = $visitasModel->getEstatisticas(CLIENTE_ID);
+    $ultimasVisitas = $visitasModel->getUltimasVisitas(20);
+    
+    // Estatísticas por página
+    $db = new \core\classes\Database();
+    $paginas = $db->select(
+        "SELECT url, COUNT(*) as total 
+         FROM sevenlux_visitas 
+         WHERE cliente_id = :cliente_id 
+         GROUP BY url 
+         ORDER BY total DESC 
+         LIMIT 10",
+        [':cliente_id' => CLIENTE_ID]
+    );
+    
+    Store::Layout([
+        'admin/layouts/html_header',
+        'admin/layouts/header',
+        'admin/estatisticas',
+        'admin/layouts/footer',
+        'admin/layouts/html_footer'
+    ], [
+        'stats' => $stats,
+        'ultimasVisitas' => $ultimasVisitas,
+        'paginas' => $paginas
     ]);
 }
 

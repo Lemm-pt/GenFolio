@@ -45,12 +45,12 @@ class Store
         $slug = $_SESSION['cliente_slug'] ?? 'vitrine-demo';
 
         // Routes that must use the plain index.php (no friendly URL)
-        $simpleRoutes = [
-            'admin_login', 'admin_login_submit', 'admin_logout',
-            'criar_cliente', 'confirmar_email', 'recuperar_password',
-            'recuperar_password_submit', 'recuperar_password_confirmar',
-            'nova_password_submit'
-        ];
+       $simpleRoutes = [
+           'admin_login', 'admin_login_submit', 'admin_logout',
+           'criar_cliente', 'confirmar_email',
+           'recuperar_codigo', 'recuperar_codigo_submit',
+           'recuperar_codigo_confirmar', 'recuperar_codigo_novo_submit'
+         ];
 
         if (in_array($route, $simpleRoutes)) {
             header("Location: " . BASE_URL . "index.php?a=" . $route);

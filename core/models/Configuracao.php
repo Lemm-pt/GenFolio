@@ -11,6 +11,7 @@
 namespace core\models;
 
 use core\classes\Database;
+use Exception;
 
 class Configuracao
 {
@@ -22,11 +23,30 @@ class Configuracao
      * Constructor.
      *
      * @param int|null $cliente_id Client ID (defaults to logged-in client or 1)
+     * @param bool $silent Se true, não lança exceção se cliente_id for inválido
      */
-    public function __construct($cliente_id = null)
+    public function __construct($cliente_id = null, $silent = false)
     {
         $this->bd = new Database();
-        $this->cliente_id = $cliente_id ?? ($_SESSION['cliente_id'] ?? 1);
+        
+        // Determinar cliente_id
+        if ($cliente_id === null) {
+            $cliente_id = $_SESSION['cliente_id'] ?? null;
+        }
+        
+        // Se não houver cliente_id e não for silencioso, usar fallback
+        if ($cliente_id === null) {
+            if (!$silent) {
+                // Em vez de lançar exceção, usar o cliente padrão (vitrine-demo)
+                $cliente_id = 1; // vitrine-demo
+            } else {
+                // Se for silencioso, simplesmente não carregar nada
+                $this->cliente_id = null;
+                return;
+            }
+        }
+        
+        $this->cliente_id = (int) $cliente_id;
         $this->carregarTodas();
     }
 
@@ -35,12 +55,21 @@ class Configuracao
      */
     private function carregarTodas()
     {
+        if ($this->cliente_id === null) {
+            return;
+        }
+        
         $res = $this->bd->select(
             "SELECT chave, valor FROM sevenlux_configuracoes_site WHERE cliente_id = :cliente_id",
             [':cliente_id' => $this->cliente_id]
         );
-        foreach ($res as $row) {
-            $this->cache[$row->chave] = $row->valor;
+        
+        if ($res && is_array($res)) {
+            foreach ($res as $row) {
+                if (isset($row->chave)) {
+                    $this->cache[$row->chave] = $row->valor ?? '';
+                }
+            }
         }
     }
 
@@ -64,17 +93,24 @@ class Configuracao
      */
     public function set($chave, $valor)
     {
+        if ($this->cliente_id === null) {
+            return; // Não fazer nada se não houver cliente
+        }
+        
+        // Verificar se já existe
         $existe = $this->bd->select(
             "SELECT id FROM sevenlux_configuracoes_site WHERE cliente_id = :cliente_id AND chave = :chave",
             [':cliente_id' => $this->cliente_id, ':chave' => $chave]
         );
 
-        if ($existe) {
+        if ($existe && !empty($existe)) {
+            // Atualizar
             $this->bd->update(
                 "UPDATE sevenlux_configuracoes_site SET valor = :valor WHERE cliente_id = :cliente_id AND chave = :chave",
                 [':valor' => $valor, ':cliente_id' => $this->cliente_id, ':chave' => $chave]
             );
         } else {
+            // Inserir
             $this->bd->insert(
                 "INSERT INTO sevenlux_configuracoes_site (cliente_id, chave, valor) VALUES (:cliente_id, :chave, :valor)",
                 [':cliente_id' => $this->cliente_id, ':chave' => $chave, ':valor' => $valor]
@@ -92,5 +128,16 @@ class Configuracao
     public function getAll()
     {
         return $this->cache;
+    }
+    
+    /**
+     * Verifica se uma chave existe
+     *
+     * @param string $chave
+     * @return bool
+     */
+    public function has($chave)
+    {
+        return isset($this->cache[$chave]);
     }
 }

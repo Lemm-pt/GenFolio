@@ -27,11 +27,6 @@ $rotas = [
     'login_submit'      => 'main@login_submit',
     'logout'            => 'main@logout',
 
-    // Password recovery (email-based)
-    'recuperar_password'           => 'main@recuperar_password',
-    'recuperar_password_submit'    => 'main@recuperar_password_submit',
-    'recuperar_password_confirmar' => 'main@recuperar_password_confirmar',
-    'nova_password_submit'         => 'main@nova_password_submit',
 
     // Admin area
     'admin_login'         => 'admin@admin_login',

@@ -51,6 +51,7 @@ $base_url = BASE_URL . CLIENTE_SLUG . '/';
     </div>
 </nav>
 
+<!-- Espaço para compensar a navbar fixa -->
 <div style="height: 80px;"></div>
 
 <style>
@@ -64,7 +65,7 @@ $base_url = BASE_URL . CLIENTE_SLUG . '/';
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;  /* Garantir que fica atrás do conteúdo */
+    z-index: 0;
     pointer-events: none;
     display: block;
 }
@@ -73,19 +74,26 @@ $base_url = BASE_URL . CLIENTE_SLUG . '/';
 .navbar-modern {
     position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     width: 100%;
     z-index: 1000;
     padding: 0.75rem 0;
-    background: rgba(10, 10, 26, 0.75);
+    background: rgba(10, 10, 26, 0.85);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(198, 164, 63, 0.15);
     transition: all 0.3s ease;
+    /* Garantir que não fica colado no topo em iPhones */
+    padding-top: env(safe-area-inset-top, 0.75rem);
 }
 
 .navbar-modern.scrolled {
     padding: 0.4rem 0;
+    padding-top: env(safe-area-inset-top, 0.4rem);
     background: rgba(10, 10, 26, 0.95);
     backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
@@ -119,7 +127,7 @@ $base_url = BASE_URL . CLIENTE_SLUG . '/';
 .logo-part1 { color: #ffffff; }
 .logo-part2 { color: #C6A43F; }
 
-/* Menu desktop - ALINHADO À DIREITA */
+/* Menu desktop */
 .nav-menu {
     display: flex;
     gap: 0.2rem;
@@ -183,10 +191,18 @@ $base_url = BASE_URL . CLIENTE_SLUG . '/';
     transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* Mobile */
+/* ============================================
+   RESPONSIVIDADE - ESPECIAL PARA iPHONES
+   ============================================ */
 @media (max-width: 768px) {
-    .nav-container { padding: 0 1.2rem; }
-    .nav-toggle { display: flex; }
+    .nav-container { 
+        padding: 0 1.2rem; 
+    }
+    
+    .nav-toggle { 
+        display: flex; 
+    }
+    
     .nav-menu {
         position: fixed;
         top: 65px;
@@ -194,17 +210,107 @@ $base_url = BASE_URL . CLIENTE_SLUG . '/';
         width: 100%;
         background: rgba(10, 10, 26, 0.98);
         backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         flex-direction: column;
         padding: 1.5rem;
         gap: 0.5rem;
         transition: left 0.3s ease;
         margin-left: 0;
+        max-height: calc(100vh - 65px);
+        overflow-y: auto;
     }
-    .nav-menu.active { left: 0; }
-    .nav-link { width: 100%; text-align: center; padding: 0.8rem; white-space: normal; }
-    .logo { font-size: 1.3rem; }
+    
+    .nav-menu.active { 
+        left: 0; 
+    }
+    
+    .nav-link { 
+        width: 100%; 
+        text-align: center; 
+        padding: 0.8rem; 
+        white-space: normal; 
+        font-size: 1rem;
+    }
+    
+    .logo { 
+        font-size: 1.3rem; 
+    }
+    
+    .logo img {
+        max-height: 32px;
+    }
+    
+    /* Compensar o notch do iPhone */
+    .navbar-modern {
+        padding-top: calc(env(safe-area-inset-top, 0.5rem) + 0.5rem);
+    }
 }
 
+/* iPhone específico - notch e títulos */
+@supports (padding: max(0px)) {
+    .navbar-modern {
+        padding-top: max(env(safe-area-inset-top, 0.5rem), 0.5rem);
+        padding-left: max(env(safe-area-inset-left, 0px), 0px);
+        padding-right: max(env(safe-area-inset-right, 0px), 0px);
+    }
+}
+
+/* iPhone 14 Pro e superiores (Dynamic Island) */
+@media (device-width: 430px) and (device-height: 932px) {
+    .navbar-modern {
+        padding-top: 1.2rem;
+    }
+    .nav-container {
+        padding-top: 0.3rem;
+    }
+}
+
+/* iPhone 13/14/15 standard */
+@media (device-width: 390px) and (device-height: 844px) {
+    .navbar-modern {
+        padding-top: 1rem;
+    }
+}
+
+/* iPhone SE / 8 / mini */
+@media (device-width: 375px) and (device-height: 667px) {
+    .navbar-modern {
+        padding-top: 0.8rem;
+    }
+    .logo {
+        font-size: 1.1rem;
+    }
+    .nav-container {
+        padding: 0 0.8rem;
+    }
+}
+
+/* iPhone 12/13/14 mini */
+@media (device-width: 375px) and (device-height: 812px) {
+    .navbar-modern {
+        padding-top: 1rem;
+    }
+}
+
+/* iPhone Plus (6/7/8 Plus, 12/13/14 Pro Max) */
+@media (device-width: 428px) and (device-height: 926px) {
+    .navbar-modern {
+        padding-top: 1.1rem;
+    }
+}
+
+/* Ajuste para o espaço do conteúdo abaixo da navbar */
+@media (max-width: 768px) {
+    .hero, section:first-of-type, .container:first-of-type {
+        padding-top: 20px !important;
+    }
+    
+    /* Garantir que o título da home não fica colado */
+    .hero h1 {
+        font-size: 2.2rem !important;
+        margin-top: 10px;
+    }
+}
 
 #particlesCanvas {
     position: fixed;
@@ -256,7 +362,6 @@ document.querySelectorAll('a[href*="#"]').forEach(anchor => {
         
         if(target) {
             e.preventDefault();
-            // Se não estiver na home, redireciona
             if(!window.location.href.includes('?a=inicio') && window.location.pathname !== '/sevenlux/public/' && window.location.pathname !== '/sevenlux/public/index.php') {
                 window.location.href = href;
                 return;
@@ -268,8 +373,7 @@ document.querySelectorAll('a[href*="#"]').forEach(anchor => {
     });
 });
 
-// Partículas suaves com conexões visíveis (estilo original)
-// Partículas com conexões ligeiramente mais destacadas
+// Partículas
 document.addEventListener('DOMContentLoaded', function() {
     const canvas = document.getElementById('particlesCanvas');
     if (!canvas) return;
@@ -293,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
         reset() {
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * canvas.height;
-            this.baseSize = Math.random() * 2.8 + 1.2; // ligeiramente maior (max 4.0)
+            this.baseSize = Math.random() * 2.8 + 1.2;
             this.size = this.baseSize;
             this.speedX = (Math.random() - 0.5) * 0.2;
             this.speedY = (Math.random() - 0.5) * 0.2;
@@ -355,10 +459,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < 110) {
                     ctx.beginPath();
-                    // Opacidade mais destacada: 0.35 (antes 0.25)
                     const opacity = 0.35 * (1 - dist / 110);
                     ctx.strokeStyle = `rgba(198, 164, 63, ${opacity})`;
-                    ctx.lineWidth = 1.1; // ligeiramente mais grossa
+                    ctx.lineWidth = 1.1;
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
                     ctx.stroke();
