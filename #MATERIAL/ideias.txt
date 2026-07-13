@@ -1,0 +1,327 @@
+Agrada me a ideia de parceiros e juntarem às visitas para evoluíram em equipa por cidade já tenho as categorias e pode recomendar parceiro por categoria no caso de restaurante recebe parceiros de categoria comidas excepto outros restaurantes ou bares (estabelecimentos) mas sim mercearias, talho, peixarias, fotografia, dj etc, como poderia fazer isso? Que categorias usar? E como fazê-las começar umas as outras? 
+
+Acho que acabaste de tocar numa ideia muito interessante. O mais valioso aqui não é criar uma "rede social", mas sim uma rede de colaboração entre negócios. Isso é algo que pode diferenciar bastante a SevenLux.
+
+A regra principal seria:
+
+Nunca recomendar concorrentes diretos por defeito. Recomendar empresas complementares.
+
+Isso cria valor para todos.
+
+Exemplo 1 — Restaurante
+
+Em vez de recomendar:
+
+❌ Restaurante A → Restaurante B
+
+Recomendarias:
+
+🍖 Talho
+🐟 Peixaria
+🥦 Mercearia
+🍷 Garrafeira
+📸 Fotógrafo
+🎵 DJ
+🎂 Cake Designer
+🌸 Florista
+🪑 Empresa de decoração
+🧹 Empresa de limpeza
+📢 Marketing Digital
+🖨️ Gráfica
+
+Todos podem beneficiar uns dos outros.
+
+Exemplo 2 — Fotógrafo
+
+Poderia receber:
+
+💄 Maquilhadora
+💇 Cabeleireiro
+👗 Loja de vestidos
+💍 Ourivesaria
+🎥 Videógrafo
+🎵 DJ
+🏛️ Quinta de eventos
+🚘 Aluguer de viaturas
+Exemplo 3 — Oficina
+
+Receber:
+
+🚗 Stand automóvel
+🛞 Loja de pneus
+🔋 Loja de baterias
+🧽 Lavagem automóvel
+🎨 Pintura automóvel
+🚑 Reboques
+Em vez de categorias simples...
+
+Eu criaria um sistema de ecossistemas.
+
+Por exemplo:
+
+Ecossistema Casamentos
+Quinta
+
+Fotógrafo
+
+DJ
+
+Florista
+
+Wedding Planner
+
+Pastelaria
+
+Ourivesaria
+
+Cabeleireiro
+
+Maquilhadora
+
+Aluguer de carros
+
+Costureira
+
+Decoração
+
+Quando um fotógrafo entra:
+
+A SevenLux percebe:
+
+Categoria
+
+Fotografia
+
+Então recomenda automaticamente:
+
+Quintas
+
+DJ
+
+Floristas
+
+Wedding Planner
+Ecossistema Alimentação
+Restaurante
+
+Talho
+
+Peixaria
+
+Pastelaria
+
+Padaria
+
+Mercearia
+
+Hortofrutícola
+
+Distribuidor
+
+Vinhos
+
+Queijaria
+Ecossistema Construção
+Arquiteto
+
+Engenheiro
+
+Canalizador
+
+Eletricista
+
+Pintor
+
+Carpinteiro
+
+Vidraceiro
+
+Serralheiro
+
+Topógrafo
+Ecossistema Saúde
+Dentista
+
+Nutricionista
+
+Psicólogo
+
+Personal Trainer
+
+Fisioterapeuta
+
+Massagista
+
+Farmácia
+Ecossistema Tecnologia
+Programador
+
+Designer
+
+Marketing
+
+SEO
+
+Impressão 3D
+
+Consultor
+
+Cloud
+
+Fotografia de Produto
+Como fazê-los começar a colaborar?
+
+Aqui está a parte que mais me entusiasma.
+
+Não mostraria apenas:
+
+Parceiros recomendados
+
+Mostraria algo como:
+
+🤝 Faça crescer o seu negócio
+
+Empresas que podem trazer clientes para si.
+
+Depois:
+
+★★★★★ DJ Sound
+
+Aceitar parceria
+
+Quando o DJ aceita:
+
+Os dois passam a aparecer mutuamente.
+
+Restaurante Solar
+
+Parceiros
+
+✔ DJ Sound
+
+✔ Florista Rosa
+
+✔ Fotografia XPTO
+
+No DJ:
+
+Parceiros
+
+✔ Restaurante Solar
+
+✔ Quinta Bela Vista
+Sistema de visitas
+
+Imagina isto.
+
+O Restaurante recebe:
+
+500 visitas
+
+Dessas:
+
+60 clicaram no DJ
+
+O DJ recebe:
+
+Obrigado ao Restaurante Solar.
+
+Recebeste
+
+60 visitantes
+
+Depois:
+
+Este mês
+
+↗ Restaurante Solar enviou
+
+83 visitantes
+
+Isso incentiva as empresas a manter as parcerias.
+
+Sistema de pontos
+
+Cada clique gera:
+
++1 ponto
+
+Cada parceria ativa:
+
++50 pontos
+
+Cada recomendação aceite:
+
++10 pontos
+
+Depois crias um ranking por cidade.
+
+Parceiro Ouro
+
+Parceiro Prata
+
+Parceiro Bronze
+Eu iria mais longe
+
+A SevenLux já pede:
+
+cidade;
+categoria.
+
+Eu acrescentaria um terceiro conceito:
+
+Área de atuação
+
+Exemplo:
+
+Restaurante
+
+✔ Casamentos
+
+✔ Eventos
+
+✔ Empresas
+
+✔ Take Away
+
+Fotógrafo:
+
+✔ Casamentos
+
+✔ Produto
+
+✔ Moda
+
+✔ Eventos
+
+Assim o algoritmo consegue ligar negócios que trabalham nos mesmos contextos.
+
+A funcionalidade que pode tornar isto viciante
+
+Imagina que um cliente vê isto no painel:
+
+Este mês
+
+Recebeste
+
+412 visitas
+
+98 vieram dos teus parceiros
+
+Top parceiro:
+
+DJ Sound
+
+42 visitantes
+
+⚠️ Ainda não tens:
+
+Florista
+
+Pastelaria
+
+Fotógrafo
+
+Ou seja, em vez de apenas alojar um site, a SevenLux passa a dizer ao cliente: "Ainda te faltam parceiros que podem trazer clientes para o teu negócio."
+
+Na minha opinião, essa é a direção mais promissora. Não estás a criar uma rede social baseada em seguidores ou publicações virais; estás a construir uma rede de recomendações entre empresas, onde todos têm interesse em participar porque podem ganhar visibilidade e potenciais clientes. Esse efeito de rede é muito mais alinhado com o objetivo de um SaaS para negócios e cria um motivo concreto para os clientes permanecerem na plataforma.

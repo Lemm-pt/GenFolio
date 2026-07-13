@@ -34,36 +34,39 @@ class Store
         }
     }
 
-    /**
-     * Redirects to a given route while preserving the client slug in the URL.
-     *
-     * @param string $route The route name (e.g., 'admin', 'blog', or empty for home).
-     */
-    public static function redirect($route = '')
-    {
-        // Get slug from session or fallback to demo
+   /**
+ * Redirects to a given route while preserving the client slug in the URL.
+ *
+ * @param string $route The route name (e.g., 'admin', 'blog', or empty for home).
+ * @param string|null $slug Optional slug (uses session or fallback if not provided)
+ */
+public static function redirect($route = '', $slug = null)
+{
+    // Get slug from parameter, session, or fallback
+    if ($slug === null) {
         $slug = $_SESSION['cliente_slug'] ?? 'vitrine-demo';
+    }
 
-        // Routes that must use the plain index.php (no friendly URL)
-       $simpleRoutes = [
-           'admin_login', 'admin_login_submit', 'admin_logout',
-           'criar_cliente', 'confirmar_email',
-           'recuperar_codigo', 'recuperar_codigo_submit',
-           'recuperar_codigo_confirmar', 'recuperar_codigo_novo_submit'
-         ];
+    // Routes that must use the plain index.php (no friendly URL)
+    $simpleRoutes = [
+        'admin_login', 'admin_login_submit', 'admin_logout',
+        'criar_cliente', 'confirmar_email',
+        'recuperar_codigo', 'recuperar_codigo_submit',
+        'recuperar_codigo_confirmar', 'recuperar_codigo_novo_submit'
+    ];
 
-        if (in_array($route, $simpleRoutes)) {
-            header("Location: " . BASE_URL . "index.php?a=" . $route);
-            exit;
-        }
-
-        $url = BASE_URL . $slug . '/';
-        if (!empty($route) && $route !== 'inicio') {
-            $url .= $route;
-        }
-        header("Location: " . $url);
+    if (in_array($route, $simpleRoutes)) {
+        header("Location: " . BASE_URL . "index.php?a=" . $route . "&slug=" . urlencode($slug));
         exit;
     }
+
+    $url = BASE_URL . $slug . '/';
+    if (!empty($route) && $route !== 'inicio') {
+        $url .= $route;
+    }
+    header("Location: " . $url);
+    exit;
+}
 
     /**
      * Checks whether the current admin user is logged in.

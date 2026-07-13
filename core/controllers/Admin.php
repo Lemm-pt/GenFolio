@@ -144,20 +144,27 @@ class Admin
     }
 }
 
-    /**
-     * Logs out the admin user and destroys the session.
-     */
-    public function admin_logout()
-    {
-     //🔥 log para a saida
+   /**
+ * Logs out the admin user and destroys the session.
+ */
+public function admin_logout()
+{
+    // 🔥 Guardar o slug antes de destruir a sessão
+    $slug = $_SESSION['cliente_slug'] ?? 'vitrine-demo';
+    
+    // 🔥 LOG para a saída
     if (isset($_SESSION['cliente_id'], $_SESSION['cliente_slug'])) {
         \core\classes\Logger::log('logout', "Logout do cliente: " . $_SESSION['cliente_slug'], $_SESSION['cliente_id']);
     }
-        $_SESSION = [];
-        session_destroy();
-        header("Location: " . BASE_URL . "index.php");
-        exit;
-    }
+    
+    // Destruir sessão
+    $_SESSION = [];
+    session_destroy();
+    
+    // 🔥 Redirecionar para o site correto (com slug)
+    header("Location: " . BASE_URL . $slug . "/");
+    exit;
+}
 
     /**
      * Admin dashboard – shows all configurable modules.
