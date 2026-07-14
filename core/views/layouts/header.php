@@ -31,6 +31,7 @@ $base_url = BASE_URL . CLIENTE_SLUG . '/';
             <a href="<?= $base_url ?>#servicos" class="nav-link">Serviços</a>
             <a href="<?= $base_url ?>#produtos" class="nav-link">Produtos</a>
             <a href="<?= $base_url ?>#galeria" class="nav-link">Galeria</a>
+            <a href="<?= $base_url ?>#horario" class="nav-link">Horário</a> <!-- 🔥 NOVO -->
             <a href="<?= $base_url ?>blog" class="nav-link">Blog</a>
             <a href="<?= $base_url ?>#mapa" class="nav-link">Onde Estamos</a>
             <a href="<?= $base_url ?>#contacto" class="nav-link">Contacto</a>

@@ -148,6 +148,17 @@
     </script>
 <?php endif; ?>
 
+
+
+
+<!-- ============================================ -->
+<!-- 🔥 HORÁRIO DE ATENDIMENTO (NOVO) -->
+<!-- ============================================ -->
+<?php 
+$horarioModel = new \core\models\Horario(CLIENTE_ID);
+include('horario.php'); 
+?>
+
 <!-- Map Section - Where we are -->
 <section id="mapa" class="py-5">
     <div class="container">

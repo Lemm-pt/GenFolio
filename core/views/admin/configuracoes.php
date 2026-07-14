@@ -78,6 +78,57 @@
             <label class="form-label fw-bold">Endereço (para o mapa)</label>
             <input type="text" name="endereco" class="form-control" value="<?= htmlspecialchars($config->get('endereco', '')) ?>">
         </div>
+
+
+        <!-- No core/views/admin/configuracoes.php, substitua a parte do horário por: -->
+
+<!-- ============================================ -->
+<!-- HORÁRIO DE ATENDIMENTO -->
+<!-- ============================================ -->
+<?php 
+$horarioModel = new \core\models\Horario($_SESSION['cliente_id']);
+$horarios = $horarioModel->getAll();
+?>
+<div class="mt-4 pt-3 border-top">
+    <h4 class="mb-3"><i class="fas fa-clock"></i> Horário de Atendimento</h4>
+    <p class="text-muted small">Defina o horário de funcionamento para cada dia da semana. Use "fechado" para dias sem atendimento.</p>
+    
+    <div class="row">
+        <?php foreach ($horarios as $dia => $horario): ?>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold"><?= $horario['label'] ?></label>
+                <div class="row g-2">
+                    <div class="col-5">
+                        <input type="text" name="horario_<?= $dia ?>" class="form-control" 
+                               value="<?= htmlspecialchars($horario['abertura']) ?>" 
+                               placeholder="09:00 ou fechado">
+                    </div>
+                    <div class="col-1 text-center pt-2">—</div>
+                    <div class="col-5">
+                        <input type="text" name="horario_<?= $dia ?>_fim" class="form-control" 
+                               value="<?= htmlspecialchars($horario['fechamento'] ?? '') ?>" 
+                               placeholder="18:00">
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    
+    <div class="mt-2">
+        <div class="form-check">
+            <input type="hidden" name="mostrar_horario" value="0">
+            <input type="checkbox" name="mostrar_horario" class="form-check-input" id="mostrarHorario" value="1" 
+                   <?= $config->get('mostrar_horario', '1') == '1' ? 'checked' : '' ?>>
+            <label class="form-check-label" for="mostrarHorario">
+                <i class="fas fa-eye"></i> Mostrar horário no site
+            </label>
+        </div>
+    </div>
+</div>
+
+
+
+
         
         <div class="mt-4">
             <button type="submit" class="btn btn-gold px-4">💾 Guardar Configurações</button>

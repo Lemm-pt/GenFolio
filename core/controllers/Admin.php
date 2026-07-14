@@ -233,6 +233,22 @@ public function admin_logout()
                 }
             }
 
+            // 🔥 SALVAR HORÁRIOS (usando o novo model)
+        $horarioModel = new \core\models\Horario($_SESSION['cliente_id']);
+        $dias = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+        foreach ($dias as $dia) {
+            $abertura = $_POST['horario_' . $dia] ?? 'fechado';
+            $fechamento = $_POST['horario_' . $dia . '_fim'] ?? null;
+            
+            // Se abertura for vazia, definir como fechado
+            if (empty($abertura)) {
+                $abertura = 'fechado';
+                $fechamento = null;
+            }
+            
+            $horarioModel->setHorario($dia, $abertura, $fechamento);
+        }
+
             // Logo image upload
             if (isset($_FILES['logo_imagem']) && $_FILES['logo_imagem']['error'] === 0) {
                 $uploadDir = __DIR__ . '/../../public/assets/images/';

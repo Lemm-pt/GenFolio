@@ -9,14 +9,6 @@
 // CONFIGURAÇÕES SEGURAS DE SESSÃO
 // ============================================================
 
-// No index.php ou config.php
-// Aumentar limites de upload (se permitido pelo host)
-
-@ini_set('upload_max_filesize', '10M');
-@ini_set('post_max_size', '10M');
-@ini_set('memory_limit', '128M');
-@ini_set('max_execution_time', 120);
-@ini_set('max_input_time', 120);
 
 $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') 
             || $_SERVER['SERVER_PORT'] == 443;
@@ -29,8 +21,13 @@ session_set_cookie_params([
 
 session_start();
 
-// No index.php ou config.php
+
+// ============================================================
+// 🔥 DEFINIR FUSO HORÁRIO DE PORTUGAL
+// ============================================================
+date_default_timezone_set('Europe/Lisbon');
 // Aumentar limites de upload (se permitido pelo host)
+
 
 @ini_set('upload_max_filesize', '10M');
 @ini_set('post_max_size', '10M');
