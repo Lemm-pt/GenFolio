@@ -11,7 +11,7 @@
 namespace core\models;
 
 use core\classes\Database;
-use Exception;
+
 
 class Configuracao
 {
