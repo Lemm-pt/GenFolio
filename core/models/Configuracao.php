@@ -140,4 +140,71 @@ class Configuracao
     {
         return isset($this->cache[$chave]);
     }
+
+
+     // ============================================================
+    // 🔥 REDES SOCIAIS - NOVOS MÉTODOS
+    // ============================================================
+
+    /**
+     * Obtém todas as redes sociais configuradas
+     * 
+     * @return array
+     */
+    public function getSocialLinks()
+    {
+        $networks = [
+            'facebook' => ['icon' => 'fa-facebook-f', 'label' => 'Facebook', 'color' => '#1877F2'],
+            'twitter' => ['icon' => 'fa-x-twitter', 'label' => 'X (Twitter)', 'color' => '#000000'],
+            'instagram' => ['icon' => 'fa-instagram', 'label' => 'Instagram', 'color' => '#E4405F'],
+            'linkedin' => ['icon' => 'fa-linkedin-in', 'label' => 'LinkedIn', 'color' => '#0A66C2'],
+            'youtube' => ['icon' => 'fa-youtube', 'label' => 'YouTube', 'color' => '#FF0000'],
+            'tiktok' => ['icon' => 'fa-tiktok', 'label' => 'TikTok', 'color' => '#000000'],
+            'pinterest' => ['icon' => 'fa-pinterest-p', 'label' => 'Pinterest', 'color' => '#E60023'],
+            'whatsapp' => ['icon' => 'fa-whatsapp', 'label' => 'WhatsApp', 'color' => '#25D366'],
+            'telegram' => ['icon' => 'fa-telegram-plane', 'label' => 'Telegram', 'color' => '#26A5E4'],
+            'github' => ['icon' => 'fa-github', 'label' => 'GitHub', 'color' => '#181717'],
+        ];
+
+        $links = [];
+        foreach ($networks as $key => $info) {
+            $url = $this->get('social_' . $key);
+            if (!empty($url)) {
+                $links[$key] = [
+                    'url' => $url,
+                    'icon' => $info['icon'],
+                    'label' => $info['label'],
+                    'color' => $info['color']
+                ];
+            }
+        }
+        return $links;
+    }
+
+    /**
+     * Verifica se há redes sociais configuradas
+     * 
+     * @return bool
+     */
+    public function hasSocialLinks()
+    {
+        return !empty($this->getSocialLinks());
+    }
+
+    /**
+     * Obtém uma rede social específica
+     * 
+     * @param string $network facebook|twitter|instagram|linkedin|youtube|tiktok|pinterest|whatsapp|telegram|github
+     * @return array|null
+     */
+    public function getSocialLink($network)
+    {
+        $links = $this->getSocialLinks();
+        return $links[$network] ?? null;
+    }
+
+
+
+
+
 }

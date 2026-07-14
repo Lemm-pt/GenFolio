@@ -35,6 +35,14 @@ $base_url = BASE_URL . CLIENTE_SLUG . '/';
             <a href="<?= $base_url ?>blog" class="nav-link">Blog</a>
             <a href="<?= $base_url ?>#mapa" class="nav-link">Onde Estamos</a>
             <a href="<?= $base_url ?>#contacto" class="nav-link">Contacto</a>
+
+             <!-- 🔥 Redes Sociais (ícones pequenos) -->
+    <div class="social-nav mt-2 mt-md-0 d-flex gap-1">
+        <?php 
+        $socialNav = new \core\models\Social(CLIENTE_ID);
+        echo $socialNav->render('sm', '');
+        ?>
+    </div>
             
             <?php if(Store::adminLogado()): ?>
                 <a href="<?= $base_url ?>admin" class="nav-link admin-link"><i class="fas fa-crown"></i> Admin</a>

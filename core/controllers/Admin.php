@@ -736,4 +736,68 @@ public function admin_estatisticas()
     ]);
 }
 
+
+
+/**
+ * Exibe a página de gestão de redes sociais
+ */
+public function admin_social()
+{
+    $this->verificarLogin();
+    $social = new \core\models\Social($_SESSION['cliente_id']);
+    $redes = $social->getAll();
+    $disponiveis = $social->getRedesDisponiveis();
+    
+    Store::Layout([
+        'admin/layouts/html_header',
+        'admin/layouts/header',
+        'admin/social',
+        'admin/layouts/footer',
+        'admin/layouts/html_footer'
+    ], [
+        'social' => $social,
+        'redes' => $redes,
+        'disponiveis' => $disponiveis
+    ]);
+}
+
+/**
+ * Salva as redes sociais
+ */
+public function admin_salvar_social()
+{
+    $this->verificarLogin();
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        Store::redirect('admin_social');
+        return;
+    }
+    
+    $social = new \core\models\Social($_SESSION['cliente_id']);
+    
+    foreach ($_POST as $key => $value) {
+        if (strpos($key, 'social_') === 0) {
+            $rede = substr($key, 7); // remove 'social_'
+            $url = trim($value);
+            $ativo = isset($_POST['ativo_' . $rede]) ? 1 : 0;
+            
+            // Se a URL estiver vazia, desativa
+            if (empty($url)) {
+                $ativo = 0;
+            }
+            
+            $social->set($rede, $url, $ativo);
+        }
+    }
+    
+    \core\classes\Logger::log('alterar_social', "Redes sociais atualizadas", $_SESSION['cliente_id']);
+    $_SESSION['sucesso'] = "Redes sociais atualizadas!";
+    Store::redirect('admin_social');
+}
+
+
+
+
+
+
 }

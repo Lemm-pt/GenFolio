@@ -3,6 +3,13 @@
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
+
+             <!-- 🔥 REDES SOCIAIS -->
+                <?php 
+                $socialModel = new \core\models\Social(CLIENTE_ID);
+                echo $socialModel->render('md', 'justify-content-center mb-3');
+                ?>
+                
                 <!-- Logo e Copyright -->
                 <small class="text-white-50">
                     <?= $config->get('logo_parte1', 'Seven') ?><?= $config->get('logo_parte2', 'Lux') ?> &copy; <?= date('Y') ?>

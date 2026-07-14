@@ -30,6 +30,12 @@
         <a href="?a=admin_configuracoes" class="nav-item <?= ($_GET['a'] ?? '') == 'admin_configuracoes' ? 'active' : '' ?>">
             <i class="fas fa-cog"></i> Configurações
         </a>
+
+         <!-- 🔥 NOVO: Redes Sociais -->
+    <a href="?a=admin_social" class="nav-item <?= ($_GET['a'] ?? '') == 'admin_social' ? 'active' : '' ?>">
+        <i class="fas fa-share-alt"></i> Redes Sociais
+    </a>
+    
         <a href="?a=admin_logs" class="nav-item <?= ($_GET['a'] ?? '') == 'admin_logs' ? 'active' : '' ?>">
     <i class="fas fa-clipboard-list"></i> Logs
 </a>

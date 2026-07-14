@@ -67,6 +67,10 @@ $rotas = [
     'recuperar_codigo_novo_submit'  => 'main@recuperar_codigo_novo_submit',
 
     'admin_logs' => 'admin@admin_logs',
+
+    // Redes Sociais
+    'admin_social' => 'admin@admin_social',
+    'admin_salvar_social' => 'admin@admin_salvar_social',
 ];
 
 // ============================================================
