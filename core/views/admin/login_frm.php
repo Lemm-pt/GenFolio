@@ -59,14 +59,14 @@
 
 .login-container {
     width: 100%;
-    max-width: 440px;
+    max-width: 400px;
     margin: 0 auto;
 }
 
 .login-card {
     background: rgba(245, 244, 246, 0.85);
     backdrop-filter: blur(20px);
-    border-radius: 32px;
+    border-radius: 28px;
     border: 1px solid rgba(198, 164, 63, 0.2);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(198, 164, 63, 0.05) inset;
     overflow: hidden;
@@ -79,32 +79,32 @@
 }
 
 .login-header {
-    padding: 2rem 2rem 1rem 2rem;
+    padding: 1.8rem 2rem 1rem 2rem;
     text-align: center;
     border-bottom: 1px solid rgba(198, 164, 63, 0.15);
 }
 
 .login-logo {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
     background: rgba(198, 164, 63, 0.1);
-    border-radius: 60px;
+    border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1.2rem auto;
+    margin: 0 auto 1rem auto;
     border: 1px solid rgba(198, 164, 63, 0.3);
 }
 
 .logo-icon {
-    font-size: 28px;
+    font-size: 24px;
     color: #C6A43F;
     filter: drop-shadow(0 0 4px rgba(198,164,63,0.4));
 }
 
 .login-header h2 {
     font-family: 'Inter', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     font-weight: 600;
     letter-spacing: -0.3px;
     margin: 0 0 0.25rem 0;
@@ -115,28 +115,28 @@
 }
 
 .login-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #C6A43F;
     background: rgba(198, 164, 63, 0.12);
     display: inline-block;
-    padding: 0.2rem 1rem;
+    padding: 0.15rem 0.9rem;
     border-radius: 40px;
     font-weight: 500;
-    margin-top: 0.5rem;
+    margin-top: 0.4rem;
 }
 
 .login-body {
-    padding: 1.5rem 2rem 2rem 2rem;
+    padding: 1.2rem 2rem 1.8rem 2rem;
 }
 
 /* Alert message */
 .alert-message {
     background: rgba(220, 53, 69, 0.12);
     border-left: 3px solid #dc3545;
-    border-radius: 12px;
-    padding: 0.85rem 1rem;
-    margin-bottom: 1.8rem;
-    font-size: 0.85rem;
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -144,51 +144,52 @@
 }
 
 .alert-icon {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 /* Code display */
 .code-section {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .input-label {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
+    letter-spacing: 1.5px;
+    font-weight: 700;
     color: #9ca3af;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.6rem;
+    text-align: center;
 }
 
 .code-display-modern {
-    background: #035f19;
-    border-radius: 20px;
-    padding: 1rem 0.5rem;
+    background: #0a0f1e;
+    border-radius: 16px;
+    padding: 0.8rem 0.5rem;
     text-align: center;
-    border: 1px solid #1e2438;
-    margin-bottom: 1.5rem;
+    border: 1px solid rgba(198, 164, 63, 0.2);
+    margin-bottom: 1.2rem;
     transition: all 0.2s;
 }
 
 .digit-mask {
     display: inline-block;
-    width: 40px;
-    font-size: 1.6rem;
+    width: 32px;
+    font-size: 1.3rem;
     font-family: 'SF Mono', 'Fira Code', monospace;
     font-weight: 700;
     color: #C6A43F;
     text-shadow: 0 0 2px rgba(198,164,63,0.3);
-    letter-spacing: 4px;
+    letter-spacing: 2px;
 }
 
-/* Numpad moderno */
+/* Numpad moderno - BOTÕES MAIS PEQUENOS */
 .numpad-grid-modern {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    max-width: 280px;
+    gap: 8px;
+    max-width: 240px;
     margin: 0 auto;
 }
 
@@ -196,14 +197,18 @@
     background: #0f1420;
     border: 1px solid #252c3f;
     color: #e5e7eb;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: 500;
-    padding: 14px 0;
-    border-radius: 24px;
+    padding: 10px 0;
+    border-radius: 18px;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     font-family: 'Inter', monospace;
     backdrop-filter: blur(4px);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .numpad-btn-modern:hover {
@@ -214,18 +219,31 @@
 }
 
 .numpad-btn-modern:active {
-    transform: scale(0.94);
+    transform: scale(0.92);
     background: #C6A43F;
     color: #0a0f1e;
     border-color: #C6A43F;
 }
 
-/* Botão especial reset/apagar */
+/* Botão especial reset/apagar - mais pequeno */
 .numpad-special {
     background: #1a1f2e;
     color: #9ca3af;
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 8px 0;
+    min-height: 40px;
+}
+
+.numpad-special.reset-btn {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.numpad-special.back-btn {
+    font-size: 1.2rem;
 }
 
 /* Botão principal */
@@ -233,10 +251,10 @@
     width: 100%;
     background: #C6A43F;
     border: none;
-    padding: 0.9rem;
+    padding: 0.8rem;
     border-radius: 40px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #0a0f1e;
     cursor: pointer;
     transition: all 0.2s;
@@ -257,12 +275,12 @@
 
 .login-footer {
     text-align: center;
-    margin-top: 1.8rem;
+    margin-top: 1.5rem;
 }
 
 .forgot-link {
     color: #9ca3af;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     text-decoration: none;
     transition: color 0.2s;
     letter-spacing: 0.2px;
@@ -276,15 +294,74 @@
 /* Responsivo */
 @media (max-width: 480px) {
     .login-body {
-        padding: 1.5rem;
+        padding: 1rem 1.5rem 1.5rem 1.5rem;
     }
+    
+    .login-header {
+        padding: 1.2rem 1.5rem 0.8rem 1.5rem;
+    }
+    
+    .login-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .login-logo {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .logo-icon {
+        font-size: 20px;
+    }
+    
     .digit-mask {
-        width: 32px;
-        font-size: 1.3rem;
+        width: 26px;
+        font-size: 1.1rem;
     }
+    
+    .numpad-grid-modern {
+        gap: 6px;
+        max-width: 200px;
+    }
+    
     .numpad-btn-modern {
-        padding: 10px 0;
-        font-size: 1.7rem;
+        font-size: 1rem;
+        padding: 8px 0;
+        min-height: 40px;
+        border-radius: 14px;
+    }
+    
+    .numpad-special {
+        font-size: 0.7rem;
+        min-height: 34px;
+        padding: 6px 0;
+    }
+    
+    .numpad-special.back-btn {
+        font-size: 1rem;
+    }
+    
+    .code-display-modern {
+        padding: 0.6rem 0.5rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .numpad-grid-modern {
+        gap: 5px;
+        max-width: 170px;
+    }
+    
+    .numpad-btn-modern {
+        font-size: 0.9rem;
+        padding: 6px 0;
+        min-height: 34px;
+        border-radius: 12px;
+    }
+    
+    .digit-mask {
+        width: 22px;
+        font-size: 0.9rem;
     }
 }
 </style>
@@ -355,7 +432,7 @@
     // Botão Reset
     const btnReset = document.createElement('button');
     btnReset.textContent = 'reset';
-    btnReset.className = 'numpad-btn-modern numpad-special';
+    btnReset.className = 'numpad-btn-modern numpad-special reset-btn';
     btnReset.type = 'button';
     btnReset.onclick = resetDigitos;
     container.appendChild(btnReset);
@@ -363,7 +440,7 @@
     // Botão Apagar
     const btnApagar = document.createElement('button');
     btnApagar.textContent = '⌫';
-    btnApagar.className = 'numpad-btn-modern numpad-special';
+    btnApagar.className = 'numpad-btn-modern numpad-special back-btn';
     btnApagar.type = 'button';
     btnApagar.onclick = apagarDigito;
     container.appendChild(btnApagar);

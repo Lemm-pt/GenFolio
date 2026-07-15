@@ -71,6 +71,19 @@ $rotas = [
     // Redes Sociais
     'admin_social' => 'admin@admin_social',
     'admin_salvar_social' => 'admin@admin_salvar_social',
+        
+    // Política de Privacidade
+    'politica_privacidade' => 'main@politica_privacidade',
+
+    // Gestão de Conta
+    'admin_gestao_conta' => 'admin@admin_gestao_conta',
+    'admin_pausar_conta' => 'admin@admin_pausar_conta',
+    'admin_reativar_conta' => 'admin@admin_reativar_conta',
+    'admin_desativar_conta' => 'admin@admin_desativar_conta',
+    'admin_solicitar_eliminacao' => 'admin@admin_solicitar_eliminacao',
+    'admin_cancelar_eliminacao' => 'admin@admin_cancelar_eliminacao',
+    
+    'manutencao' => 'main@manutencao',
 ];
 
 // ============================================================

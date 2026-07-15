@@ -797,6 +797,140 @@ public function admin_salvar_social()
 
 
 
+/**
+ * Exibe a página de gestão de conta
+ */
+public function admin_gestao_conta()
+{
+    $this->verificarLogin();
+    
+    Store::Layout([
+        'admin/layouts/html_header',
+        'admin/layouts/header',
+        'admin/gestao_conta',
+        'admin/layouts/footer',
+        'admin/layouts/html_footer'
+    ]);
+}
+
+/**
+ * Pausar conta
+ */
+public function admin_pausar_conta()
+{
+    $this->verificarLogin();
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        Store::redirect('admin_gestao_conta');
+        return;
+    }
+    
+    $clientModel = new \core\models\Clientes();
+    $motivo = trim($_POST['motivo'] ?? '');
+    
+    if ($clientModel->pausarConta($_SESSION['cliente_id'], $motivo)) {
+        $_SESSION['sucesso'] = "Conta pausada com sucesso. O site está offline.";
+    } else {
+        $_SESSION['erro'] = "Erro ao pausar a conta.";
+    }
+    
+    Store::redirect('admin_gestao_conta');
+}
+
+/**
+ * Reativar conta
+ */
+public function admin_reativar_conta()
+{
+    $this->verificarLogin();
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        Store::redirect('admin_gestao_conta');
+        return;
+    }
+    
+    $clientModel = new \core\models\Clientes();
+    
+    if ($clientModel->reativarConta($_SESSION['cliente_id'])) {
+        $_SESSION['sucesso'] = "Conta reativada com sucesso. O site está online.";
+    } else {
+        $_SESSION['erro'] = "Erro ao reativar a conta.";
+    }
+    
+    Store::redirect('admin_gestao_conta');
+}
+
+/**
+ * Desativar conta
+ */
+public function admin_desativar_conta()
+{
+    $this->verificarLogin();
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        Store::redirect('admin_gestao_conta');
+        return;
+    }
+    
+    $clientModel = new \core\models\Clientes();
+    $motivo = trim($_POST['motivo'] ?? '');
+    
+    if ($clientModel->desativarConta($_SESSION['cliente_id'], $motivo)) {
+        $_SESSION['sucesso'] = "Conta desativada com sucesso. O site está offline.";
+    } else {
+        $_SESSION['erro'] = "Erro ao desativar a conta.";
+    }
+    
+    Store::redirect('admin_gestao_conta');
+}
+
+/**
+ * Solicitar eliminação da conta
+ */
+public function admin_solicitar_eliminacao()
+{
+    $this->verificarLogin();
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        Store::redirect('admin_gestao_conta');
+        return;
+    }
+    
+    $clientModel = new \core\models\Clientes();
+    $motivo = trim($_POST['motivo'] ?? '');
+    
+    if ($clientModel->solicitarEliminacaoConta($_SESSION['cliente_id'], $motivo)) {
+        $_SESSION['sucesso'] = "Eliminação solicitada. Tem 30 dias para cancelar.";
+    } else {
+        $_SESSION['erro'] = "Erro ao solicitar eliminação.";
+    }
+    
+    Store::redirect('admin_gestao_conta');
+}
+
+/**
+ * Cancelar eliminação da conta
+ */
+public function admin_cancelar_eliminacao()
+{
+    $this->verificarLogin();
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        Store::redirect('admin_gestao_conta');
+        return;
+    }
+    
+    $clientModel = new \core\models\Clientes();
+    
+    if ($clientModel->cancelarEliminacaoConta($_SESSION['cliente_id'])) {
+        $_SESSION['sucesso'] = "Eliminação cancelada. A conta está ativa novamente.";
+    } else {
+        $_SESSION['erro'] = "Erro ao cancelar eliminação.";
+    }
+    
+    Store::redirect('admin_gestao_conta');
+}
+
 
 
 

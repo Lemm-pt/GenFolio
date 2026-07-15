@@ -4,11 +4,15 @@
         <div class="row">
             <div class="col-12 text-center">
 
-             <!-- 🔥 REDES SOCIAIS -->
+                <!-- 🔥 REDES SOCIAIS -->
                 <?php 
                 $socialModel = new \core\models\Social(CLIENTE_ID);
                 echo $socialModel->render('md', 'justify-content-center mb-3');
                 ?>
+
+                <!-- ============================================ -->
+                <!-- INFO DO CLIENTE (Logo, Contactos, Visitas) -->
+                <!-- ============================================ -->
                 
                 <!-- Logo e Copyright -->
                 <small class="text-white-50">
@@ -18,10 +22,19 @@
                 
                 <!-- Contactos -->
                 <small class="text-white-50">
-                    <a href="mailto:<?= $config->get('email_contacto', '') ?>" class="text-gold">
-                        <?= $config->get('email_contacto', '') ?>
-                    </a> | 
-                    <?= $config->get('telefone', '') ?>
+                    <?php if (!empty($config->get('email_contacto', ''))): ?>
+                        <a href="mailto:<?= $config->get('email_contacto', '') ?>" class="text-gold">
+                            <?= $config->get('email_contacto', '') ?>
+                        </a>
+                    <?php endif; ?>
+                    
+                    <?php if (!empty($config->get('email_contacto', '')) && !empty($config->get('telefone', ''))): ?>
+                        <span class="text-muted">|</span>
+                    <?php endif; ?>
+                    
+                    <?php if (!empty($config->get('telefone', ''))): ?>
+                        <?= $config->get('telefone', '') ?>
+                    <?php endif; ?>
                 </small>
                 
                 <!-- 🔥 CONTADOR DE VISITAS -->
@@ -46,12 +59,105 @@
                     </small>
                 </div>
                 <?php endif; ?>
+
+                <!-- ============================================ -->
+                <!-- DIVISOR -->
+                <!-- ============================================ -->
+                <div class="footer-divider my-3"></div>
+
+                <!-- ============================================ -->
+                <!-- POLÍTICA DE PRIVACIDADE + DEVELOPED BY -->
+                <!-- ============================================ -->
+                <div class="footer-legal">
+                    <small class="text-white-50">
+                        <a href="<?= BASE_URL . CLIENTE_SLUG ?>/politica_privacidade" class="text-gold legal-link">
+                            <i class="fas fa-shield-alt"></i> Política de Privacidade
+                        </a>
+                    </small>
+                    
+                    <span class="text-muted separator">|</span>
+                    
+                    <small class="text-white-50 developed-by">
+                        <i class="fas fa-code"></i> 
+                        Desenvolvido por 
+                        <a href="https://sevenlux.pt" target="_blank" rel="noopener noreferrer" class="text-gold developed-link">
+                            <strong>SevenLux.pt</strong>
+                        </a>
+                    </small>
+                </div>
+
             </div>
         </div>
     </div>
 </footer>
 
 <style>
+/* ============================================
+   FOOTER ESTILOS
+   ============================================ */
+
+/* Divisor */
+.footer-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(198, 164, 63, 0.3), transparent);
+    margin: 15px auto;
+}
+
+/* Área legal */
+.footer-legal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.footer-legal .separator {
+    color: rgba(255, 255, 255, 0.15);
+    font-size: 0.8rem;
+}
+
+/* Links legais */
+.legal-link {
+    font-size: 0.75rem;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.legal-link:hover {
+    background: rgba(198, 164, 63, 0.1);
+    text-decoration: none !important;
+}
+
+/* Developed by */
+.developed-by {
+    font-size: 0.75rem;
+    letter-spacing: 0.2px;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.developed-by:hover {
+    opacity: 1;
+}
+
+.developed-link {
+    font-weight: 600;
+    transition: all 0.3s ease;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.developed-link:hover {
+    background: rgba(198, 164, 63, 0.15);
+    text-decoration: none !important;
+    transform: translateY(-1px);
+}
+
+/* Visitas counter (mantido) */
 .visitas-counter {
     opacity: 0.7;
     transition: opacity 0.3s ease;
@@ -77,7 +183,6 @@
     color: rgba(255, 255, 255, 0.3) !important;
 }
 
-/* Animação suave para o contador */
 @keyframes countPulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
@@ -88,18 +193,45 @@
     display: inline-block;
 }
 
-/* Responsivo */
+/* ============================================
+   RESPONSIVO
+   ============================================ */
 @media (max-width: 576px) {
     .visitas-counter small {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
     }
+    
     .visitas-counter .text-muted {
         margin: 0 2px !important;
+    }
+    
+    .footer-legal {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .footer-legal .separator {
+        display: none;
+    }
+    
+    .legal-link,
+    .developed-by {
+        font-size: 0.7rem;
+    }
+    
+    .footer-divider {
+        width: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-legal {
+        flex-wrap: wrap;
     }
 }
 </style>
 
-<!-- Script para animar o contador -->
+<!-- Script para animar o contador (mantido) -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Animação de contagem para o total

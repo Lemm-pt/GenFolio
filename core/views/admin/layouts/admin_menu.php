@@ -35,6 +35,11 @@
     <a href="?a=admin_social" class="nav-item <?= ($_GET['a'] ?? '') == 'admin_social' ? 'active' : '' ?>">
         <i class="fas fa-share-alt"></i> Redes Sociais
     </a>
+
+     <!-- 🔥 NOVO: Gestão de Conta -->
+    <a href="?a=admin_gestao_conta" class="nav-item <?= ($_GET['a'] ?? '') == 'admin_gestao_conta' ? 'active' : '' ?>">
+        <i class="fas fa-user-cog"></i> Gestão de Conta
+    </a>
     
         <a href="?a=admin_logs" class="nav-item <?= ($_GET['a'] ?? '') == 'admin_logs' ? 'active' : '' ?>">
     <i class="fas fa-clipboard-list"></i> Logs

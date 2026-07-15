@@ -945,3 +945,60 @@ body:not(.admin-container) {
 .social-icons .social-icon i {
     color: inherit;
 }
+
+
+/* ============================================
+   POLÍTICA DE PRIVACIDADE - LINK NO MENU
+   ============================================ */
+.privacy-link {
+    font-size: 0.75rem !important;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.privacy-link:hover {
+    opacity: 1 !important;
+}
+
+@media (max-width: 768px) {
+    .privacy-link {
+        font-size: 0.85rem !important;
+        opacity: 1;
+    }
+}
+
+
+
+/* ============================================
+   ALERTA DE STATUS NO DASHBOARD
+   ============================================ */
+.alert-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+    border-radius: 12px;
+}
+
+.alert-warning .btn-warning {
+    background: #ffc107;
+    border: none;
+    color: #0a0a1a;
+    font-weight: 600;
+    border-radius: 50px;
+    padding: 5px 20px;
+}
+
+.alert-warning .btn-warning:hover {
+    background: #e0a800;
+}
+
+.alert-warning .btn-danger {
+    background: #dc3545;
+    border: none;
+    border-radius: 50px;
+    padding: 5px 20px;
+}
+
+.alert-warning .btn-danger:hover {
+    background: #c82333;
+}

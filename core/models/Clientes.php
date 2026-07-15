@@ -543,4 +543,270 @@ public function buscarPorTokenConfirmacao($token)
             );
         }
     }
+
+
+
+    /**
+     * Obtém o status da conta de um cliente
+     * 
+     * @param int $cliente_id
+     * @return array
+     */
+    public function getStatusConta($cliente_id)
+    {
+        $result = $this->db->select(
+            "SELECT status_conta, status_updated_at, eliminacao_solicitada_em, 
+                    eliminacao_agendada_para, motivo_desativacao 
+             FROM sevenlux_clientes 
+             WHERE id_cliente = :cliente_id",
+            [':cliente_id' => $cliente_id]
+        );
+        
+        if (!$result || empty($result)) {
+            return ['status' => 'ativa', 'mensagem' => 'Conta ativa'];
+        }
+        
+        $data = $result[0];
+        $status = $data->status_conta;
+        $mensagens = [
+            'ativa' => 'Conta ativa e visível ao público',
+            'pausada' => 'Conta pausada. O site está offline temporariamente.',
+            'desativada' => 'Conta desativada. O site está offline.',
+            'pendente_eliminacao' => 'Eliminação pendente. A conta será apagada em breve.'
+        ];
+        
+        $retorno = [
+            'status' => $status,
+            'mensagem' => $mensagens[$status] ?? 'Status desconhecido',
+            'updated_at' => $data->status_updated_at
+        ];
+        
+        if ($status === 'pendente_eliminacao' && $data->eliminacao_agendada_para) {
+            $retorno['eliminacao_em'] = $data->eliminacao_agendada_para;
+            $retorno['dias_restantes'] = $this->diasAteEliminacao($data->eliminacao_agendada_para);
+        }
+        
+        if ($data->motivo_desativacao) {
+            $retorno['motivo'] = $data->motivo_desativacao;
+        }
+        
+        return $retorno;
+    }
+
+    /**
+     * Calcula os dias até à eliminação
+     */
+    private function diasAteEliminacao($dataEliminacao)
+    {
+        if (!$dataEliminacao) return null;
+        
+        $agora = new \DateTime('now', new \DateTimeZone('Europe/Lisbon'));
+        $eliminacao = new \DateTime($dataEliminacao, new \DateTimeZone('Europe/Lisbon'));
+        $diferenca = $agora->diff($eliminacao);
+        
+        return $diferenca->days;
+    }
+
+    /**
+     * Pausar a conta (site offline temporariamente)
+     * 
+     * @param int $cliente_id
+     * @param string|null $motivo
+     * @return bool
+     */
+    public function pausarConta($cliente_id, $motivo = null)
+    {
+        return $this->atualizarStatusConta($cliente_id, 'pausada', $motivo);
+    }
+
+    /**
+     * Reativar a conta
+     * 
+     * @param int $cliente_id
+     * @return bool
+     */
+    public function reativarConta($cliente_id)
+    {
+        return $this->atualizarStatusConta($cliente_id, 'ativa', null);
+    }
+
+    /**
+     * Desativar a conta (offline indefinidamente)
+     * 
+     * @param int $cliente_id
+     * @param string|null $motivo
+     * @return bool
+     */
+    public function desativarConta($cliente_id, $motivo = null)
+    {
+        return $this->atualizarStatusConta($cliente_id, 'desativada', $motivo);
+    }
+
+    /**
+     * Solicitar eliminação da conta (com período de carência)
+     * 
+     * @param int $cliente_id
+     * @param string|null $motivo
+     * @return bool
+     */
+    public function solicitarEliminacaoConta($cliente_id, $motivo = null)
+    {
+        $agora = date('Y-m-d H:i:s');
+        $eliminacaoEm = date('Y-m-d H:i:s', strtotime('+30 days')); // 30 dias de carência
+        
+        return $this->atualizarStatusConta($cliente_id, 'pendente_eliminacao', $motivo, $eliminacaoEm);
+    }
+
+    /**
+     * Cancelar a solicitação de eliminação
+     * 
+     * @param int $cliente_id
+     * @return bool
+     */
+    public function cancelarEliminacaoConta($cliente_id)
+    {
+        return $this->atualizarStatusConta($cliente_id, 'ativa', null);
+    }
+
+    /**
+     * Eliminar permanentemente a conta (apenas para uso interno)
+     * 
+     * @param int $cliente_id
+     * @return bool
+     */
+    public function eliminarPermanentemente($cliente_id)
+    {
+        // Backup dos dados antes de eliminar (opcional)
+        $this->fazerBackupCliente($cliente_id);
+        
+        // Eliminar dados do cliente (cascade)
+        $this->db->delete(
+            "DELETE FROM sevenlux_clientes WHERE id_cliente = :cliente_id",
+            [':cliente_id' => $cliente_id]
+        );
+        
+        \core\classes\Logger::log('eliminar_conta', "Conta eliminada permanentemente: ID $cliente_id");
+        return true;
+    }
+
+    /**
+     * Atualiza o status da conta
+     * 
+     * @param int $cliente_id
+     * @param string $status
+     * @param string|null $motivo
+     * @param string|null $eliminacaoAgendada
+     * @return bool
+     */
+    private function atualizarStatusConta($cliente_id, $status, $motivo = null, $eliminacaoAgendada = null)
+    {
+        $agora = date('Y-m-d H:i:s');
+        
+        $params = [
+            ':cliente_id' => $cliente_id,
+            ':status' => $status,
+            ':status_updated_at' => $agora
+        ];
+        
+        $sql = "UPDATE sevenlux_clientes 
+                SET status_conta = :status, 
+                    status_updated_at = :status_updated_at";
+        
+        if ($motivo !== null) {
+            $sql .= ", motivo_desativacao = :motivo";
+            $params[':motivo'] = $motivo;
+        }
+        
+        if ($status === 'pendente_eliminacao' && $eliminacaoAgendada) {
+            $sql .= ", eliminacao_solicitada_em = :solicitada, 
+                     eliminacao_agendada_para = :agendada";
+            $params[':solicitada'] = $agora;
+            $params[':agendada'] = $eliminacaoAgendada;
+        } elseif ($status !== 'pendente_eliminacao') {
+            $sql .= ", eliminacao_solicitada_em = NULL, 
+                     eliminacao_agendada_para = NULL";
+        }
+        
+        $sql .= " WHERE id_cliente = :cliente_id";
+        
+        $result = $this->db->update($sql, $params);
+        
+        // Log da ação
+        $acao = "status_conta_$status";
+        $detalhes = "Conta ID $cliente_id alterada para: $status";
+        if ($motivo) {
+            $detalhes .= " - Motivo: $motivo";
+        }
+        \core\classes\Logger::log($acao, $detalhes, $cliente_id);
+        
+        return $result;
+    }
+
+    /**
+     * Faz backup dos dados do cliente antes de eliminar
+     */
+    private function fazerBackupCliente($cliente_id)
+    {
+        // Buscar dados do cliente
+        $cliente = $this->db->select(
+            "SELECT * FROM sevenlux_clientes WHERE id_cliente = :id",
+            [':id' => $cliente_id]
+        );
+        
+        if ($cliente) {
+            // Salvar em ficheiro JSON (pode ser adaptado para tabela de backups)
+            $backupDir = __DIR__ . '/../../backups/';
+            if (!is_dir($backupDir)) {
+                mkdir($backupDir, 0777, true);
+            }
+            
+            $filename = $backupDir . 'cliente_' . $cliente_id . '_' . date('Y-m-d_H-i-s') . '.json';
+            file_put_contents($filename, json_encode($cliente, JSON_PRETTY_PRINT));
+            
+            \core\classes\Logger::log('backup_cliente', "Backup criado: $filename", $cliente_id);
+        }
+    }
+
+    /**
+     * Verifica se a conta está ativa (para exibir o site)
+     * 
+     * @param int $cliente_id
+     * @return bool
+     */
+    public function isContaAtiva($cliente_id)
+    {
+        $result = $this->db->select(
+            "SELECT status_conta FROM sevenlux_clientes 
+             WHERE id_cliente = :cliente_id AND activo = 1",
+            [':cliente_id' => $cliente_id]
+        );
+        
+        if (!$result || empty($result)) {
+            return false;
+        }
+        
+        return $result[0]->status_conta === 'ativa';
+    }
+
+    /**
+     * Processa eliminações agendadas (para ser executado num cron)
+     */
+    public function processarEliminacoesAgendadas()
+    {
+        $result = $this->db->select(
+            "SELECT id_cliente FROM sevenlux_clientes 
+             WHERE status_conta = 'pendente_eliminacao' 
+             AND eliminacao_agendada_para <= NOW()"
+        );
+        
+        if ($result) {
+            foreach ($result as $cliente) {
+                $this->eliminarPermanentemente($cliente->id_cliente);
+                \core\classes\Logger::log('eliminacao_automatica', "Eliminação automática: ID {$cliente->id_cliente}");
+            }
+        }
+    }
+
+
+    
 }

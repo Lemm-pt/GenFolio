@@ -742,6 +742,40 @@ public function recuperar_codigo_novo_submit()
         exit;
     }
 }
+
+
+
+/**
+ * Exibe a Política de Privacidade
+ */
+public function politica_privacidade()
+{
+    $config = new Configuracao(CLIENTE_ID);
+    
+    Store::Layout([
+        'layouts/html_header',
+        'layouts/header',
+        'politica_privacidade',
+        'layouts/footer',
+        'layouts/html_footer'
+    ], [
+        'config' => $config,
+        'slug' => CLIENTE_SLUG
+    ]);
+}
+
+
+/**
+ * Página de manutenção
+ */
+public function manutencao()
+{
+    $status = $_GET['status'] ?? 'pausada';
+    $tempo = $_GET['tempo'] ?? null;
+    
+    include('../core/views/manutencao.php');
+    exit;
+}
   
 
     

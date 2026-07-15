@@ -6,10 +6,13 @@
  */
 
 // ============================================================
+// 🔥 DEFINIR FUSO HORÁRIO DE PORTUGAL (DEVE SER O PRIMEIRO)
+// ============================================================
+date_default_timezone_set('Europe/Lisbon');
+
+// ============================================================
 // CONFIGURAÇÕES SEGURAS DE SESSÃO
 // ============================================================
-
-
 $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') 
             || $_SERVER['SERVER_PORT'] == 443;
 
@@ -21,14 +24,9 @@ session_set_cookie_params([
 
 session_start();
 
-
 // ============================================================
-// 🔥 DEFINIR FUSO HORÁRIO DE PORTUGAL
-// ============================================================
-date_default_timezone_set('Europe/Lisbon');
 // Aumentar limites de upload (se permitido pelo host)
-
-
+// ============================================================
 @ini_set('upload_max_filesize', '10M');
 @ini_set('post_max_size', '10M');
 @ini_set('memory_limit', '128M');
@@ -60,10 +58,18 @@ $routes_without_slug = [
     'recuperar_codigo_submit',
     'recuperar_codigo_confirmar',
     'recuperar_codigo_novo_submit',
+    'admin_gestao_conta',
+    'admin_pausar_conta',
+    'admin_reativar_conta',
+    'admin_desativar_conta',
+    'admin_solicitar_eliminacao',
+    'admin_cancelar_eliminacao',
+    'admin_social',
+    'admin_salvar_social',
 ];
 
 // ============================================================
-// Admin routes
+// Admin routes (todas as rotas que começam com 'admin_')
 // ============================================================
 $admin_routes = [
     'admin',
@@ -72,7 +78,27 @@ $admin_routes = [
     'admin_galeria',
     'admin_produtos',
     'admin_publicacoes',
-    'admin_logs', 
+    'admin_logs',
+    'admin_salvar_config',
+    'admin_servico_criar',
+    'admin_servico_editar',
+    'admin_servico_deletar',
+    'admin_galeria_criar',
+    'admin_galeria_deletar',
+    'admin_produto_criar',
+    'admin_produto_editar',
+    'admin_produto_deletar',
+    'admin_publicacao_criar',
+    'admin_publicacao_editar',
+    'admin_publicacao_deletar',
+    'admin_gestao_conta',
+    'admin_pausar_conta',
+    'admin_reativar_conta',
+    'admin_desativar_conta',
+    'admin_solicitar_eliminacao',
+    'admin_cancelar_eliminacao',
+    'admin_social',
+    'admin_salvar_social',
 ];
 
 // ============================================================
@@ -152,6 +178,29 @@ if (!defined('CLIENTE_LOCALE')) {
 
 // Definir o locale do PHP
 setlocale(LC_ALL, CLIENTE_LOCALE . '_' . strtoupper(CLIENTE_LOCALE) . '.utf8');
+
+// ============================================================
+// 🔥 VERIFICAR STATUS DA CONTA (após definir CLIENTE_ID)
+// ============================================================
+// Excluir rotas de admin e rotas sem slug (login, recuperação, etc.)
+$isAdminRoute = in_array($action, $admin_routes);
+$isPublicRoute = in_array($action, $routes_without_slug);
+$isLoginRoute = ($action === 'admin_login' || $action === 'admin_login_submit');
+
+if (defined('CLIENTE_ID') && CLIENTE_ID > 0 && !$isAdminRoute && !$isPublicRoute && !$isLoginRoute) {
+    $clientModel = new \core\models\Clientes();
+    
+    if (!$clientModel->isContaAtiva(CLIENTE_ID)) {
+        // Se a conta não estiver ativa, mostrar página de manutenção
+        $status = $clientModel->getStatusConta(CLIENTE_ID);
+        $statusSlug = $status['status'];
+        $tempo = $status['dias_restantes'] ?? null;
+        
+        // Incluir a página de manutenção
+        include('../core/views/manutencao.php');
+        exit;
+    }
+}
 
 // ============================================================
 // 🔥 REGISTAR VISITA (apenas para páginas públicas, não admin)
