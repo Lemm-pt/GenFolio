@@ -213,28 +213,45 @@ public function admin_logout()
         ], ['config' => $config]);
     }
 
-    /**
-     * Saves the site configuration (text fields and logo upload).
-     */
-    public function admin_salvar_config()
-    {
-        $this->verificarLogin();
-        $config = new Configuracao();
+   /**
+ * Saves the site configuration (text fields and logo upload).
+ */
+public function admin_salvar_config()
+{
+    $this->verificarLogin();
+    $config = new Configuracao();
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $fields = [
-                'logo_parte1', 'logo_parte2', 'slogan', 'texto_descritivo',
-                'meta_description', 'meta_keywords', 'email_contacto',
-                'telefone', 'endereco'
-            ];
-            foreach ($fields as $field) {
-                if (isset($_POST[$field])) {
-                    $config->set($field, trim($_POST[$field]));
-                }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // ============================================================
+        // SALVAR CAMPOS DE TEXTO
+        // ============================================================
+        $fields = [
+            'logo_parte1', 'logo_parte2', 'slogan', 'texto_descritivo',
+            'meta_description', 'meta_keywords', 'email_contacto',
+            'telefone', 'endereco'
+        ];
+        foreach ($fields as $field) {
+            if (isset($_POST[$field])) {
+                $config->set($field, trim($_POST[$field]));
             }
+        }
 
-            // 🔥 SALVAR HORÁRIOS (usando o novo model)
+        // ============================================================
+        // 🔥 SALVAR ATIVO/INATIVO DO HORÁRIO
+        // ============================================================
         $horarioModel = new \core\models\Horario($_SESSION['cliente_id']);
+        
+        // Verificar se o checkbox foi marcado (valor '1') ou não
+        $ativo = isset($_POST['horario_ativo']) && $_POST['horario_ativo'] == '1';
+        
+        // 🔥 DEBUG - registar no log
+        error_log("🔍 HORARIO - POST horario_ativo: " . ($_POST['horario_ativo'] ?? 'não enviado'));
+        error_log("🔍 HORARIO - Ativo calculado: " . ($ativo ? 'SIM' : 'NÃO'));
+        
+        // Ativar/desativar globalmente para este cliente
+        $horarioModel->setAtivo($ativo);
+
+        // Salvar horários individuais de cada dia
         $dias = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
         foreach ($dias as $dia) {
             $abertura = $_POST['horario_' . $dia] ?? 'fechado';
@@ -246,33 +263,56 @@ public function admin_logout()
                 $fechamento = null;
             }
             
-            $horarioModel->setHorario($dia, $abertura, $fechamento);
+            // Guardar o horário com o mesmo estado ativo/inativo
+            $horarioModel->setHorario($dia, $abertura, $fechamento, $ativo);
         }
 
-            // Logo image upload
-            if (isset($_FILES['logo_imagem']) && $_FILES['logo_imagem']['error'] === 0) {
-                $uploadDir = __DIR__ . '/../../public/assets/images/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                $ext = strtolower(pathinfo($_FILES['logo_imagem']['name'], PATHINFO_EXTENSION));
-                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-                if (in_array($ext, $allowedExtensions)) {
-                    $fileName = time() . '_' . uniqid() . '.' . $ext;
-                    if (move_uploaded_file($_FILES['logo_imagem']['tmp_name'], $uploadDir . $fileName)) {
-                        $config->set('logo_imagem', $fileName);
+        // ============================================================
+        // LOGO IMAGE UPLOAD
+        // ============================================================
+        if (isset($_FILES['logo_imagem']) && $_FILES['logo_imagem']['error'] === 0) {
+            $uploadDir = __DIR__ . '/../../public/assets/images/logos/';
+            
+            // Criar diretório se não existir
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            $ext = strtolower(pathinfo($_FILES['logo_imagem']['name'], PATHINFO_EXTENSION));
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            
+            if (in_array($ext, $allowedExtensions)) {
+                $fileName = time() . '_' . uniqid() . '.' . $ext;
+                
+                // Mover ficheiro para o diretório de logos
+                if (move_uploaded_file($_FILES['logo_imagem']['tmp_name'], $uploadDir . $fileName)) {
+                    // Se já existia uma imagem, apagar a antiga (opcional)
+                    $oldLogo = $config->get('logo_imagem');
+                    if (!empty($oldLogo) && file_exists($uploadDir . $oldLogo)) {
+                        unlink($uploadDir . $oldLogo);
                     }
+                    
+                    $config->set('logo_imagem', $fileName);
                 }
             }
-
-            $_SESSION['sucesso'] = "Configurações atualizadas!";
-
-            // 🔥 Depois de salvar as configurações
-             \core\classes\Logger::log('alterar_config', "Configurações atualizadas pelo admin: " . $_SESSION['cliente_slug'], $_SESSION['cliente_id']);
         }
 
-        Store::redirect('admin_configuracoes');
+        // ============================================================
+        // MENSAGEM DE SUCESSO E LOG
+        // ============================================================
+        $_SESSION['sucesso'] = "Configurações atualizadas!";
+
+        // 🔥 LOG: alteração de configurações
+        \core\classes\Logger::log('alterar_config', 
+            "Configurações atualizadas pelo admin: " . $_SESSION['cliente_slug'] . 
+            " | Horário: " . ($ativo ? 'ATIVO' : 'INATIVO'), 
+            $_SESSION['cliente_id']
+        );
     }
+
+    // Redirecionar para a página de configurações
+    Store::redirect('admin_configuracoes');
+}
 
     // ============================================================
     // SERVICES (CRUD)

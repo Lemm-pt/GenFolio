@@ -1,4 +1,3 @@
-
 <?php use core\classes\Store; ?>
 
 <nav class="navbar navbar-dark bg-dark">
@@ -6,16 +5,15 @@
         <button class="btn btn-dark d-md-none" type="button" onclick="toggleMobileMenu()">
             <i class="fas fa-bars"></i>
         </button>
-          <a class="navbar-brand" href="<?= Store::getBaseUrl() ?>admin">
-              <i class="fas fa-crown"></i> Admin
-         </a>
+        <a class="navbar-brand" href="<?= Store::getBaseUrl() ?>admin">
+            <i class="fas fa-crown"></i> Admin
+        </a>
         <div>
-            <a href="?a=admin_configuracoes" class="btn btn-sm btn-outline-gold me-2">
-                <i class="fas fa-cog"></i> Configs
-            </a>
-           <span class="text-gold me-3">
-               <i class="fas fa-user-circle"></i> <?= $_SESSION['cliente_email'] ?? ($_SESSION['cliente_slug'] ?? 'Admin') ?>
-           </span>
+           
+            <span class="text-gold me-3" style="font-size: 0.85rem;">
+                <i class="fas fa-user-circle"></i> 
+                <?= $_SESSION['cliente_slug'] ?? 'Admin' ?>
+            </span>
             <a href="?a=admin_logout" class="btn btn-sm btn-danger">
                 <i class="fas fa-sign-out-alt"></i> Sair
             </a>

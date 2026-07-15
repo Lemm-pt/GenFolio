@@ -3,7 +3,14 @@
  * Secção de Horário de Atendimento
  * Exibe o horário completo da semana de forma visual
  */
-if (!isset($horarioModel) || !$config->get('mostrar_horario', '1') == '1') {
+if (!isset($config)) {
+    $config = new \core\models\Configuracao(CLIENTE_ID);
+}
+
+$horarioModel = new \core\models\Horario(CLIENTE_ID);
+
+// Se o horário não estiver ativo, não mostra nada
+if (!$horarioModel->isAtivo()) {
     return;
 }
 

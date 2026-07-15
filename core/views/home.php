@@ -152,11 +152,13 @@
 
 
 <!-- ============================================ -->
-<!-- 🔥 HORÁRIO DE ATENDIMENTO (NOVO) -->
+<!-- 🔥 HORÁRIO DE ATENDIMENTO -->
 <!-- ============================================ -->
 <?php 
 $horarioModel = new \core\models\Horario(CLIENTE_ID);
-include('horario.php'); 
+if ($horarioModel->isAtivo()) {
+    include('horario.php'); 
+}
 ?>
 
 <!-- Map Section - Where we are -->
