@@ -1,19 +1,9 @@
+<!-- core/views/admin/publicacoes.php -->
 <div class="container mt-4 main-content">
 
-<!-- core/views/admin/publicacoes.php -->
-<div class="container mt-4">
-    
     <!-- 🔥 LUXOR - MENSAGEM DA SECÇÃO -->
     <?php include('layouts/luxor_message.php'); ?>
     
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Gestão de Publicações (máx 7)</h2>
-        <a href="?a=admin_publicacao_criar" class="btn btn-gold">+ Nova Publicação</a>
-    </div>
-    
-    <!-- ... resto do conteúdo ... -->
-</div>
-
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestão de Publicações (máx 7)</h2>
         <a href="?a=admin_publicacao_criar" class="btn btn-gold">+ Nova Publicação</a>
@@ -48,7 +38,7 @@
                             <?php else: ?>
                                 <span class="text-muted">Sem img</span>
                             <?php endif; ?>
-                        <td>
+                        </td>
                         <td><?= htmlspecialchars($p->titulo) ?></td>
                         <td><?= $p->publicado ? '<span class="text-success">Publicado</span>' : '<span class="text-secondary">Rascunho</span>' ?></td>
                         <td><?= date('d/m/Y', strtotime($p->created_at)) ?></td>
