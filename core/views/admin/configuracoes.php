@@ -1,4 +1,9 @@
-<div class="container-fluid config-container">
+<div class="container-fluid config-container main-content">
+
+<!-- 🔥 LUXOR - MENSAGEM DA SECÇÃO -->
+    <?php include('layouts/luxor_message.php'); ?>
+
+
     <div class="config-header mb-4">
         <h2><i class="fas fa-cog text-gold"></i> Configurações do Site</h2>
         <p class="text-muted small">Gerir logotipo, conteúdo e informações de contacto</p>

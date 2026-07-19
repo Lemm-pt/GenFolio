@@ -1,5 +1,5 @@
 /* ============================================
-   MAIN STYLESHEET - Vitrine.lemm
+   MAIN STYLESHEET - SevenLux
    ============================================ */
 
 /* Reset & Fonts */
@@ -101,7 +101,6 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 10px;
 }
 
-/* Minimalist buttons on product cards */
 .produto-card .btn-outline-gold,
 .produto-card .btn-gold {
     font-size: 0.8rem;
@@ -200,6 +199,9 @@ h1, h2, h3, h4, h5, h6 {
     background: #0a0a1a;
     border-top: 2px solid rgba(198, 164, 63, 0.3);
     margin-top: 50px;
+    padding: 30px 0 !important;
+    position: relative;
+    z-index: 1;
 }
 
 .rodape .text-white-50 {
@@ -225,8 +227,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Fix footer to bottom */
-html,
-body {
+html, body {
     height: 100%;
     margin: 0;
     padding: 0;
@@ -300,7 +301,7 @@ body {
 }
 
 /* ============================================
-   ADMIN PANEL (Light background, dark text)
+   ADMIN PANEL
    ============================================ */
 body.admin-container {
     background: #f0f2f5 !important;
@@ -357,10 +358,13 @@ body.admin-container {
     margin-bottom: 20px;
 }
 
-/* Admin text */
-.admin-container p,
-.admin-container span,
-.admin-container div:not(.card-header):not(.alert) {
+/* ============================================
+   ADMIN TEXT - EXCLUIR O SIDEBAR DESTA REGRA
+   ============================================ */
+/* 🔥 CORRIGIDO: Agora apenas elementos DENTRO do conteúdo principal */
+.admin-container .main-content p,
+.admin-container .main-content span,
+.admin-container .main-content div:not(.card-header):not(.alert) {
     color: #333 !important;
 }
 
@@ -464,6 +468,33 @@ body.admin-container {
     background: #f9f9f9 !important;
 }
 
+.admin-container .table-responsive {
+    border-radius: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-container .table {
+    min-width: 480px;
+    margin-bottom: 0;
+}
+
+.admin-container .table th,
+.admin-container .table td {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.admin-container .table td:last-child {
+    white-space: normal;
+}
+
+.admin-container .btn-group-sm .btn {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+}
+
 /* Admin alerts */
 .admin-container .alert-success {
     background: #d4edda !important;
@@ -483,67 +514,11 @@ body.admin-container {
     border: 1px solid #bee5eb !important;
 }
 
-/* Dashboard cards */
-.admin-container .dashboard-card {
-    background: white !important;
+.admin-container .alert-warning {
+    background: rgba(255, 193, 7, 0.1) !important;
+    border: 1px solid rgba(255, 193, 7, 0.3) !important;
+    color: #ffc107 !important;
     border-radius: 12px !important;
-    padding: 20px !important;
-    text-align: center !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
-    transition: transform 0.2s !important;
-}
-
-.admin-container .dashboard-card:hover {
-    transform: translateY(-5px) !important;
-}
-
-.admin-container .dashboard-card h3 {
-    font-size: 2.5rem !important;
-    margin: 0 !important;
-    color: #C6A43F !important;
-}
-
-.admin-container .dashboard-card p {
-    margin: 10px 0 0 0 !important;
-    color: #555 !important;
-}
-
-/* Admin sidebar */
-.admin-sidebar {
-    background: #1a1a2e;
-    padding: 20px;
-    border-radius: 12px;
-    height: 100%;
-}
-
-.admin-sidebar .btn-outline-light {
-    text-align: left;
-    border-color: #333;
-    color: #e0e0e0;
-    margin-bottom: 10px;
-}
-
-.admin-sidebar .btn-outline-light:hover {
-    background: #C6A43F;
-    color: #1a1a2e;
-    border-color: #C6A43F;
-}
-
-/* Admin list group */
-.admin-container .list-group-item {
-    background: white !important;
-    color: #1a1a2e !important;
-    border-color: #e0e0e0 !important;
-}
-
-/* Admin links */
-.admin-container a:not(.btn):not(.nav-link) {
-    color: #C6A43F !important;
-    text-decoration: none;
-}
-
-.admin-container a:not(.btn):not(.nav-link):hover {
-    text-decoration: underline !important;
 }
 
 /* Admin badges */
@@ -552,44 +527,19 @@ body.admin-container {
     color: #1a1a2e !important;
 }
 
-/* Admin sidebar corrections */
-.admin-container .admin-sidebar {
-    background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
-}
-
-.admin-container .sidebar-header h4 {
-    color: white !important;
-}
-
-.admin-container .nav-item {
-    color: #e0e0e0 !important;
-}
-
-.admin-container .nav-item:hover {
-    background: rgba(198, 164, 63, 0.15) !important;
+/* Admin links (apenas dentro do conteúdo principal) */
+.admin-container .main-content a:not(.btn):not(.nav-link) {
     color: #C6A43F !important;
+    text-decoration: none;
 }
 
-.admin-container .nav-item.active {
-    background: #C6A43F !important;
-    color: #1a1a2e !important;
+.admin-container .main-content a:not(.btn):not(.nav-link):hover {
+    text-decoration: underline !important;
 }
 
-.admin-container .sidebar-footer .btn-outline-light {
-    color: #e0e0e0 !important;
-    border-color: #333 !important;
-}
-
-.admin-container .sidebar-footer .btn-outline-light:hover {
-    background: #C6A43F !important;
-    color: #1a1a2e !important;
-    border-color: #C6A43F !important;
-}
-
-.admin-container .sidebar-footer .btn-danger {
-    background: #dc3545 !important;
-    border: none !important;
-}
+/* ============================================
+   SIDEBAR - NENHUM ESTILO AQUI (tudo no admin_menu.php)
+   ============================================ */
 
 /* ============================================
    TOAST NOTIFICATIONS
@@ -657,208 +607,6 @@ body.admin-container {
 }
 
 /* ============================================
-   RESPONSIVENESS
-   ============================================ */
-@media (max-width: 768px) {
-    .container {
-        padding: 0 15px;
-    }
-
-    .hero h1 {
-        font-size: 2rem;
-    }
-
-    .admin-container .table-responsive {
-        overflow-x: auto;
-    }
-}
-
-@media (max-width: 576px) {
-    .numpad-grid {
-        gap: 8px;
-        max-width: 240px;
-    }
-    .numpad-btn {
-        padding: 12px;
-        font-size: 1.3rem;
-    }
-    .code-display {
-        font-size: 1.4rem;
-        letter-spacing: 6px;
-    }
-}
-
-/* Garantir fundo escuro no frontend */
-body:not(.admin-container) {
-    background: #0a0a1a;
-    color: #e0e0e0;
-}
-
-/* assets/css/app.css - Adicionar no final */
-
-/* assets/css/app.css - Adicionar/atualizar */
-
-/* ============================================
-   PRODUTOS - TEXTO PRETO GARANTIDO
-   ============================================ */
-.produto-card .card-title {
-    color: #1a1a2e !important;
-}
-
-.produto-card .card-text {
-    color: #333333 !important;
-    opacity: 1 !important;
-}
-
-.produto-card .card-text strong,
-.produto-card .card-text b {
-    color: #1a1a2e !important;
-}
-
-.produto-card .text-gold {
-    color: var(--theme-primary, #C6A43F) !important;
-}
-
-/* Garantir que a descrição do produto é legível */
-.produto-card .card-text p,
-.produto-card .card-text span,
-.produto-card .card-text div {
-    color: #333333 !important;
-}
-
-/* ============================================
-   RODAPÉ - ESPAÇO PARA AS LUZES
-   ============================================ */
-.rodape {
-    position: relative;
-    z-index: 1;
-    padding: 30px 0 !important;
-}
-
-/* Em desktop, as luzes estão no topo, não afetam o rodapé */
-@media (min-width: 993px) {
-    .rodape {
-        padding-bottom: 30px !important;
-    }
-}
-
-/* Em mobile, as luzes estão em baixo, dar espaço */
-@media (max-width: 992px) {
-    .rodape {
-        padding-bottom: 80px !important;
-    }
-}
-
-@media (max-width: 576px) {
-    .rodape {
-        padding-bottom: 70px !important;
-    }
-}
-
-/* ============================================
-   SEÇÃO DE CONTACTO - FORMULÁRIO LEGÍVEL
-   ============================================ */
-#contacto .form-control {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    color: #1a1a2e !important;
-}
-
-#contacto .form-control::placeholder {
-    color: #888888 !important;
-}
-
-#contacto .form-control:focus {
-    border-color: var(--theme-primary, #C6A43F) !important;
-    box-shadow: 0 0 0 3px var(--theme-glow, rgba(198, 164, 63, 0.2)) !important;
-}
-
-
-.admin-sidebar {
-    background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
-    min-height: 100vh;
-    padding: 20px 0;
-    transition: all 0.3s ease;
-}
-
-.sidebar-header {
-    padding: 0 20px 20px 20px;
-    border-bottom: 1px solid rgba(198, 164, 63, 0.2);
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.sidebar-header h4 {
-    color: white;
-    margin: 0;
-}
-
-.sidebar-close {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    padding: 0 15px;
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
-    color: #e0e0e0;
-    text-decoration: none;
-    border-radius: 10px;
-    transition: all 0.2s;
-}
-
-.nav-item i {
-    width: 24px;
-    font-size: 18px;
-}
-
-.nav-item:hover {
-    background: rgba(198, 164, 63, 0.15);
-    color: #C6A43F;
-}
-
-.nav-item.active {
-    background: #C6A43F;
-    color: #1a1a2e;
-}
-
-.sidebar-footer {
-    padding: 20px;
-    margin-top: 30px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-@media (max-width: 768px) {
-    .admin-sidebar {
-        position: fixed;
-        left: -280px;
-        top: 0;
-        width: 280px;
-        z-index: 1050;
-        height: 100%;
-        overflow-y: auto;
-    }
-    .admin-sidebar.mobile-open {
-        left: 0;
-    }
-}
-
-
-/* ============================================
    REDES SOCIAIS
    ============================================ */
 .social-icons {
@@ -888,7 +636,7 @@ body:not(.admin-container) {
     font-size: inherit;
 }
 
-/* Cores específicas para hover mais intenso */
+/* Cores específicas para hover */
 .social-icons .social-icon[title="Facebook"]:hover {
     background: #1877F2 !important;
     border-color: #1877F2 !important;
@@ -946,59 +694,138 @@ body:not(.admin-container) {
     color: inherit;
 }
 
-
 /* ============================================
-   POLÍTICA DE PRIVACIDADE - LINK NO MENU
+   RESPONSIVENESS
    ============================================ */
-.privacy-link {
-    font-size: 0.75rem !important;
-    opacity: 0.6;
-    transition: opacity 0.3s ease;
-}
-
-.privacy-link:hover {
-    opacity: 1 !important;
-}
-
 @media (max-width: 768px) {
-    .privacy-link {
-        font-size: 0.85rem !important;
-        opacity: 1;
+    .container {
+        padding: 0 15px;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .admin-container .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .admin-container .table th,
+    .admin-container .table td {
+        padding: 8px 10px;
+        font-size: 0.8rem;
     }
 }
 
-
+@media (max-width: 576px) {
+    .numpad-grid {
+        gap: 8px;
+        max-width: 240px;
+    }
+    .numpad-btn {
+        padding: 12px;
+        font-size: 1.3rem;
+    }
+    .code-display {
+        font-size: 1.4rem;
+        letter-spacing: 6px;
+    }
+    
+    .admin-container .table th,
+    .admin-container .table td {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .admin-container .table td .btn-group-sm .btn {
+        padding: 3px 6px;
+        font-size: 0.65rem;
+    }
+    
+    .admin-container .d-none.d-sm-inline {
+        display: none !important;
+    }
+    
+    .module-card .card-body {
+        padding: 10px 6px !important;
+    }
+    
+    .module-icon {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .module-count {
+        font-size: 1.1rem !important;
+    }
+    
+    .module-label {
+        font-size: 0.55rem !important;
+    }
+    
+    .modules-grid .col-6 {
+        padding: 6px;
+    }
+    
+    .config-section {
+        padding: 12px 10px !important;
+    }
+    
+    .config-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .config-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .form-control {
+        font-size: 0.8rem !important;
+        padding: 8px 10px !important;
+    }
+    
+    .form-label {
+        font-size: 0.75rem !important;
+    }
+    
+    .config-section .row.g-2 > div {
+        padding: 4px;
+    }
+    
+    .config-section .d-flex.gap-2 {
+        flex-wrap: wrap;
+        gap: 4px !important;
+    }
+    
+    .config-section .d-flex.gap-2 .form-control {
+        flex: 1;
+        min-width: 60px;
+    }
+}
 
 /* ============================================
-   ALERTA DE STATUS NO DASHBOARD
+   OVERLAY PARA MOBILE MENU
    ============================================ */
-.alert-warning {
-    background: rgba(255, 193, 7, 0.1);
-    border: 1px solid rgba(255, 193, 7, 0.3);
-    color: #ffc107;
-    border-radius: 12px;
+.admin-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
 }
 
-.alert-warning .btn-warning {
-    background: #ffc107;
-    border: none;
-    color: #0a0a1a;
-    font-weight: 600;
-    border-radius: 50px;
-    padding: 5px 20px;
+.admin-overlay.active {
+    display: block;
 }
 
-.alert-warning .btn-warning:hover {
-    background: #e0a800;
-}
-
-.alert-warning .btn-danger {
-    background: #dc3545;
-    border: none;
-    border-radius: 50px;
-    padding: 5px 20px;
-}
-
-.alert-warning .btn-danger:hover {
-    background: #c82333;
+/* Garantir fundo escuro no frontend */
+body:not(.admin-container) {
+    background: #0a0a1a;
+    color: #e0e0e0;
 }

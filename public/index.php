@@ -25,7 +25,7 @@ session_set_cookie_params([
 session_start();
 
 // ============================================================
-// Aumentar limites de upload (se permitido pelo host)
+// Aumentar limites de upload (uma única vez)
 // ============================================================
 @ini_set('upload_max_filesize', '10M');
 @ini_set('post_max_size', '10M');
@@ -66,6 +66,7 @@ $routes_without_slug = [
     'admin_cancelar_eliminacao',
     'admin_social',
     'admin_salvar_social',
+    'politica_privacidade'
 ];
 
 // ============================================================
@@ -99,6 +100,7 @@ $admin_routes = [
     'admin_cancelar_eliminacao',
     'admin_social',
     'admin_salvar_social',
+    'admin_estatisticas'
 ];
 
 // ============================================================
@@ -180,9 +182,8 @@ if (!defined('CLIENTE_LOCALE')) {
 setlocale(LC_ALL, CLIENTE_LOCALE . '_' . strtoupper(CLIENTE_LOCALE) . '.utf8');
 
 // ============================================================
-// 🔥 VERIFICAR STATUS DA CONTA (após definir CLIENTE_ID)
+// 🔥 VERIFICAR STATUS DA CONTA
 // ============================================================
-// Excluir rotas de admin e rotas sem slug (login, recuperação, etc.)
 $isAdminRoute = in_array($action, $admin_routes);
 $isPublicRoute = in_array($action, $routes_without_slug);
 $isLoginRoute = ($action === 'admin_login' || $action === 'admin_login_submit');
@@ -191,12 +192,10 @@ if (defined('CLIENTE_ID') && CLIENTE_ID > 0 && !$isAdminRoute && !$isPublicRoute
     $clientModel = new \core\models\Clientes();
     
     if (!$clientModel->isContaAtiva(CLIENTE_ID)) {
-        // Se a conta não estiver ativa, mostrar página de manutenção
         $status = $clientModel->getStatusConta(CLIENTE_ID);
         $statusSlug = $status['status'];
         $tempo = $status['dias_restantes'] ?? null;
         
-        // Incluir a página de manutenção
         include('../core/views/manutencao.php');
         exit;
     }
@@ -210,7 +209,6 @@ if (!in_array($action, $admin_routes) && !in_array($action, $routes_without_slug
         $visitas = new \core\models\Visitas(CLIENTE_ID, CLIENTE_SLUG);
         $visitas->registrarVisita();
     } catch (Exception $e) {
-        // Silencioso - não interrompe o funcionamento
         error_log("Erro ao registar visita: " . $e->getMessage());
     }
 }

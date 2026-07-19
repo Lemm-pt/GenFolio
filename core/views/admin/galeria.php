@@ -1,4 +1,9 @@
-<div class="container mt-4">
+<div class="container mt-4 main-content">
+
+ <!-- 🔥 LUXOR - MENSAGEM DA SECÇÃO -->
+    <?php include('layouts/luxor_message.php'); ?>
+
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Galeria de Fotos (máx 7)</h2>
         <button type="button" class="btn btn-gold" onclick="abrirModalGaleria()">

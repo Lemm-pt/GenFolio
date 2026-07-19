@@ -307,9 +307,20 @@ if ($horarioModel->isAtivo()) {
             // ============================================
             // URL PARAMETER FALLBACK
             // ============================================
-            const urlParams = new URLSearchParams(window.location.search);
-            const produtoUrl = urlParams.get('produto');
-            const servicoUrl = urlParams.get('servico');
+            function getUrlParameter(name) {
+                const query = window.location.search.substring(1);
+                const params = query.split('&');
+                for (let i = 0; i < params.length; i++) {
+                    const [key, value] = params[i].split('=');
+                    if (decodeURIComponent(key) === name) {
+                        return value ? decodeURIComponent(value.replace(/\+/g, ' ')) : null;
+                    }
+                }
+                return null;
+            }
+
+            const produtoUrl = getUrlParameter('produto');
+            const servicoUrl = getUrlParameter('servico');
 
             if (produtoUrl) {
                 setTimeout(function () {

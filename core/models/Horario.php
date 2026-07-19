@@ -237,30 +237,23 @@ class Horario
         return true;
     }
 
-    /**
+   /**
      * Verifica se a empresa está aberta neste momento
      * 
      * @return array
      */
     public function verificarStatusAgora()
     {
-        // Se o horário não estiver ativo globalmente, retorna fechado
-        if (!$this->isAtivo()) {
-            return [
-                'status' => 'fechado',
-                'status_icon' => '🔴',
-                'status_text' => 'Fechado',
-                'status_class' => 'fechado',
-                'mensagem' => 'Horário desativado',
-                'dia' => 'segunda',
-                'horario' => 'Fechado',
-                'abertura' => null,
-                'fechamento' => null,
-                'proximo' => null,
-                'proximo_texto' => null
-            ];
-        }
-        
+        $labels = [
+            'segunda' => 'Segunda',
+            'terca' => 'Terça',
+            'quarta' => 'Quarta',
+            'quinta' => 'Quinta',
+            'sexta' => 'Sexta',
+            'sabado' => 'Sábado',
+            'domingo' => 'Domingo'
+        ];
+
         $diasSemana = [
             1 => 'segunda',
             2 => 'terca',
@@ -275,8 +268,27 @@ class Horario
         $horaAtual = date('H:i');
         $diaKey = $diasSemana[$diaAtual] ?? 'segunda';
 
+        // 1. Se o horário não estiver ativo globalmente
+        if (!$this->isAtivo()) {
+            return [
+                'status' => 'fechado',
+                'status_icon' => '🔴',
+                'status_text' => 'Fechado',
+                'status_class' => 'fechado',
+                'mensagem' => 'Horário desativado',
+                'dia' => $diaKey,
+                'dia_label' => $labels[$diaKey] ?? $diaKey, // CORREÇÃO
+                'horario' => 'Fechado',
+                'abertura' => null,
+                'fechamento' => null,
+                'proximo' => null,
+                'proximo_texto' => null
+            ];
+        }
+
         $horario = $this->getHorario($diaKey);
         
+        // 2. Se o dia atual estiver desativado ou explicitamente fechado
         if (!$horario || !$horario['ativo'] || $horario['abertura'] === 'fechado' || empty($horario['abertura'])) {
             $proximo = $this->proximoHorarioAbertura($diaKey);
             return [
@@ -286,6 +298,7 @@ class Horario
                 'status_class' => 'fechado',
                 'mensagem' => 'Fechado hoje',
                 'dia' => $diaKey,
+                'dia_label' => $labels[$diaKey] ?? $diaKey, // CORREÇÃO
                 'horario' => 'Fechado',
                 'abertura' => null,
                 'fechamento' => null,
@@ -300,16 +313,7 @@ class Horario
 
         $estaAberto = ($horaAtualTimestamp >= $aberturaTimestamp && $horaAtualTimestamp <= $fechamentoTimestamp);
 
-        $labels = [
-            'segunda' => 'Segunda',
-            'terca' => 'Terça',
-            'quarta' => 'Quarta',
-            'quinta' => 'Quinta',
-            'sexta' => 'Sexta',
-            'sabado' => 'Sábado',
-            'domingo' => 'Domingo'
-        ];
-
+        // 3. Retorno quando há horário definido para hoje (pode estar aberto ou fechado dependendo da hora atual)
         return [
             'status' => $estaAberto ? 'aberto' : 'fechado',
             'status_icon' => $estaAberto ? '🟢' : '🔴',

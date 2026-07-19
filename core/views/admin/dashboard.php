@@ -1,21 +1,63 @@
-<div class="container-fluid dashboard-container">
+<!-- core/views/admin/dashboard.php -->
+<div class="container-fluid dashboard-container main-content">
+    
     <!-- ============================================ -->
-    <!-- HEADER COM SLUG E BOTÕES -->
+    <!-- CABEÇALHO COM LUXOR E LUZES -->
     <!-- ============================================ -->
-    <div class="dashboard-header d-flex flex-wrap align-items-center justify-content-between mb-4">
-        <div>
-            <h2 class="dashboard-title"><i class="fas fa-tachometer-alt text-gold"></i> Painel de Controlo</h2>
-           
-        </div>
-        <div class="dashboard-actions mt-2 mt-md-0">
-            <a href="<?= BASE_URL . CLIENTE_SLUG ?>/" target="_blank" class="btn btn-sm btn-outline-gold">
-                <i class="fas fa-external-link-alt"></i> Ver Site
-            </a>
+    <?php 
+    $cristaisModel = new \core\models\Cristais(CLIENTE_ID);
+    $cristais = $cristaisModel->getAll();
+    $ativos = $cristaisModel->getAtivos();
+    $totalAtivos = $cristaisModel->getContagemAtivos();
+    $cristalPrincipal = $cristaisModel->getCristalPrincipal();
+    $infoPrincipal = $cristalPrincipal ? $cristaisModel->getInfo($cristalPrincipal) : null;
+    ?>
+
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-7">
+                <div class="luxor-welcome">
+                   
+                    <div class="luxor-message">
+                        <h5 class="mb-1">
+                            <i class="fas fa-crown text-gold"></i> 
+                            Bem-vindo, Guardião de <span class="text-gold"><?= htmlspecialchars(CLIENTE_SLUG) ?></span>
+                        </h5>
+                        <p class="mb-0" style="color: #b0b0c0; font-size: 0.9rem;">
+                            <?php if ($infoPrincipal): ?>
+                                <span class="text-gold" style="font-weight: 600;">
+                                    <i class="fas <?= $infoPrincipal['icone'] ?>"></i>
+                                    <?= $infoPrincipal['nome'] ?>
+                                </span>
+                                — <?= $infoPrincipal['lenda'] ?>
+                            <?php else: ?>
+                                A tua jornada está prestes a começar.
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 text-md-end">
+                <div class="luzes-status">
+                    <span class="luzes-contagem">
+                        <?= $totalAtivos ?> / 7 Luzes
+                    </span>
+                    <div class="luzes-indicadores">
+                        <?php foreach ($cristais as $key => $cristal): ?>
+                            <span class="luz-indicador <?= $cristal['ativo'] ? 'ativa' : 'inativa' ?>" 
+                                  title="<?= $cristal['nome'] ?> <?= $cristal['ativo'] ? '✨ Ativa' : '🔒 Inativa' ?>"
+                                  style="background: <?= $cristal['ativo'] ? $cristal['cor'] : '#2a2a3a' ?>;">
+                                <?= $cristal['emoji'] ?>
+                            </span>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- ============================================ -->
-    <!-- ALERTA DE STATUS (se conta pausada) -->
+    <!-- ALERTA DE STATUS -->
     <!-- ============================================ -->
     <?php
     $clientModel = new \core\models\Clientes();
@@ -41,43 +83,121 @@
     <?php endif; ?>
 
     <!-- ============================================ -->
-    <!-- CONFIGURAÇÕES RÁPIDAS (Topo) -->
+    <!-- JORNADA DO GUARDIÃO - PROGRESSO -->
     <!-- ============================================ -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card quick-config-card">
-                <div class="card-body">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-                        <div class="d-flex align-items-center gap-3">
-                            <i class="fas fa-cog fa-2x text-gold"></i>
-                            <div>
-                                <h6 class="mb-0">Configurações Rápidas</h6>
-                                <small class="text-muted">Gerir logotipo, slogan e contactos</small>
-                            </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-route text-gold"></i> A Jornada do Guardião
+            <span class="badge bg-gold text-dark float-end">
+                <?= $totalAtivos ?> de 7 Luzes
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="progress-jornada">
+                <?php 
+                $ordemCristais = ['esmeralda', 'safira', 'rubi', 'topazio', 'perola', 'ametista', 'diamante'];
+                $labels = [
+                    'esmeralda' => 'Alimentação',
+                    'safira' => 'Turismo',
+                    'rubi' => 'Criatividade',
+                    'topazio' => 'Construção',
+                    'perola' => 'Saúde',
+                    'ametista' => 'Tecnologia',
+                    'diamante' => 'Parcerias'
+                ];
+                ?>
+                <?php foreach ($ordemCristais as $key): ?>
+                    <?php 
+                    $cristal = $cristais[$key] ?? null;
+                    if (!$cristal) continue;
+                    $isAtivo = $cristal['ativo'];
+                    ?>
+                    <div class="passo-jornada <?= $isAtivo ? 'concluido' : 'pendente' ?>">
+                        <div class="passo-circulo" style="border-color: <?= $cristal['cor'] ?>;">
+                            <?php if ($isAtivo): ?>
+                                <i class="fas fa-check"></i>
+                            <?php else: ?>
+                                <i class="fas <?= $cristal['icone'] ?>"></i>
+                            <?php endif; ?>
                         </div>
-                        <a href="?a=admin_configuracoes" class="btn btn-sm btn-gold">
-                            <i class="fas fa-edit"></i> Editar
-                        </a>
+                        <div class="passo-info">
+                            <span class="passo-nome"><?= $cristal['nome'] ?></span>
+                            <span class="passo-label"><?= $labels[$key] ?? '' ?></span>
+                        </div>
+                        <?php if ($key === 'diamante' && !$isAtivo): ?>
+                            <div class="passo-dica">
+                                <small>🔗 Crie parcerias</small>
+                            </div>
+                        <?php endif; ?>
                     </div>
+                    <?php if ($key !== end($ordemCristais)): ?>
+                        <div class="passo-conector <?= $isAtivo && ($cristais[next($ordemCristais)]['ativo'] ?? false) ? 'ativo' : '' ?>">
+                            <span></span>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MENSAGEM DO LUXOR -->
+    <!-- ============================================ -->
+    <div class="card mb-4" style="background: rgba(198, 164, 63, 0.05); border-color: rgba(198, 164, 63, 0.2);">
+        <div class="card-body">
+            <div class="d-flex align-items-start gap-3">
+              
+                <div>
+                    <h6 class="text-gold mb-1">🧙‍♂️ Luxor, o Guardião Supremo</h6>
+                    <p class="mb-0" style="color: #e0e0e0; font-size: 1rem;">
+                        <?php if ($totalAtivos === 0): ?>
+                            "Bem-vindo, Guardião. A tua jornada começa agora. 
+                            Define a identidade do teu reino para despertar a primeira Luz."
+                        <?php elseif ($totalAtivos < 7): ?>
+                            "Vais bem, Guardião. Já despertaste <strong><?= $totalAtivos ?></strong> Luzes. 
+                            Continua a construir o teu reino para desbloquear as restantes."
+                        <?php elseif ($totalAtivos === 7): ?>
+                            "🌌 <strong>Incrível!</strong> As sete Luzes estão acesas! 
+                            O Cristal Primordial revelou-se. O conhecimento dos antigos é teu."
+                        <?php endif; ?>
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ============================================ -->
-    <!-- CARDS DE MÓDULOS (Grid 2 colunas em mobile) -->
+    <!-- MÓDULOS DO BACKOFFICE - TEXTOS MAIORES -->
     <!-- ============================================ -->
     <div class="row g-3 modules-grid">
         
-        <!-- Serviços -->
-        <div class="col-6 col-md-3">
-            <div class="card module-card">
-                <div class="card-body text-center">
-                    <div class="module-icon">
-                        <i class="fas fa-concierge-bell"></i>
+        <!-- Essência do Reino -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card module-card <?= !empty($config->get('logo_parte1')) ? 'module-completo' : '' ?>">
+                <div class="card-body text-center p-3">
+                    <div class="module-icon" style="background: rgba(231, 76, 60, 0.15); color: #e74c3c;">
+                        <i class="fas fa-crown"></i>
                     </div>
-                    <h3 class="module-count"><?= isset($servicos) ? count($servicos) : 0 ?></h3>
-                    <p class="module-label">Serviços</p>
+                    <h3 class="module-count"><?= !empty($config->get('logo_parte1')) ? '✓' : '?' ?></h3>
+                    <p class="module-label">A Essência do Reino</p>
+                    <p class="module-desc">Identidade, nome, slogan</p>
+                    <a href="?a=admin_configuracoes" class="btn btn-sm btn-outline-gold w-100">
+                        <i class="fas fa-edit"></i> Gerir
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ofícios do Guardião -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card module-card <?= !empty($servicos) ? 'module-completo' : '' ?>">
+                <div class="card-body text-center p-3">
+                    <div class="module-icon" style="background: rgba(46, 204, 113, 0.15); color: #2ecc71;">
+                        <i class="fas fa-hammer"></i>
+                    </div>
+                    <h3 class="module-count"><?= count($servicos ?? []) ?></h3>
+                    <p class="module-label">Os Ofícios do Guardião</p>
+                    <p class="module-desc">Serviços</p>
                     <a href="?a=admin_servicos" class="btn btn-sm btn-outline-gold w-100">
                         <i class="fas fa-edit"></i> Gerir
                     </a>
@@ -85,31 +205,16 @@
             </div>
         </div>
 
-        <!-- Galeria -->
-        <div class="col-6 col-md-3">
-            <div class="card module-card">
-                <div class="card-body text-center">
-                    <div class="module-icon">
-                        <i class="fas fa-images"></i>
+        <!-- Vitrina dos Artefactos -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card module-card <?= !empty($produtos) ? 'module-completo' : '' ?>">
+                <div class="card-body text-center p-3">
+                    <div class="module-icon" style="background: rgba(241, 196, 15, 0.15); color: #f1c40f;">
+                        <i class="fas fa-gem"></i>
                     </div>
-                    <h3 class="module-count"><?= isset($galeria) ? count($galeria) : 0 ?></h3>
-                    <p class="module-label">Galeria <small class="text-muted">(max 7)</small></p>
-                    <a href="?a=admin_galeria" class="btn btn-sm btn-outline-gold w-100">
-                        <i class="fas fa-edit"></i> Gerir
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Produtos -->
-        <div class="col-6 col-md-3">
-            <div class="card module-card">
-                <div class="card-body text-center">
-                    <div class="module-icon">
-                        <i class="fas fa-box"></i>
-                    </div>
-                    <h3 class="module-count"><?= isset($produtos) ? count($produtos) : 0 ?></h3>
-                    <p class="module-label">Produtos <small class="text-muted">(max 7)</small></p>
+                    <h3 class="module-count"><?= count($produtos ?? []) ?></h3>
+                    <p class="module-label">A Vitrina dos Artefactos</p>
+                    <p class="module-desc">Produtos</p>
                     <a href="?a=admin_produtos" class="btn btn-sm btn-outline-gold w-100">
                         <i class="fas fa-edit"></i> Gerir
                     </a>
@@ -117,488 +222,425 @@
             </div>
         </div>
 
-        <!-- Publicações -->
-        <div class="col-6 col-md-3">
-            <div class="card module-card">
-                <div class="card-body text-center">
-                    <div class="module-icon">
-                        <i class="fas fa-newspaper"></i>
+        <!-- Espelho das Profundezas -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card module-card <?= !empty($galeria) ? 'module-completo' : '' ?>">
+                <div class="card-body text-center p-3">
+                    <div class="module-icon" style="background: rgba(52, 152, 219, 0.15); color: #3498db;">
+                        <i class="fas fa-images"></i>
                     </div>
-                    <h3 class="module-count"><?= isset($publicacoes) ? count($publicacoes) : 0 ?></h3>
-                    <p class="module-label">Publicações <small class="text-muted">(max 7)</small></p>
+                    <h3 class="module-count"><?= count($galeria ?? []) ?></h3>
+                    <p class="module-label">O Espelho das Profundezas</p>
+                    <p class="module-desc">Galeria</p>
+                    <a href="?a=admin_galeria" class="btn btn-sm btn-outline-gold w-100">
+                        <i class="fas fa-edit"></i> Gerir
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portal do Luar -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card module-card <?= !empty($config->get('endereco')) ? 'module-completo' : '' ?>">
+                <div class="card-body text-center p-3">
+                    <div class="module-icon" style="background: rgba(241, 196, 15, 0.15); color: #f1c40f;">
+                        <i class="fas fa-location-dot"></i>
+                    </div>
+                    <h3 class="module-count"><?= !empty($config->get('endereco')) ? '✓' : '?' ?></h3>
+                    <p class="module-label">O Portal do Luar</p>
+                    <p class="module-desc">Mapa e localização</p>
+                    <a href="?a=admin_configuracoes" class="btn btn-sm btn-outline-gold w-100">
+                        <i class="fas fa-edit"></i> Gerir
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portais da Harmonia -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card module-card <?= !empty($config->get('email_contacto')) ? 'module-completo' : '' ?>">
+                <div class="card-body text-center p-3">
+                    <div class="module-icon" style="background: rgba(236, 240, 241, 0.15); color: #ecf0f1;">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3 class="module-count"><?= !empty($config->get('email_contacto')) ? '✓' : '?' ?></h3>
+                    <p class="module-label">Os Portais da Harmonia</p>
+                    <p class="module-desc">Contactos</p>
+                    <a href="?a=admin_configuracoes" class="btn btn-sm btn-outline-gold w-100">
+                        <i class="fas fa-edit"></i> Gerir
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biblioteca das Crónicas -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card module-card <?= !empty($publicacoes) ? 'module-completo' : '' ?>">
+                <div class="card-body text-center p-3">
+                    <div class="module-icon" style="background: rgba(155, 89, 182, 0.15); color: #9b59b6;">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3 class="module-count"><?= count($publicacoes ?? []) ?></h3>
+                    <p class="module-label">A Biblioteca das Crónicas</p>
+                    <p class="module-desc">Blog</p>
                     <a href="?a=admin_publicacoes" class="btn btn-sm btn-outline-gold w-100">
                         <i class="fas fa-edit"></i> Gerir
                     </a>
                 </div>
             </div>
         </div>
-    </div>
 
-  
-
-        <!-- Estatísticas rápidas -->
-        <div class="col-md-6">
-            <div class="card info-card">
-                <div class="card-body">
-                    <div class="row g-2 text-center">
-                        <div class="col-3">
-                            <div class="stat-item">
-                                <span class="stat-number"><?= isset($servicos) ? count($servicos) : 0 ?></span>
-                                <span class="stat-label">Serviços</span>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="stat-item">
-                                <span class="stat-number"><?= isset($galeria) ? count($galeria) : 0 ?></span>
-                                <span class="stat-label">Fotos</span>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="stat-item">
-                                <span class="stat-number"><?= isset($produtos) ? count($produtos) : 0 ?></span>
-                                <span class="stat-label">Produtos</span>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="stat-item">
-                                <span class="stat-number"><?= isset($publicacoes) ? count($publicacoes) : 0 ?></span>
-                                <span class="stat-label">Posts</span>
-                            </div>
-                        </div>
+        <!-- Rede Estelar -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card module-card">
+                <div class="card-body text-center p-3">
+                    <div class="module-icon" style="background: rgba(198, 164, 63, 0.15); color: #C6A43F;">
+                        <i class="fas fa-star"></i>
                     </div>
+                    <h3 class="module-count">0</h3>
+                    <p class="module-label">A Rede Estelar</p>
+                    <p class="module-desc">Parcerias (em breve)</p>
+                    <button class="btn btn-sm btn-outline-secondary w-100" disabled>
+                        <i class="fas fa-lock"></i> Em breve
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ============================================ -->
-    <!-- CONTADOR DE VISITAS (Rodapé do Dashboard) -->
-    <!-- ============================================ -->
-    <?php if (defined('CLIENTE_ID') && CLIENTE_ID > 0): 
-        $visitasModel = new \core\models\Visitas(CLIENTE_ID, CLIENTE_SLUG);
-        $stats = $visitasModel->getEstatisticas(CLIENTE_ID);
-    ?>
-    <div class="mt-4 p-3 dashboard-footer">
-        <div class="d-flex flex-wrap align-items-center justify-content-center gap-3">
-            <small class="text-muted">
-                <i class="fas fa-eye text-gold"></i>
-                <strong>Total:</strong> <?= number_format($stats['total']) ?>
-            </small>
-            <small class="text-muted">
-                <i class="fas fa-calendar-day text-gold"></i>
-                <strong>Hoje:</strong> <?= number_format($stats['hoje']) ?>
-            </small>
-            <small class="text-muted">
-                <i class="fas fa-calendar-week text-gold"></i>
-                <strong>Semana:</strong> <?= number_format($stats['semana']) ?>
-            </small>
-            <small class="text-muted">
-                <i class="fas fa-calendar-alt text-gold"></i>
-                <strong>Mês:</strong> <?= number_format($stats['mes']) ?>
-            </small>
-        </div>
-    </div>
-    <?php endif; ?>
-</div>
+
 
 <style>
 /* ============================================
-   DASHBOARD ADMIN - RESPONSIVO
+   DASHBOARD - ESTILOS MELHORADOS
    ============================================ */
 
 .dashboard-container {
     padding: 0.5rem;
 }
 
-/* Header */
-.dashboard-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 0;
-    color: #1a1a2e;
+/* Cabeçalho */
+.luxor-welcome {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.dashboard-title i {
-    margin-right: 8px;
-}
-
-.dashboard-actions .btn-outline-gold {
-    border-color: #C6A43F;
+.luxor-avatar {
+    width: 50px;
+    height: 50px;
+    background: rgba(198, 164, 63, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(198, 164, 63, 0.3);
+    font-size: 1.5rem;
     color: #C6A43F;
-    font-size: 0.75rem;
-    padding: 4px 14px;
-    border-radius: 50px;
+    flex-shrink: 0;
 }
 
-.dashboard-actions .btn-outline-gold:hover {
-    background: #C6A43F;
-    color: #1a1a2e;
+.luxor-message h5 {
+    color: #e0e0e0;
+    font-size: 1.1rem;
 }
 
-/* Quick Config Card */
-.quick-config-card {
-    background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
+.luxor-message h5 strong {
+    color: #ffffff;
 }
 
-.quick-config-card .card-body {
-    padding: 12px 18px;
+.luzes-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
-/* Module Cards */
-.module-card {
-    border: 1px solid #e8e8e8;
-    border-radius: 12px;
+.luzes-contagem {
+    font-weight: 600;
+    color: #C6A43F;
+    font-size: 1rem;
+}
+
+.luzes-indicadores {
+    display: flex;
+    gap: 4px;
+}
+
+.luz-indicador {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 0.8rem;
     transition: all 0.3s ease;
-    background: white;
-    height: 100%;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
-.module-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+.luz-indicador.ativa {
+    box-shadow: 0 0 20px rgba(198, 164, 63, 0.2);
+    transform: scale(1.05);
 }
 
-.module-card .card-body {
-    padding: 16px 12px;
+.luz-indicador.inativa {
+    opacity: 0.25;
+    filter: grayscale(1);
 }
 
-.module-icon {
-    width: 44px;
-    height: 44px;
-    margin: 0 auto 8px auto;
+/* Jornada */
+.progress-jornada {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.passo-jornada {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    flex: 1;
+    min-width: 80px;
+    transition: all 0.3s ease;
+}
+
+.passo-jornada.concluido {
+    background: rgba(46, 204, 113, 0.08);
+}
+
+.passo-jornada.pendente {
+    opacity: 0.6;
+}
+
+.passo-circulo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: #e0e0e0;
+    flex-shrink: 0;
+}
+
+.passo-jornada.concluido .passo-circulo {
+    background: rgba(46, 204, 113, 0.15);
+    border-color: #2ecc71;
+    color: #2ecc71;
+}
+
+.passo-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.passo-nome {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #e0e0e0;
+}
+
+.passo-label {
+    font-size: 0.6rem;
+    color: #888;
+}
+
+.passo-dica {
+    font-size: 0.6rem;
+    margin-left: auto;
+}
+
+.passo-dica small {
+    color: #888;
+}
+
+.passo-conector {
+    flex: 0 0 20px;
+    height: 2px;
+    background: #333;
+}
+
+.passo-conector.ativo {
+    background: #2ecc71;
+}
+
+/* Luxor Chat */
+.luxor-chat-avatar {
+    width: 45px;
+    height: 45px;
     background: rgba(198, 164, 63, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    color: #C6A43F;
+    border: 1px solid rgba(198, 164, 63, 0.2);
+    flex-shrink: 0;
+}
+
+/* Module Cards - TEXTO MAIOR */
+.module-card {
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.03);
+    height: 100%;
+}
+
+.module-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    border-color: rgba(198, 164, 63, 0.2);
+}
+
+.module-card .card-body {
+    padding: 20px 15px !important;
+}
+
+.module-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 10px auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
 }
 
 .module-count {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    color: #1a1a2e;
+    color: #e0e0e0;
     margin: 0;
     line-height: 1.2;
 }
 
 .module-label {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: #666;
-    margin: 2px 0 10px 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: #e0e0e0;
+    margin: 4px 0 2px 0;
 }
 
-.module-label small {
-    font-weight: 400;
-    text-transform: none;
-    font-size: 0.6rem;
+.module-desc {
+    font-size: 0.7rem;
+    color: #888 !important;
+    margin-bottom: 10px;
+}
+
+.module-completo {
+    border-color: rgba(46, 204, 113, 0.2) !important;
+}
+
+.module-completo .module-count {
+    color: #2ecc71 !important;
 }
 
 .module-card .btn-outline-gold {
-    font-size: 0.7rem;
-    padding: 4px 8px;
+    font-size: 0.75rem;
+    padding: 5px 10px;
     border-radius: 50px;
-    border-color: #C6A43F;
-    color: #C6A43F;
 }
 
-.module-card .btn-outline-gold:hover {
-    background: #C6A43F;
-    color: #1a1a2e;
-}
-
-/* Info Cards */
-.info-card {
-    border: 1px solid #e8e8e8;
-    border-radius: 12px;
-    background: white;
-}
-
-.info-card .card-body {
-    padding: 12px 16px;
-}
-
-.logo-preview-mini {
-    min-width: 60px;
-    text-align: center;
-}
-
-/* Stats */
-.stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.stat-number {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #1a1a2e;
-    line-height: 1.2;
-}
-
-.stat-label {
-    font-size: 0.6rem;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-/* Dashboard Footer */
+/* Footer */
 .dashboard-footer {
-    background: rgba(0, 0, 0, 0.02);
+    background: rgba(255,255,255,0.02);
     border-radius: 12px;
-    border: 1px solid #e8e8e8;
+    border: 1px solid rgba(255,255,255,0.05);
 }
 
-.dashboard-footer small {
-    font-size: 0.7rem;
-}
-
-.dashboard-footer .text-gold {
-    color: #C6A43F !important;
-}
-
-/* Alert */
-.alert-warning {
-    background: rgba(255, 193, 7, 0.08);
-    border: 1px solid rgba(255, 193, 7, 0.2);
-    border-radius: 12px;
-    color: #856404;
-    padding: 12px 16px;
-}
-
-.alert-warning .btn-warning {
-    background: #ffc107;
-    border: none;
-    color: #1a1a2e;
-    font-weight: 600;
-    border-radius: 50px;
-    padding: 4px 16px;
-    font-size: 0.75rem;
-}
-
-.alert-warning .btn-warning:hover {
-    background: #e0a800;
-}
-
-.alert-warning .btn-danger {
-    background: #dc3545;
-    border: none;
-    border-radius: 50px;
-    padding: 4px 16px;
-    font-size: 0.75rem;
-}
-
-.alert-warning .btn-danger:hover {
-    background: #c82333;
-}
-
-/* ============================================
-   RESPONSIVO
-   ============================================ */
-
-/* Tablets e telemóveis grandes */
+/* Responsivo */
 @media (max-width: 768px) {
-    .dashboard-container {
-        padding: 0.25rem;
-    }
-    
-    .dashboard-title {
-        font-size: 1.1rem;
-    }
-    
-    .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 6px;
-    }
-    
-    .dashboard-actions {
-        width: 100%;
-    }
-    
-    .dashboard-actions .btn {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .quick-config-card .card-body {
-        padding: 10px 14px;
-    }
-    
-    .quick-config-card h6 {
-        font-size: 0.85rem;
-    }
-    
-    .quick-config-card small {
-        font-size: 0.7rem;
-    }
-    
-    .module-card .card-body {
-        padding: 12px 8px;
-    }
-    
-    .module-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-    }
-    
-    .module-count {
-        font-size: 1.3rem;
-    }
-    
-    .module-label {
-        font-size: 0.6rem;
-    }
-    
-    .module-card .btn-outline-gold {
-        font-size: 0.6rem;
-        padding: 3px 6px;
-    }
-    
-    .info-card .card-body {
-        padding: 10px 14px;
-    }
-    
-    .stat-number {
-        font-size: 1rem;
-    }
-    
-    .stat-label {
-        font-size: 0.5rem;
-    }
-    
-    .dashboard-footer {
-        padding: 10px;
-    }
-    
-    .dashboard-footer small {
-        font-size: 0.6rem;
-    }
-}
-
-/* Telemóveis pequenos */
-@media (max-width: 576px) {
-    .modules-grid .col-6 {
-        padding: 6px;
-    }
-    
-    .module-card .card-body {
-        padding: 10px 6px;
-    }
-    
-    .module-icon {
-        width: 32px;
-        height: 32px;
-        font-size: 0.85rem;
-        margin-bottom: 4px;
-    }
-    
-    .module-count {
-        font-size: 1.1rem;
-    }
-    
-    .module-label {
-        font-size: 0.5rem;
-        margin-bottom: 6px;
-    }
-    
-    .module-label small {
-        display: none;
-    }
-    
-    .module-card .btn-outline-gold {
-        font-size: 0.55rem;
-        padding: 2px 4px;
-    }
-    
-    .quick-config-card .d-flex {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 8px;
-    }
-    
-    .quick-config-card .btn {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .alert-warning {
+    .luxor-welcome {
         flex-direction: column;
         text-align: center;
         gap: 10px;
     }
     
-    .alert-warning .btn {
-        width: 100%;
+    .luzes-status {
+        justify-content: center;
+        margin-top: 10px;
     }
     
-    .info-card .d-flex {
+    .progress-jornada {
         flex-direction: column;
-        align-items: center !important;
-        text-align: center;
+        align-items: stretch;
     }
     
-    .logo-preview-mini {
+    .passo-jornada {
         min-width: auto;
+        padding: 6px 12px;
     }
     
-    .stat-item {
-        padding: 4px 0;
+    .passo-conector {
+        display: none;
     }
     
-    .stat-number {
-        font-size: 0.9rem;
-    }
-    
-    .dashboard-footer .d-flex {
-        gap: 8px !important;
-    }
-    
-    .dashboard-footer small {
-        font-size: 0.55rem;
-    }
-}
-
-/* Telemóveis muito pequenos */
-@media (max-width: 360px) {
-    .modules-grid .col-6 {
-        padding: 4px;
+    .passo-dica {
+        margin-left: auto;
     }
     
     .module-card .card-body {
-        padding: 8px 4px;
+        padding: 14px 10px !important;
     }
     
     .module-icon {
-        width: 28px;
-        height: 28px;
-        font-size: 0.7rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
     }
     
     .module-count {
-        font-size: 0.9rem;
+        font-size: 1.5rem;
     }
     
     .module-label {
-        font-size: 0.45rem;
+        font-size: 0.75rem;
+    }
+    
+    .module-desc {
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .luz-indicador {
+        width: 24px;
+        height: 24px;
+        font-size: 0.65rem;
+    }
+    
+    .luzes-contagem {
+        font-size: 0.8rem;
+    }
+    
+    .passo-circulo {
+        width: 28px;
+        height: 28px;
+        font-size: 0.6rem;
+    }
+    
+    .passo-nome {
+        font-size: 0.65rem;
+    }
+    
+    .passo-label {
+        font-size: 0.5rem;
     }
     
     .module-card .btn-outline-gold {
-        font-size: 0.5rem;
-        padding: 2px 4px;
-    }
-    
-    .dashboard-title {
-        font-size: 0.95rem;
+        font-size: 0.65rem;
+        padding: 4px 8px;
     }
 }
 </style>

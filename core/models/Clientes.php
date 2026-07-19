@@ -90,186 +90,208 @@ class Clientes
     }
 
     
-   /**
-     * Deteta o idioma com base no país
-     */
-    private function getLocaleFromCountry($pais)
-    {
-        if (empty($pais)) {
-            return 'pt';
-        }
-
-        $map = [
-            'portugal' => 'pt',
-            'brasil' => 'pt-br',
-            'angola' => 'pt',
-            'moçambique' => 'pt',
-            'cabo verde' => 'pt',
-            'guiné-bissau' => 'pt',
-            'são tomé' => 'pt',
-            'timor-leste' => 'pt',
-            'espanha' => 'es',
-            'frança' => 'fr',
-            'reino unido' => 'en',
-            'inglaterra' => 'en',
-            'estados unidos' => 'en',
-            'eua' => 'en',
-            'alemanha' => 'de',
-            'itália' => 'it',
-            'holanda' => 'nl',
-            'bélgica' => 'nl',
-            'suíça' => 'de',
-            'áustria' => 'de',
-            'irlanda' => 'en',
-            'canadá' => 'en',
-            'austrália' => 'en',
-            'japão' => 'ja',
-            'china' => 'zh',
-            'rússia' => 'ru',
-            'méxico' => 'es',
-            'argentina' => 'es',
-            'colômbia' => 'es',
-            'peru' => 'es',
-            'chile' => 'es',
-            'venezuela' => 'es',
-            'índia' => 'hi',
-            'áfrica do sul' => 'en',
-            'egito' => 'ar',
-            'israel' => 'he',
-            'coreia do sul' => 'ko',
-            'singapura' => 'en',
-            'malásia' => 'ms',
-            'indonésia' => 'id',
-            'turquia' => 'tr',
-            'grécia' => 'el',
-            'polónia' => 'pl',
-            'suécia' => 'sv',
-            'noruega' => 'no',
-            'dinamarca' => 'da',
-            'finlândia' => 'fi',
-            'ucrânia' => 'uk',
-            'roménia' => 'ro',
-            'bulgária' => 'bg',
-            'hungria' => 'hu',
-            'república checa' => 'cs',
-            'eslováquia' => 'sk',
-            'eslovénia' => 'sl',
-            'croácia' => 'hr',
-            'sérvia' => 'sr',
-            'marrocos' => 'ar',
-            'emirados árabes' => 'ar',
-            'arábia saudita' => 'ar',
-            'tailândia' => 'th',
-            'vietname' => 'vi',
-            'filipinas' => 'tl',
-            'paquistão' => 'ur',
-            'bangladesh' => 'bn',
-            'nigéria' => 'en',
-            'quénia' => 'sw',
-            'nova zelândia' => 'en'
-        ];
-
-        $paisLower = strtolower(trim($pais));
-        $paisLower = iconv('utf-8', 'ascii//TRANSLIT', $paisLower);
-
-        foreach ($map as $key => $locale) {
-            if (strpos($paisLower, $key) !== false) {
-                return $locale;
-            }
-        }
-
-        return 'pt'; // fallback
+/**
+ * Deteta o idioma com base no país (VERSÃO CORRIGIDA)
+ */
+private function getLocaleFromCountry($pais)
+{
+    if (empty($pais)) {
+        return 'pt';
     }
 
-    /**
-     * Deteta a moeda com base no país
-     */
-    private function getCurrencyFromCountry($pais)
-    {
-        if (empty($pais)) {
-            return 'EUR';
+    // 🔥 NORMALIZAR: remover acentos, converter para minúsculas, remover espaços extras
+    $paisLower = strtolower(trim($pais));
+    $paisLower = iconv('utf-8', 'ascii//TRANSLIT', $paisLower);
+    $paisLower = preg_replace('/[^a-z\s-]/', '', $paisLower);
+    $paisLower = trim($paisLower);
+
+    error_log("🔍 getLocaleFromCountry - País original: '$pais'");
+    error_log("🔍 getLocaleFromCountry - País normalizado: '$paisLower'");
+
+    // Mapeamento completo país -> locale
+    $map = [
+        'portugal' => 'pt',
+        'brasil' => 'pt-br',
+        'angola' => 'pt',
+        'mocambique' => 'pt',
+        'cabo verde' => 'pt',
+        'guine-bissau' => 'pt',
+        'sao tome' => 'pt',
+        'timor-leste' => 'pt',
+        'espanha' => 'es',
+        'franca' => 'fr',
+        'reino unido' => 'en',
+        'inglaterra' => 'en',
+        'estados unidos' => 'en',
+        'eua' => 'en',
+        'alemanha' => 'de',
+        'italia' => 'it',
+        'holanda' => 'nl',
+        'belgica' => 'nl',
+        'suica' => 'de',
+        'austria' => 'de',
+        'irlanda' => 'en',
+        'canada' => 'en',
+        'australia' => 'en',
+        'japao' => 'ja',
+        'china' => 'zh',
+        'russia' => 'ru',
+        'mexico' => 'es',
+        'argentina' => 'es',
+        'colombia' => 'es',
+        'peru' => 'es',
+        'chile' => 'es',
+        'venezuela' => 'es',
+        'india' => 'hi',
+        'africa do sul' => 'en',
+        'egito' => 'ar',
+        'israel' => 'he',
+        'coreia do sul' => 'ko',
+        'singapura' => 'en',
+        'malasia' => 'ms',
+        'indonesia' => 'id',
+        'turquia' => 'tr',
+        'grecia' => 'el',
+        'polonia' => 'pl',
+        'suecia' => 'sv',
+        'noruega' => 'no',
+        'dinamarca' => 'da',
+        'finlandia' => 'fi',
+        'ucrania' => 'uk',
+        'romenia' => 'ro',
+        'bulgaria' => 'bg',
+        'hungria' => 'hu',
+        'republica checa' => 'cs',
+        'eslovaquia' => 'sk',
+        'eslovenia' => 'sl',
+        'croacia' => 'hr',
+        'servia' => 'sr',
+        'marrocos' => 'ar',
+        'emirados arabes' => 'ar',
+        'arabia saudita' => 'ar',
+        'tailandia' => 'th',
+        'vietname' => 'vi',
+        'filipinas' => 'tl',
+        'paquistao' => 'ur',
+        'bangladesh' => 'bn',
+        'nigeria' => 'en',
+        'quenia' => 'sw',
+        'nova zelandia' => 'en'
+    ];
+
+    // Verificar correspondência exata
+    foreach ($map as $key => $locale) {
+        if ($paisLower === $key) {
+            error_log("✅ Locale encontrado (exato): $locale para '$pais'");
+            return $locale;
         }
-
-        $map = [
-            'portugal' => 'EUR',
-            'brasil' => 'BRL',
-            'angola' => 'AOA',
-            'moçambique' => 'MZN',
-            'cabo verde' => 'CVE',
-            'guiné-bissau' => 'XOF',
-            'são tomé' => 'STN',
-            'timor-leste' => 'USD',
-            'espanha' => 'EUR',
-            'frança' => 'EUR',
-            'alemanha' => 'EUR',
-            'itália' => 'EUR',
-            'holanda' => 'EUR',
-            'bélgica' => 'EUR',
-            'irlanda' => 'EUR',
-            'estados unidos' => 'USD',
-            'reino unido' => 'GBP',
-            'suíça' => 'CHF',
-            'áustria' => 'EUR',
-            'canadá' => 'CAD',
-            'austrália' => 'AUD',
-            'japão' => 'JPY',
-            'china' => 'CNY',
-            'rússia' => 'RUB',
-            'méxico' => 'MXN',
-            'argentina' => 'ARS',
-            'colômbia' => 'COP',
-            'peru' => 'PEN',
-            'chile' => 'CLP',
-            'venezuela' => 'VES',
-            'índia' => 'INR',
-            'áfrica do sul' => 'ZAR',
-            'egito' => 'EGP',
-            'israel' => 'ILS',
-            'coreia do sul' => 'KRW',
-            'singapura' => 'SGD',
-            'malásia' => 'MYR',
-            'indonésia' => 'IDR',
-            'turquia' => 'TRY',
-            'grécia' => 'EUR',
-            'polónia' => 'PLN',
-            'suécia' => 'SEK',
-            'noruega' => 'NOK',
-            'dinamarca' => 'DKK',
-            'finlândia' => 'EUR',
-            'ucrânia' => 'UAH',
-            'roménia' => 'RON',
-            'bulgária' => 'BGN',
-            'hungria' => 'HUF',
-            'república checa' => 'CZK',
-            'eslováquia' => 'EUR',
-            'eslovénia' => 'EUR',
-            'croácia' => 'EUR',
-            'sérvia' => 'RSD',
-            'marrocos' => 'MAD',
-            'emirados árabes' => 'AED',
-            'arábia saudita' => 'SAR',
-            'tailândia' => 'THB',
-            'vietname' => 'VND',
-            'filipinas' => 'PHP',
-            'paquistão' => 'PKR',
-            'bangladesh' => 'BDT',
-            'nigéria' => 'NGN',
-            'quénia' => 'KES',
-            'nova zelândia' => 'NZD'
-        ];
-
-        $paisLower = strtolower(trim($pais));
-        $paisLower = iconv('utf-8', 'ascii//TRANSLIT', $paisLower);
-
-        foreach ($map as $key => $currency) {
-            if (strpos($paisLower, $key) !== false) {
-                return $currency;
-            }
-        }
-
-        return 'EUR'; // fallback
     }
 
+    // Verificar correspondência contém
+    foreach ($map as $key => $locale) {
+        if (strpos($paisLower, $key) !== false || strpos($key, $paisLower) !== false) {
+            error_log("✅ Locale encontrado (parcial): $locale para '$pais'");
+            return $locale;
+        }
+    }
+
+    error_log("⚠️ Locale não encontrado, usando fallback 'pt' para '$pais'");
+    return 'pt';
+}
+
+/**
+ * Deteta a moeda com base no país (VERSÃO CORRIGIDA)
+ */
+private function getCurrencyFromCountry($pais)
+{
+    if (empty($pais)) {
+        return 'EUR';
+    }
+
+    // 🔥 NORMALIZAR
+    $paisLower = strtolower(trim($pais));
+    $paisLower = iconv('utf-8', 'ascii//TRANSLIT', $paisLower);
+    $paisLower = preg_replace('/[^a-z\s-]/', '', $paisLower);
+    $paisLower = trim($paisLower);
+
+    $map = [
+        'portugal' => 'EUR',
+        'brasil' => 'BRL',
+        'angola' => 'AOA',
+        'mocambique' => 'MZN',
+        'cabo verde' => 'CVE',
+        'guine-bissau' => 'XOF',
+        'sao tome' => 'STN',
+        'timor-leste' => 'USD',
+        'espanha' => 'EUR',
+        'franca' => 'EUR',
+        'alemanha' => 'EUR',
+        'italia' => 'EUR',
+        'holanda' => 'EUR',
+        'belgica' => 'EUR',
+        'irlanda' => 'EUR',
+        'estados unidos' => 'USD',
+        'reino unido' => 'GBP',
+        'suica' => 'CHF',
+        'austria' => 'EUR',
+        'canada' => 'CAD',
+        'australia' => 'AUD',
+        'japao' => 'JPY',
+        'china' => 'CNY',
+        'russia' => 'RUB',
+        'mexico' => 'MXN',
+        'argentina' => 'ARS',
+        'colombia' => 'COP',
+        'peru' => 'PEN',
+        'chile' => 'CLP',
+        'venezuela' => 'VES',
+        'india' => 'INR',
+        'africa do sul' => 'ZAR',
+        'egito' => 'EGP',
+        'israel' => 'ILS',
+        'coreia do sul' => 'KRW',
+        'singapura' => 'SGD',
+        'malasia' => 'MYR',
+        'indonesia' => 'IDR',
+        'turquia' => 'TRY',
+        'grecia' => 'EUR',
+        'polonia' => 'PLN',
+        'suecia' => 'SEK',
+        'noruega' => 'NOK',
+        'dinamarca' => 'DKK',
+        'finlandia' => 'EUR',
+        'ucrania' => 'UAH',
+        'romenia' => 'RON',
+        'bulgaria' => 'BGN',
+        'hungria' => 'HUF',
+        'republica checa' => 'CZK',
+        'eslovaquia' => 'EUR',
+        'eslovenia' => 'EUR',
+        'croacia' => 'EUR',
+        'servia' => 'RSD',
+        'marrocos' => 'MAD',
+        'emirados arabes' => 'AED',
+        'arabia saudita' => 'SAR',
+        'tailandia' => 'THB',
+        'vietname' => 'VND',
+        'filipinas' => 'PHP',
+        'paquistao' => 'PKR',
+        'bangladesh' => 'BDT',
+        'nigeria' => 'NGN',
+        'quenia' => 'KES',
+        'nova zelandia' => 'NZD'
+    ];
+
+    foreach ($map as $key => $currency) {
+        if ($paisLower === $key || strpos($paisLower, $key) !== false || strpos($key, $paisLower) !== false) {
+            return $currency;
+        }
+    }
+
+    return 'EUR';
+}
+
+   
  // ============================================================
     // LOGIN VALIDATION
     // ============================================================

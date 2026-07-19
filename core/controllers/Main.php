@@ -225,6 +225,14 @@ class Main
         $cidade     = trim($_POST['text_cidade'] ?? '');
         $pais       = trim($_POST['text_pais'] ?? '');
         $categoria  = trim($_POST['text_categoria'] ?? '');
+
+        // 🔥 DEBUG - verificar valores recebidos
+    error_log("📝 REGISTO - Email: $email");
+    error_log("📝 REGISTO - Slug: $slug");
+    error_log("📝 REGISTO - País: $pais");
+    error_log("📝 REGISTO - Categoria: $categoria");
+    error_log("📝 REGISTO - Cidade: $cidade");
+
         
         // Validation
         $errors = [];

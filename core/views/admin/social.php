@@ -1,4 +1,10 @@
-<div class="container mt-4">
+<div class="container mt-4 main-content">
+
+    <!-- 🔥 LUXOR - MENSAGEM DA SECÇÃO -->
+    <?php include('layouts/luxor_message.php'); ?>
+
+
+
     <h2><i class="fas fa-share-alt text-gold"></i> Redes Sociais</h2>
     <p class="text-muted">Adicione os links das suas redes sociais. Preencha a URL para ativar o ícone.</p>
     

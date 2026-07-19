@@ -19,7 +19,12 @@ function getIconeStatus($status)
 }
 ?>
 
-<div class="container mt-4">
+<div class="container mt-4 main-content">
+
+    <!-- 🔥 LUXOR - MENSAGEM DA SECÇÃO -->
+    <?php include('layouts/luxor_message.php'); ?>
+
+
     <h2><i class="fas fa-user-cog text-gold"></i> Gestão da Conta</h2>
     <p class="text-muted">Gerencie o estado da sua conta e do seu site.</p>
     
