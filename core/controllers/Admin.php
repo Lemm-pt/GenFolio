@@ -474,15 +474,28 @@ public function admin_salvar_config()
         ], ['produtos' => $products]);
     }
 
-   public function admin_produto_criar()
+ // Em core/controllers/Admin.php - atualizar admin_produto_criar e admin_produto_editar
+
+public function admin_produto_criar()
 {
     $this->verificarLogin();
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $model = new Produtos();
 
-        if ($model->contar() >= 7) {
-            $_SESSION['erro'] = "Máximo de 6 produtos!";
+        // Verificar limite de produtos
+        $totalProdutos = $model->contar();
+        $destaqueCount = count($model->listarDestaques());
+        
+        // Se já tem 7 produtos em destaque, não permitir mais
+        if ($destaqueCount >= 7 && isset($_POST['destaque']) && $_POST['destaque'] == '1') {
+            $_SESSION['erro'] = "Máximo de 7 produtos em destaque!";
+            Store::redirect('admin_produtos');
+            return;
+        }
+
+        if ($totalProdutos >= 7) {
+            $_SESSION['erro'] = "Máximo de 7 produtos no total!";
             Store::redirect('admin_produtos');
             return;
         }

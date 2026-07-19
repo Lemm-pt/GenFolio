@@ -46,57 +46,175 @@
     </section>
 <?php endif; ?>
 
-<!-- Products Section (only if there are products) -->
+<!-- core/views/home.php - secção de produtos -->
+
+<!-- 🔥 PRODUTOS - VITRINA DE DESTAQUES + LISTA -->
 <?php if (!empty($produtos)): ?>
-    <section id="produtos" class="py-5 bg-light">
+    <section id="produtos" class="py-5 bg-dark" style="background: #0a0a1a;">
         <div class="container">
-            <h2 class="text-center text-dark mb-5">Produtos</h2>
-            <div class="row">
-                <?php foreach ($produtos as $produto): ?>
-                    <div class="col-md-4 mb-4">
-                        <div class="card produto-card h-100">
-                            <?php if ($produto->imagem): ?>
-                                <img src="<?= BASE_URL ?>assets/images/produtos/<?= $produto->imagem ?>"
-                                     class="card-img-top"
-                                     style="height: 220px; object-fit: cover;">
-                            <?php else: ?>
-                                <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 220px;">
-                                    <i class="fas fa-image fa-3x text-white"></i>
-                                </div>
-                            <?php endif; ?>
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title"><?= htmlspecialchars($produto->nome) ?></h5>
-                                <p class="card-text flex-grow-1">
-                                    <?= htmlspecialchars(substr($produto->descricao ?? '', 0, 100)) ?>...
-                                </p>
-
-                                <?php if ($produto->preco): ?>
-                                    <p class="text-gold fw-bold mb-3">
-                                     <?php 
-                                     $moeda = defined('CLIENTE_CURRENCY') ? CLIENTE_CURRENCY : 'EUR';
-                                     $simbolo = \core\classes\LocaleHelper::getCurrencySymbol($moeda);
-                                     echo $simbolo . ' ' . number_format($produto->preco, 2, ',', '.');
-                                     ?>
-                                 </p>
-                                <?php endif; ?>
-
-                                <!-- Minimalist buttons -->
-                                <div class="d-flex gap-2 mt-2">
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-gold flex-grow-1 text-center btn-info-produto"
-                                            data-produto="<?= htmlspecialchars($produto->nome) ?>">
-                                        <i class="fas fa-info-circle"></i> Informações
-                                    </button>
-                                    <a href="tel:<?= preg_replace('/[^0-9+]/', '', $config->get('telefone', '')) ?>"
-                                       class="btn btn-sm btn-gold flex-grow-1 text-center">
-                                        <i class="fas fa-phone-alt"></i> Encomendar
-                                    </a>
+            <div class="text-center mb-5">
+                <h2 class="text-white">Vitrina de Produtos</h2>
+                <div class="luxor-message-mini text-gold">
+                    <i class="fas fa-gem"></i> 
+                    <span>Produtos selecionados com a mais alta qualidade, para o seu negócio brilhar.</span>
+                </div>
+            </div>
+            
+            <?php 
+            // Separar produtos em destaque e normais
+            $produtosDestaque = array_filter($produtos, function($p) { return $p->destaque == 1; });
+            $produtosNormais = array_filter($produtos, function($p) { return $p->destaque == 0 || $p->destaque === null; });
+            
+            // Ordenar destaques por ordem
+            usort($produtosDestaque, function($a, $b) { return ($a->ordem ?? 0) - ($b->ordem ?? 0); });
+            ?>
+            
+            <!-- 🔥 VITRINA DE PRODUTOS EM DESTAQUE (máx 7) -->
+            <?php if(!empty($produtosDestaque)): ?>
+                <div class="vitrina-destaques mb-5">
+                    <h4 class="text-gold text-center mb-4">
+                        <i class="fas fa-star"></i> Em Destaque / Promoção
+                    </h4>
+                    <div class="row g-4">
+                        <?php foreach(array_slice($produtosDestaque, 0, 7) as $produto): ?>
+                            <div class="col-lg-3 col-md-4 col-sm-6">
+                                <div class="card produto-destaque-card h-100">
+                                    <?php if($produto->preco_promocional): ?>
+                                        <div class="promo-badge">PROMOÇÃO</div>
+                                    <?php endif; ?>
+                                    <div class="card-img-wrapper">
+                                        <?php if($produto->imagem): ?>
+                                            <img src="<?= BASE_URL ?>assets/images/produtos/<?= $produto->imagem ?>"
+                                                 class="card-img-top"
+                                                 style="height: 220px; width: 100%; object-fit: cover;">
+                                        <?php else: ?>
+                                            <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 220px;">
+                                                <i class="fas fa-image fa-3x text-white-50"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title text-white"><?= htmlspecialchars($produto->nome) ?></h5>
+                                        <p class="card-text text-white-50 small flex-grow-1">
+                                            <?= htmlspecialchars(substr($produto->descricao ?? '', 0, 80)) ?>...
+                                        </p>
+                                        <div class="mt-auto">
+                                            <?php if($produto->preco_promocional): ?>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="text-muted text-decoration-line-through">
+                                                        € <?= number_format($produto->preco, 2, ',', '.') ?>
+                                                    </span>
+                                                    <span class="text-gold fw-bold fs-5">
+                                                        € <?= number_format($produto->preco_promocional, 2, ',', '.') ?>
+                                                    </span>
+                                                </div>
+                                            <?php elseif($produto->preco): ?>
+                                                <p class="text-gold fw-bold fs-5 mb-0">
+                                                    € <?= number_format($produto->preco, 2, ',', '.') ?>
+                                                </p>
+                                            <?php endif; ?>
+                                            
+                                            <div class="d-flex gap-2 mt-2">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-gold flex-grow-1 text-center btn-info-produto"
+                                                        data-produto="<?= htmlspecialchars($produto->nome) ?>">
+                                                    <i class="fas fa-info-circle"></i> Info
+                                                </button>
+                                                <a href="tel:<?= preg_replace('/[^0-9+]/', '', $config->get('telefone', '')) ?>"
+                                                   class="btn btn-sm btn-gold flex-grow-1 text-center">
+                                                    <i class="fas fa-phone-alt"></i> Encomendar
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
-            </div>
+                </div>
+            <?php endif; ?>
+            
+            <!-- 🔥 LISTA DE TODOS OS PRODUTOS (estilo catálogo) -->
+            <?php if(!empty($produtosNormais)): ?>
+                <div class="catalogo-produtos">
+                    <h4 class="text-white-50 text-center mb-4">
+                        <i class="fas fa-list"></i> Catálogo Completo
+                    </h4>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover table-catalogo">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">#</th>
+                                    <th style="width: 80px;">Imagem</th>
+                                    <th>Nome</th>
+                                    <th class="text-end">Preço</th>
+                                    <th class="text-end" style="width: 160px;">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($produtosNormais as $produto): ?>
+                                <tr>
+                                    <td><?= $produto->id ?></td>
+                                    <td>
+                                        <?php if($produto->imagem): ?>
+                                            <img src="<?= BASE_URL ?>assets/images/produtos/<?= $produto->imagem ?>" 
+                                                 style="height: 40px; width: 40px; object-fit: cover; border-radius: 6px;">
+                                        <?php else: ?>
+                                            <span class="text-muted small">Sem img</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <strong><?= htmlspecialchars($produto->nome) ?></strong>
+                                        <div class="small text-white-50"><?= htmlspecialchars(substr($produto->descricao ?? '', 0, 60)) ?>...</div>
+                                    </td>
+                                    <td class="text-end">
+                                        <?php if($produto->preco_promocional): ?>
+                                            <span class="text-muted text-decoration-line-through small">€ <?= number_format($produto->preco, 2, ',', '.') ?></span><br>
+                                            <span class="text-gold fw-bold">€ <?= number_format($produto->preco_promocional, 2, ',', '.') ?></span>
+                                        <?php elseif($produto->preco): ?>
+                                            <span class="text-gold fw-bold">€ <?= number_format($produto->preco, 2, ',', '.') ?></span>
+                                        <?php else: ?>
+                                            <span class="text-muted small">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button"
+                                                    class="btn btn-outline-gold btn-info-produto"
+                                                    data-produto="<?= htmlspecialchars($produto->nome) ?>">
+                                                <i class="fas fa-info-circle"></i>
+                                            </button>
+                                            <a href="tel:<?= preg_replace('/[^0-9+]/', '', $config->get('telefone', '')) ?>"
+                                               class="btn btn-gold">
+                                                <i class="fas fa-phone-alt"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <?php if(count($produtosNormais) > 10): ?>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-outline-gold btn-sm" id="btnVerMaisProdutos">
+                                <i class="fas fa-chevron-down"></i> Ver mais produtos
+                            </button>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            
+            <!-- 🔥 MENSAGEM DO LUXOR PARA PRODUTOS -->
+            <?php if(empty($produtosDestaque) && empty($produtosNormais)): ?>
+                <div class="text-center py-5">
+                    <i class="fas fa-box-open fa-3x text-gold mb-3"></i>
+                    <p class="text-white-50">Em breve novos produtos estarão disponíveis.<br>O Luxor está a preparar algo especial para si.</p>
+                </div>
+            <?php endif; ?>
+            
         </div>
     </section>
 <?php endif; ?>

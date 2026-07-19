@@ -66,12 +66,21 @@
                 <div class="footer-divider my-3"></div>
 
                 <!-- ============================================ -->
-                <!-- POLÍTICA DE PRIVACIDADE + DEVELOPED BY -->
+                <!-- POLÍTICA DE PRIVACIDADE + DEVELOPED BY + BUGS -->
                 <!-- ============================================ -->
                 <div class="footer-legal">
                     <small class="text-white-50">
                         <a href="<?= BASE_URL . CLIENTE_SLUG ?>/politica_privacidade" class="text-gold legal-link">
                             <i class="fas fa-shield-alt"></i> Política de Privacidade
+                        </a>
+                    </small>
+                    
+                    <span class="text-muted separator">|</span>
+                    
+                    <!-- 🔥 NOVO: Comunicar Erros e Sugestões (apenas para beta) -->
+                    <small class="text-white-50">
+                        <a href="<?= BASE_URL ?>vitrine-demo/contacto" class="text-gold legal-link" target="_blank">
+                            <i class="fas fa-bug"></i> Comunicar Erro ou Sugestão
                         </a>
                     </small>
                     
@@ -125,6 +134,7 @@
     transition: all 0.3s ease;
     padding: 4px 8px;
     border-radius: 4px;
+    text-decoration: none !important;
 }
 
 .legal-link:hover {
@@ -157,7 +167,7 @@
     transform: translateY(-1px);
 }
 
-/* Visitas counter (mantido) */
+/* Visitas counter */
 .visitas-counter {
     opacity: 0.7;
     transition: opacity 0.3s ease;
@@ -231,10 +241,9 @@
 }
 </style>
 
-<!-- Script para animar o contador (mantido) -->
+<!-- Script para animar o contador -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Animação de contagem para o total
     const countEl = document.querySelector('.visit-count');
     if (countEl) {
         const target = parseInt(countEl.textContent.replace(/\D/g, ''));

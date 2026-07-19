@@ -15,12 +15,12 @@ $base_url = Store::getBaseUrl();
     <?php 
 $base_url = BASE_URL . CLIENTE_SLUG . '/';
 ?>
-       <a href="<?= $base_url ?>" class="logo">
-           <?php if($config->get('logo_imagem')): ?>
-               <img src="<?= BASE_URL ?>assets/images/<?= $config->get('logo_imagem') ?>" alt="Logotipo" style="height: 40px; width: auto; margin-right: 8px;">
-           <?php endif; ?>
-           <span class="logo-part1"><?= htmlspecialchars($config->get('logo_parte1', 'Seven')) ?></span><span class="logo-part2"><?= htmlspecialchars($config->get('logo_parte2', 'Lux')) ?></span>
-       </a>
+      <a href="<?= $base_url ?>" class="logo">
+    <?php if($config->get('logo_imagem')): ?>
+        <img src="<?= BASE_URL ?>assets/images/logos/<?= $config->get('logo_imagem') ?>" alt="Logotipo" style="height: 40px; width: auto; margin-right: 8px;">
+    <?php endif; ?>
+    <span class="logo-part1"><?= htmlspecialchars($config->get('logo_parte1', 'Seven')) ?></span><span class="logo-part2"><?= htmlspecialchars($config->get('logo_parte2', 'Lux')) ?></span>
+</a>
         
         <button class="nav-toggle" id="navToggle">
             <span></span><span></span><span></span>

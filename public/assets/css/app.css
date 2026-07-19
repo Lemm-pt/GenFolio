@@ -829,3 +829,137 @@ body:not(.admin-container) {
     background: #0a0a1a;
     color: #e0e0e0;
 }
+
+
+
+/* Adicionar ao seven-lux.css ou app.css */
+
+/* Produtos em Destaque */
+.produto-destaque-card {
+    background: linear-gradient(145deg, #1a1a2e, #12122a);
+    border: 1px solid rgba(198, 164, 63, 0.15);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+
+.produto-destaque-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(198, 164, 63, 0.4);
+    box-shadow: 0 20px 40px rgba(198, 164, 63, 0.15);
+}
+
+.produto-destaque-card .card-img-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.produto-destaque-card .card-img-wrapper img {
+    transition: transform 0.5s ease;
+}
+
+.produto-destaque-card:hover .card-img-wrapper img {
+    transform: scale(1.05);
+}
+
+.promo-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #dc3545;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    z-index: 2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+/* Catálogo de produtos */
+.table-catalogo {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table-catalogo thead th {
+    background: #1a1a2e;
+    color: #C6A43F;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid rgba(198, 164, 63, 0.1);
+}
+
+.table-catalogo tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: background 0.2s ease;
+    cursor: default;
+}
+
+.table-catalogo tbody tr:hover {
+    background: rgba(198, 164, 63, 0.05);
+}
+
+.text-gold { color: #C6A43F; }
+.btn-outline-gold {
+    color: #C6A43F;
+    border-color: #C6A43F;
+}
+.btn-outline-gold:hover {
+    background: #C6A43F;
+    color: #0a0a1a;
+}
+.btn-gold {
+    background: #C6A43F;
+    color: #0a0a1a;
+    border: none;
+}
+.btn-gold:hover {
+    background: #d4b96a;
+    color: #0a0a1a;
+}
+
+/* Mensagem do Luxor mini */
+.luxor-message-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(198, 164, 63, 0.08);
+    padding: 8px 24px;
+    border-radius: 50px;
+    border: 1px solid rgba(198, 164, 63, 0.15);
+}
+
+.luxor-message-mini i {
+    font-size: 1.2rem;
+    color: #C6A43F;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .vitrina-destaques .col-lg-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 480px) {
+    .vitrina-destaques .col-lg-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .table-catalogo td, 
+    .table-catalogo th {
+        font-size: 0.75rem;
+        padding: 0.4rem;
+    }
+    .table-catalogo .btn-group .btn {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+    }
+}

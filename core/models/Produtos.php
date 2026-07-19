@@ -1,4 +1,5 @@
 <?php
+// core/models/Produtos.php
 namespace core\models;
 
 use core\classes\Database;
@@ -14,7 +15,33 @@ class Produtos {
     }
     
     public function listar($limite = null) {
-        $sql = "SELECT * FROM sevenlux_produtos WHERE cliente_id = :cliente_id ORDER BY ordem, id DESC";
+        $sql = "SELECT * FROM sevenlux_produtos WHERE cliente_id = :cliente_id ORDER BY destaque DESC, ordem, id DESC";
+        if($limite) $sql .= " LIMIT " . intval($limite);
+        $result = $this->bd->select($sql, [':cliente_id' => $this->cliente_id]);
+        return $result ? $result : [];
+    }
+    
+    /**
+     * Lista apenas produtos em destaque/promoção
+     */
+    public function listarDestaques($limite = 7) {
+        $sql = "SELECT * FROM sevenlux_produtos 
+                WHERE cliente_id = :cliente_id 
+                AND destaque = 1 
+                ORDER BY ordem, id DESC 
+                LIMIT " . intval($limite);
+        $result = $this->bd->select($sql, [':cliente_id' => $this->cliente_id]);
+        return $result ? $result : [];
+    }
+    
+    /**
+     * Lista produtos normais (não destaque)
+     */
+    public function listarNormais($limite = null) {
+        $sql = "SELECT * FROM sevenlux_produtos 
+                WHERE cliente_id = :cliente_id 
+                AND (destaque = 0 OR destaque IS NULL)
+                ORDER BY ordem, id DESC";
         if($limite) $sql .= " LIMIT " . intval($limite);
         $result = $this->bd->select($sql, [':cliente_id' => $this->cliente_id]);
         return $result ? $result : [];
@@ -35,37 +62,42 @@ class Produtos {
     
     public function criar($dados, $imagem = null) {
         $ordem = $this->contar() + 1;
+        $destaque = isset($dados['destaque']) && $dados['destaque'] == '1' ? 1 : 0;
         
         $filename = null;
         if ($imagem && isset($imagem['tmp_name']) && $imagem['error'] === UPLOAD_ERR_OK) {
-            // 🔥 COMPRIMIR IMAGEM
             $uploadDir = __DIR__ . '/../../public/assets/images/produtos/';
             $filename = ImageHelper::processarImagem($imagem, 'produto', $uploadDir);
         }
         
-        $this->bd->insert("INSERT INTO sevenlux_produtos (cliente_id, nome, descricao, preco, imagem, ordem) VALUES (:cliente_id, :nome, :descricao, :preco, :imagem, :ordem)", [
+        $this->bd->insert("INSERT INTO sevenlux_produtos (cliente_id, nome, descricao, preco, preco_promocional, imagem, ordem, destaque) VALUES (:cliente_id, :nome, :descricao, :preco, :preco_promocional, :imagem, :ordem, :destaque)", [
             ':cliente_id' => $this->cliente_id,
             ':nome' => $dados['nome'],
             ':descricao' => $dados['descricao'] ?? null,
             ':preco' => $dados['preco'] ?? null,
+            ':preco_promocional' => $dados['preco_promocional'] ?? null,
             ':imagem' => $filename,
-            ':ordem' => $ordem
+            ':ordem' => $ordem,
+            ':destaque' => $destaque
         ]);
     }
     
     public function atualizar($id, $dados, $imagem = null) {
-        $sql = "UPDATE sevenlux_produtos SET nome=:nome, descricao=:descricao, preco=:preco, ordem=:ordem";
+        $destaque = isset($dados['destaque']) && $dados['destaque'] == '1' ? 1 : 0;
+        
+        $sql = "UPDATE sevenlux_produtos SET nome=:nome, descricao=:descricao, preco=:preco, preco_promocional=:preco_promocional, ordem=:ordem, destaque=:destaque";
         $params = [
             ':id' => $id,
             ':cliente_id' => $this->cliente_id,
             ':nome' => $dados['nome'],
             ':descricao' => $dados['descricao'] ?? null,
             ':preco' => $dados['preco'] ?? null,
-            ':ordem' => $dados['ordem'] ?? 0
+            ':preco_promocional' => $dados['preco_promocional'] ?? null,
+            ':ordem' => $dados['ordem'] ?? 0,
+            ':destaque' => $destaque
         ];
         
         if ($imagem && isset($imagem['tmp_name']) && $imagem['error'] === UPLOAD_ERR_OK) {
-            // 🔥 COMPRIMIR IMAGEM
             $uploadDir = __DIR__ . '/../../public/assets/images/produtos/';
             $filename = ImageHelper::processarImagem($imagem, 'produto', $uploadDir);
             if ($filename) {
